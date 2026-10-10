@@ -101,4 +101,32 @@ void main() {
     expect(montantsProposes(3500), [3500, 4000, 5000, 10000]);
     expect(montantsProposes(10000), [10000]);
   });
+
+  test('ré-ajout : le stock le plus récent remplace l\'ancien', () {
+    const l = LignePanier(
+      produitId: 'p',
+      nom: 'Riz',
+      unite: 'sac',
+      prixUnitaire: 100,
+      prixAchatUnitaire: 80,
+      quantite: 1,
+      stockDisponible: 2,
+    );
+    final panier = const Panier()
+        .ajouter(l)
+        .ajouter(l)
+        .ajouter(
+          const LignePanier(
+            produitId: 'p',
+            nom: 'Riz',
+            unite: 'sac',
+            prixUnitaire: 100,
+            prixAchatUnitaire: 80,
+            quantite: 1,
+            stockDisponible: 50,
+          ),
+        );
+    expect(panier.lignes.single.quantite, 3);
+    expect(panier.lignes.single.depasseLeStock, isFalse);
+  });
 }

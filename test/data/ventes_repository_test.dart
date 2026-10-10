@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kassa/core/identifiant.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
 import 'package:kassa/data/db/tables.dart';
@@ -124,6 +125,23 @@ void main() {
           panier: panier,
           mode: ModeChoisi.especes,
           paiement: paiement,
+          utilisateurId: utilisateurId,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('paiement incohérent (dette hors crédit) : refusé', () async {
+      final riz = await ligne('Riz');
+      final panier = const Panier().ajouter(riz);
+      expect(
+        () => ventes.enregistrerVente(
+          panier: panier,
+          mode: ModeChoisi.momo,
+          paiement: CalculPaiement.pour(
+            mode: ModeChoisi.credit,
+            total: panier.total,
+          ),
           utilisateurId: utilisateurId,
         ),
         throwsArgumentError,
@@ -283,6 +301,53 @@ void main() {
       expect(annul.single.quantite, 2);
       expect(annul.single.referenceId, v.id);
     });
+
+    test(
+      'crédit déjà remboursé : annulation refusée, rien ne change',
+      () async {
+        final riz = await ligne('Riz', quantite: 2);
+        final clientId = await clients.creerClient(nom: 'Awa');
+        final panier = const Panier().ajouter(riz);
+        final v = await ventes.enregistrerVente(
+          panier: panier,
+          mode: ModeChoisi.credit,
+          paiement: CalculPaiement.pour(
+            mode: ModeChoisi.credit,
+            total: panier.total,
+            saisi: 2000,
+          ),
+          utilisateurId: utilisateurId,
+          clientId: clientId,
+        );
+        await db
+            .into(db.versementsDette)
+            .insert(
+              VersementsDetteCompanion.insert(
+                id: Identifiant.nouveau(),
+                clientId: clientId,
+                montant: 5000,
+                modePaiement: ModePaiement.especes,
+                dateVersement: heure,
+                majLe: heure,
+                appareilId: 'tel-1',
+              ),
+            );
+        await db.recalculerSoldeDette(clientId);
+        await expectLater(
+          ventes.annulerVente(v.id),
+          throwsA(isA<AnnulationImpossible>()),
+        );
+        final vente = await (db.select(
+          db.ventes,
+        )..where((x) => x.id.equals(v.id))).getSingle();
+        expect(vente.annulee, isFalse);
+        expect(await stock(riz.produitId), 8);
+        final c = await (db.select(
+          db.clients,
+        )..where((x) => x.id.equals(clientId))).getSingle();
+        expect(c.soldeDette, 0);
+      },
+    );
 
     test('annuler deux fois : refusé', () async {
       final riz = await ligne('Riz');

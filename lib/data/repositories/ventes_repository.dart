@@ -51,6 +51,13 @@ class VentesRepository {
     if (mode == ModeChoisi.especes && paiement.manque > 0) {
       throw ArgumentError('Montant reçu insuffisant');
     }
+    // Le paiement doit correspondre au panier : pas de dette hors crédit.
+    if (paiement.montantPaye + paiement.resteAPayer != panier.total ||
+        paiement.montantPaye < 0 ||
+        paiement.resteAPayer < 0 ||
+        (paiement.resteAPayer > 0 && mode != ModeChoisi.credit)) {
+      throw ArgumentError('Paiement incohérent avec le panier');
+    }
     return _db.transaction(() async {
       final instant = _champs.maintenant();
       final venteId = Identifiant.nouveau();
@@ -106,6 +113,8 @@ class VentesRepository {
 
   /// Annule une vente : le stock est remis (mouvements « annulation ») et la
   /// dette du client recalculée. Une vente déjà annulée est refusée.
+  /// Une vente à crédit dont l'annulation rendrait la dette du client
+  /// négative (il a déjà remboursé) est refusée : [AnnulationImpossible].
   Future<void> annulerVente(String venteId) => _db.transaction(() async {
     final vente =
         await (_db.select(_db.ventes)
@@ -136,7 +145,9 @@ class VentesRepository {
       await _db.recalculerStock(l.produitId);
     }
     if (vente.clientId != null) {
-      await _db.recalculerSoldeDette(vente.clientId!);
+      final solde = await _db.recalculerSoldeDette(vente.clientId!);
+      // Lever annule toute la transaction : rien n'est enregistré.
+      if (solde < 0) throw const AnnulationImpossible();
     }
   });
 
@@ -155,9 +166,10 @@ class VentesRepository {
 
   /// Une vente avec ses lignes et son client.
   Stream<VenteDetaillee?> surveillerVente(String id) {
-    final vente = (_db.select(
-      _db.ventes,
-    )..where((v) => v.id.equals(id))).watchSingleOrNull();
+    final vente =
+        (_db.select(_db.ventes)
+              ..where((v) => v.id.equals(id) & v.supprimeLe.isNull()))
+            .watchSingleOrNull();
     return vente.asyncMap((v) async {
       if (v == null) return null;
       final lignes = await (_db.select(
@@ -207,4 +219,9 @@ class VentesRepository {
           appareilId: _champs.appareilId,
         ),
       );
+}
+
+/// Annulation refusée : le client a déjà remboursé une partie de la vente.
+class AnnulationImpossible implements Exception {
+  const AnnulationImpossible();
 }

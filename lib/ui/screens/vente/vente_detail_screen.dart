@@ -60,10 +60,15 @@ class _VenteDetailScreenState extends ConsumerState<VenteDetailScreen> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(l.saleCancelled(numero))));
-    } on Object {
+    } on Object catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.saveError)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is AnnulationImpossible ? l.errCancelRepaid : l.saveError,
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _enCours = false);

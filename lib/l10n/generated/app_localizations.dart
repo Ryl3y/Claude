@@ -1286,6 +1286,12 @@ abstract class AppLocalizations {
   /// **'Garder la vente'**
   String get keepSale;
 
+  /// No description provided for @errCancelRepaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le client a déjà remboursé une partie de cette vente : impossible de l\'annuler.'**
+  String get errCancelRepaid;
+
   /// No description provided for @saleCancelled.
   ///
   /// In fr, this message translates to:

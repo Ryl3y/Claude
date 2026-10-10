@@ -732,6 +732,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get keepSale => 'Keep sale';
 
   @override
+  String get errCancelRepaid =>
+      'The customer has already paid back part of this sale, so it can\'t be cancelled.';
+
+  @override
   String saleCancelled(int numero) {
     return 'Sale #$numero cancelled. Stock was put back.';
   }

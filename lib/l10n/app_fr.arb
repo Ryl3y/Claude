@@ -532,6 +532,7 @@
   },
   "cancelSaleBody": "Le stock sera remis et la dette du client retirée. La vente reste dans l'historique, marquée Annulée.",
   "keepSale": "Garder la vente",
+  "errCancelRepaid": "Le client a déjà remboursé une partie de cette vente : impossible de l'annuler.",
   "saleCancelled": "Vente n°{numero} annulée. Le stock a été remis.",
   "@saleCancelled": {
     "placeholders": {

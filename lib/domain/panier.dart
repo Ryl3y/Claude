@@ -73,7 +73,8 @@ class Panier {
     final i = lignes.indexWhere((l) => l.produitId == nouvelle.produitId);
     if (i < 0) return Panier([...lignes, nouvelle]);
     final copie = [...lignes];
-    copie[i] = copie[i].avecQuantite(copie[i].quantite + nouvelle.quantite);
+    // Le stock le plus récent remplace celui du premier ajout.
+    copie[i] = nouvelle.avecQuantite(copie[i].quantite + nouvelle.quantite);
     return Panier(copie);
   }
 

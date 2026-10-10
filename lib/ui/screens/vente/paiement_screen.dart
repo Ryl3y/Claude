@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../core/montant.dart';
 import '../../../data/db/kassa_database.dart';
 import '../../../data/providers.dart';
+import '../../../data/repositories/ventes_repository.dart';
 import '../../../domain/panier.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../state/vente.dart';
@@ -58,6 +59,8 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
       setState(() => _clientManquant = true);
       return;
     }
+    // Deux appuis rapides avant le rebuild : une seule vente.
+    if (_enCours) return;
     setState(() => _enCours = true);
     try {
       final utilisateur = await ref
@@ -214,7 +217,8 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
           for (final montant in propositions)
             ChoiceChip(
               label: Text(Montant.format(montant, langue, court: true)),
-              selected: _montantSaisi == montant,
+              // Rien de saisi = montant exact : sa puce est choisie.
+              selected: (_montantSaisi ?? panier.total) == montant,
               showCheckmark: false,
               onSelected: (_) => setState(() => _saisie = '$montant'),
             ),
@@ -334,7 +338,10 @@ class _ChoixMode extends StatelessWidget {
                     child: _TuileMode(
                       mode: modes[ligne * 2 + col],
                       choisi: mode == modes[ligne * 2 + col],
-                      libelle: libelleModeChoisi(l, modes[ligne * 2 + col]),
+                      libelle: libelleMode(
+                        l,
+                        VentesRepository.codeMode(modes[ligne * 2 + col]),
+                      ),
                       onTap: () => onChanged(modes[ligne * 2 + col]),
                       tokens: t,
                     ),

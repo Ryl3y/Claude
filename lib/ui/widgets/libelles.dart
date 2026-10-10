@@ -10,14 +10,8 @@ String libelleMode(AppLocalizations l, String code) => switch (code) {
   ModePaiement.especes => l.payCash,
   ModePaiement.momo => l.payMomo,
   ModePaiement.orangeMoney => l.payOrange,
-  _ => l.payCredit,
-};
-
-String libelleModeChoisi(AppLocalizations l, ModeChoisi mode) => switch (mode) {
-  ModeChoisi.especes => l.payCash,
-  ModeChoisi.momo => l.payMomo,
-  ModeChoisi.orangeMoney => l.payOrange,
-  ModeChoisi.credit => l.payCredit,
+  ModePaiement.credit => l.payCredit,
+  _ => code,
 };
 
 IconData iconeMode(ModeChoisi mode) => switch (mode) {

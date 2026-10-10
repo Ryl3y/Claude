@@ -735,6 +735,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get keepSale => 'Garder la vente';
 
   @override
+  String get errCancelRepaid =>
+      'Le client a déjà remboursé une partie de cette vente : impossible de l\'annuler.';
+
+  @override
   String saleCancelled(int numero) {
     return 'Vente n°$numero annulée. Le stock a été remis.';
   }

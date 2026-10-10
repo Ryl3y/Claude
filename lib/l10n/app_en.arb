@@ -198,6 +198,7 @@
   "cancelSaleTitle": "Cancel sale #{numero}?",
   "cancelSaleBody": "Stock will be put back and the customer's debt removed. The sale stays in the history, marked Cancelled.",
   "keepSale": "Keep sale",
+  "errCancelRepaid": "The customer has already paid back part of this sale, so it can't be cancelled.",
   "saleCancelled": "Sale #{numero} cancelled. Stock was put back.",
   "saleNotFound": "This sale no longer exists."
 }
