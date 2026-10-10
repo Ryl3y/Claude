@@ -247,16 +247,19 @@ class KassaTextStyles {
     required this.caption,
   });
 
-  /// Construit les styles à partir d'un style de base (la police)
-  /// et de la couleur du texte principal.
-  factory KassaTextStyles.build(TextStyle base, Color ink) {
+  /// Construit les styles à partir de [police], qui renvoie la police
+  /// pour une graisse donnée, et de la couleur du texte principal.
+  ///
+  /// La graisse doit être donnée à google_fonts dès le départ : sinon il ne
+  /// charge que le fichier Regular et simule le gras.
+  factory KassaTextStyles.build(
+      TextStyle Function(FontWeight graisse) police, Color ink) {
     const tabular = [FontFeature.tabularFigures()];
     TextStyle style(double size, double height, FontWeight weight,
             {bool chiffres = false}) =>
-        base.copyWith(
+        police(weight).copyWith(
           fontSize: size,
           height: height / size,
-          fontWeight: weight,
           color: ink,
           fontFeatures: chiffres ? tabular : null,
           leadingDistribution: TextLeadingDistribution.even,

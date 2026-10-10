@@ -17,8 +17,9 @@ enum KassaSymboleVariante {
 
 /// Le symbole : un reçu de caisse vert marqué d'un K, avec une pièce d'or.
 ///
-/// Le contour de la pièce prend la couleur du fond pour la « détacher »
-/// du reçu : [fond] (par défaut `surface` du thème).
+/// Le contour de la pièce (et, sur fond foncé, le K) prend la couleur
+/// du fond pour la « détacher » du reçu : [fond], par défaut
+/// `surface-raised` (cartes), ou `kassa-deep` pour la variante surFonce.
 class KassaSymbole extends StatelessWidget {
   const KassaSymbole({
     super.key,
@@ -40,7 +41,10 @@ class KassaSymbole extends StatelessWidget {
         (taille <= 24
             ? KassaSymboleVariante.petit
             : KassaSymboleVariante.principal);
-    final contour = fond ?? context.kassa.surface;
+    final contour = fond ??
+        (v == KassaSymboleVariante.surFonce
+            ? context.kassa.kassaDeep
+            : context.kassa.surfaceRaised);
     return SvgPicture.string(
       KassaSvg.pour(v, contourPiece: contour),
       width: taille,
@@ -64,7 +68,6 @@ class KassaNom extends StatelessWidget {
       style: context.kassa.display.copyWith(
         fontSize: taille,
         height: 1,
-        fontWeight: FontWeight.w800,
         letterSpacing: kassaWordmarkSpacing(taille),
         color: couleur ?? context.kassa.ink,
       ),
@@ -128,7 +131,7 @@ abstract final class KassaSvg {
   static String surFonce({String contourPiece = '#0e3b26'}) =>
       '<svg viewBox="0 0 100 100">'
       '<path d="$_recu" fill="#e2f3e8"/>'
-      '<path d="M38 26 V58 M60 26 L42 42 L60 58" fill="none" stroke="#0e3b26" '
+      '<path d="M38 26 V58 M60 26 L42 42 L60 58" fill="none" stroke="$contourPiece" '
       'stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
       '<path d="M36 72 H64" stroke="#1d7349" stroke-width="5" stroke-linecap="round"/>'
       '<circle cx="82" cy="18" r="13" fill="#f2b233" stroke="$contourPiece" stroke-width="4"/>'

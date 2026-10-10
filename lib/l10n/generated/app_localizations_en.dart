@@ -89,9 +89,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get previewTitle => 'Kassa style guide';
-
-  @override
   String get previewLogo => 'Logo';
 
   @override

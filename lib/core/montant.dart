@@ -7,16 +7,20 @@ import 'package:intl/intl.dart';
 /// - version courte pour les listes serrées : « 12 500 F »
 ///
 /// Le séparateur de milliers vient d'intl selon la langue, jamais fait à la main.
-/// Une espace insécable sépare le nombre de la devise : elle ne passe
-/// jamais seule à la ligne.
+/// En français, intl donne une espace fine insécable (U+202F) que
+/// Plus Jakarta Sans ne contient pas : on la remplace par une espace
+/// insécable (U+00A0), présente dans la police. Le montant ne se coupe
+/// jamais en fin de ligne.
 abstract final class Montant {
   static const deviseLongue = 'FCFA';
   static const deviseCourte = 'F';
-  static const _insecable = ' ';
+  static const _insecable = '\u00A0';
 
   /// Nombre seul, avec séparateur de milliers : « 12 500 » / « 12,500 ».
   static String nombre(int valeur, String locale) =>
-      NumberFormat.decimalPattern(locale).format(valeur);
+      NumberFormat.decimalPattern(locale)
+          .format(valeur)
+          .replaceAll('\u202F', _insecable);
 
   /// Montant avec devise : « 12 500 FCFA » ou, si [court], « 12 500 F ».
   static String format(int valeur, String locale, {bool court = false}) {

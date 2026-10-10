@@ -312,7 +312,6 @@ class _Logos extends StatelessWidget {
               child: const KassaSymbole(
                 taille: 44,
                 variante: KassaSymboleVariante.surFonce,
-                fond: Color(0xFF0E3B26),
               ),
             ),
           ],
@@ -344,7 +343,7 @@ class _Couleurs extends StatelessWidget {
     ];
     return LayoutBuilder(
       builder: (context, c) {
-        final largeur = (c.maxWidth - 2 * KassaSpace.s2) / 3;
+        final largeur = ((c.maxWidth - 2 * KassaSpace.s2) / 3).floorToDouble();
         return Wrap(
           spacing: KassaSpace.s2,
           runSpacing: KassaSpace.s2,

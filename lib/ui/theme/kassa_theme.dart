@@ -16,10 +16,11 @@ abstract final class KassaTheme {
 
   /// Police de base : Plus Jakarta Sans via google_fonts.
   /// Les fichiers sont embarqués dans assets/fonts (aucun téléchargement).
-  static TextStyle _police() => GoogleFonts.plusJakartaSans();
+  static TextStyle _police(FontWeight graisse) =>
+      GoogleFonts.plusJakartaSans(fontWeight: graisse);
 
   static ThemeData _build(Brightness brightness, KassaPalette p) {
-    final textes = KassaTextStyles.build(_police(), p.ink);
+    final textes = KassaTextStyles.build(_police, p.ink);
     final tokens = KassaTokens.from(p, textes);
 
     final scheme = ColorScheme(
@@ -56,7 +57,7 @@ abstract final class KassaTheme {
       displaySmall: textes.display,
       headlineSmall: textes.title,
       titleLarge: textes.title,
-      titleMedium: textes.body.copyWith(fontWeight: FontWeight.w600),
+      titleMedium: textes.label.copyWith(fontSize: 16, height: 24 / 16),
       titleSmall: textes.label,
       bodyLarge: textes.body,
       bodyMedium: textes.body,

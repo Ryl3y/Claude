@@ -58,7 +58,13 @@ void main() {
     // Chiffres tabulaires pour les montants.
     expect(t.amount.fontFeatures, contains(const FontFeature.tabularFigures()));
     expect(t.amountLg.fontFeatures, contains(const FontFeature.tabularFigures()));
-    expect(t.body.fontFamily, contains('PlusJakartaSans'));
+    // Chaque graisse utilise son propre fichier de police (pas de faux gras).
+    expect(t.body.fontFamily, 'PlusJakartaSans_regular');
+    expect(t.caption.fontFamily, 'PlusJakartaSans_500');
+    expect(t.label.fontFamily, 'PlusJakartaSans_600');
+    expect(t.title.fontFamily, 'PlusJakartaSans_700');
+    expect(t.display.fontFamily, 'PlusJakartaSans_800');
+    expect(t.amountLg.fontFamily, 'PlusJakartaSans_800');
   });
 
   test('lerp entre clair et sombre', () {

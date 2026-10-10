@@ -248,12 +248,6 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEnglish;
 
-  /// No description provided for @previewTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Charte Kassa'**
-  String get previewTitle;
-
   /// No description provided for @previewLogo.
   ///
   /// In fr, this message translates to:
