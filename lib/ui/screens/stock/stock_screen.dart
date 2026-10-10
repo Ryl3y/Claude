@@ -154,7 +154,7 @@ class _StockScreenState extends ConsumerState<StockScreen> {
                       const Center(child: CircularProgressIndicator()),
                   error: (erreur, pile) => EtatVide(
                     icone: Symbols.error_rounded,
-                    titre: l.saveError,
+                    titre: l.loadError,
                   ),
                   data: (tous) {
                     if (tous.isEmpty) {

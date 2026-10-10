@@ -112,10 +112,16 @@ class ProduitsRepository {
     });
   }
 
-  /// Modifie un produit. Si la quantité saisie diffère du stock calculé,
-  /// un mouvement « correction » enregistre l'écart (jamais d'écrasement).
-  Future<void> modifierProduit(String id, ProduitSaisie s) {
-    _verifier(s);
+  /// Modifie un produit. [quantiteAffichee] est le stock montré à
+  /// l'utilisateur à l'ouverture du formulaire : s'il l'a changé, un
+  /// mouvement « correction » enregistre son écart. Un mouvement fait entre
+  /// temps (réappro, vente sur un autre téléphone) n'est donc jamais annulé.
+  Future<void> modifierProduit(
+    String id,
+    ProduitSaisie s, {
+    required double quantiteAffichee,
+  }) {
+    _verifier(s, creation: false);
     return _db.transaction(() async {
       final instant = _champs.maintenant();
       final modifies =
@@ -138,9 +144,7 @@ class ProduitsRepository {
           );
       if (modifies == 0) throw StateError('Produit introuvable : $id');
 
-      final ecart = Calculs.arrondirQuantite(
-        s.quantite - await _db.calculerStock(id),
-      );
+      final ecart = Calculs.arrondirQuantite(s.quantite - quantiteAffichee);
       if (ecart != 0) {
         await _mouvement(
           produitId: id,
@@ -154,7 +158,12 @@ class ProduitsRepository {
   }
 
   /// Suppression logique : le produit n'est plus proposé, l'historique reste.
-  Future<void> supprimerProduit(String id) async {
+  /// Renvoie le chemin de la photo du produit (à effacer du téléphone).
+  Future<String?> supprimerProduit(String id) async {
+    final produit = await (_db.select(
+      _db.produits,
+    )..where((p) => p.id.equals(id) & p.supprimeLe.isNull())).getSingleOrNull();
+    if (produit == null) throw StateError('Produit introuvable : $id');
     final suppression = _champs.suppression();
     await (_db.update(_db.produits)..where((p) => p.id.equals(id))).write(
       ProduitsCompanion(
@@ -164,6 +173,7 @@ class ProduitsRepository {
         appareilId: Value(_champs.appareilId),
       ),
     );
+    return produit.photoLocale;
   }
 
   /// Réappro : mouvement « entree » au prix d'achat donné. Un nouveau prix
@@ -211,8 +221,8 @@ class ProduitsRepository {
 
   // ---------------------------------------------------------------- Interne
 
-  void _verifier(ProduitSaisie s) {
-    final erreurs = ReglesProduit.verifier(s);
+  void _verifier(ProduitSaisie s, {bool creation = true}) {
+    final erreurs = ReglesProduit.verifier(s, creation: creation);
     if (erreurs.isNotEmpty) throw ArgumentError(erreurs.join(', '));
   }
 

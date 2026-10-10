@@ -334,5 +334,6 @@
       }
     }
   },
-  "comingSoon": "Cet écran arrive dans une prochaine version."
+  "comingSoon": "Cet écran arrive dans une prochaine version.",
+  "loadError": "Impossible de lire vos produits. Fermez puis rouvrez l'app ; vos données restent sur le téléphone."
 }

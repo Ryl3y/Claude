@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kassa/core/quantite.dart';
 import 'package:kassa/core/saisie.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
@@ -94,7 +95,7 @@ void main() {
     test('quantité changée : mouvement correction de l\'écart', () async {
       final id = await repo.creerProduit(riz());
       heure = heure.add(const Duration(minutes: 5));
-      await repo.modifierProduit(id, riz(quantite: 7.5));
+      await repo.modifierProduit(id, riz(quantite: 7.5), quantiteAffichee: 10);
       final m = await mouvements();
       expect(m.map((x) => x.type), [
         TypeMouvement.entree,
@@ -110,14 +111,64 @@ void main() {
 
     test('quantité inchangée : aucun mouvement de plus', () async {
       final id = await repo.creerProduit(riz());
-      await repo.modifierProduit(id, riz(prixAchat: 3100));
+      await repo.modifierProduit(
+        id,
+        riz(prixAchat: 3100),
+        quantiteAffichee: 10,
+      );
       expect(await mouvements(), hasLength(1));
+    });
+
+    test('réappro faite pendant la modification : jamais annulée', () async {
+      final id = await repo.creerProduit(riz());
+      // Le formulaire s'ouvre avec 10 ; une réappro de 5 arrive entre temps.
+      await repo.reapprovisionner(
+        produitId: id,
+        quantite: 5,
+        nouveauPrixAchat: 3300,
+      );
+      // L'utilisateur change seulement le nom ; la quantité affichée reste 10.
+      await repo.modifierProduit(
+        id,
+        riz(nom: 'Riz long 5 kg'),
+        quantiteAffichee: 10,
+      );
+      final p = await (db.select(
+        db.produits,
+      )..where((x) => x.id.equals(id))).getSingle();
+      expect(p.quantite, 15);
+      expect(
+        (await mouvements()).where((m) => m.type == TypeMouvement.correction),
+        isEmpty,
+      );
+    });
+
+    test(
+      'stock négatif accepté en modification, refusé à la création',
+      () async {
+        final id = await repo.creerProduit(riz());
+        await repo.modifierProduit(id, riz(quantite: -2), quantiteAffichee: 10);
+        final p = await (db.select(
+          db.produits,
+        )..where((x) => x.id.equals(id))).getSingle();
+        expect(p.quantite, -2);
+        expect(() => repo.creerProduit(riz(quantite: -1)), throwsArgumentError);
+      },
+    );
+
+    test('supprimer deux fois : refusé la deuxième fois', () async {
+      final id = await repo.creerProduit(riz());
+      await repo.supprimerProduit(id);
+      expect(() => repo.supprimerProduit(id), throwsStateError);
     });
 
     test('produit supprimé : modification refusée', () async {
       final id = await repo.creerProduit(riz());
       await repo.supprimerProduit(id);
-      expect(() => repo.modifierProduit(id, riz()), throwsStateError);
+      expect(
+        () => repo.modifierProduit(id, riz(), quantiteAffichee: 10),
+        throwsStateError,
+      );
     });
   });
 
@@ -210,6 +261,8 @@ void main() {
   group('saisie au clavier', () {
     test('montants', () {
       expect(Saisie.montant('3 500'), 3500);
+      expect(Saisie.montant('3\u00A0500'), 3500);
+      expect(Saisie.montant('3\u202F500'), 3500);
       expect(Saisie.montant('0'), 0);
       expect(Saisie.montant('12,5'), isNull);
       expect(Saisie.montant(''), isNull);
@@ -221,6 +274,18 @@ void main() {
       expect(Saisie.quantite('1.25'), 1.25);
       expect(Saisie.quantite('1,2345'), isNull);
       expect(Saisie.quantite('abc'), isNull);
+      expect(Saisie.quantite('-2'), -2);
+    });
+    test('une quantité affichée dans un champ se relit toujours', () {
+      for (final langue in ['fr', 'en']) {
+        for (final q in [0.0, 1.5, 1234.5, 2000.0, -3.25]) {
+          expect(
+            Saisie.quantite(Quantite.pourSaisie(q, langue)),
+            q,
+            reason: '$langue $q',
+          );
+        }
+      }
     });
     test('recherche sans accents', () {
       expect(Saisie.pourRecherche('Épicerie Fine'), 'epicerie fine');

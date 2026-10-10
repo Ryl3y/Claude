@@ -480,4 +480,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get comingSoon => 'Cet écran arrive dans une prochaine version.';
+
+  @override
+  String get loadError =>
+      'Impossible de lire vos produits. Fermez puis rouvrez l\'app ; vos données restent sur le téléphone.';
 }

@@ -883,6 +883,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Cet écran arrive dans une prochaine version.'**
   String get comingSoon;
+
+  /// No description provided for @loadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de lire vos produits. Fermez puis rouvrez l\'app ; vos données restent sur le téléphone.'**
+  String get loadError;
 }
 
 class _AppLocalizationsDelegate

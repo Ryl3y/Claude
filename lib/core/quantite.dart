@@ -7,4 +7,9 @@ import 'montant.dart';
 abstract final class Quantite {
   static String format(double valeur, String locale) =>
       Montant.sansEspaceFine(NumberFormat('#,##0.###', locale).format(valeur));
+
+  /// Valeur à mettre dans un champ de saisie : sans séparateur de milliers,
+  /// pour que [Saisie.quantite] la relise toujours (« 1234,5 » / « 1234.5 »).
+  static String pourSaisie(double valeur, String locale) =>
+      NumberFormat('0.###', locale).format(valeur);
 }

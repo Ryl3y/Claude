@@ -479,4 +479,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoon => 'This screen is coming in a future version.';
+
+  @override
+  String get loadError =>
+      'Your products could not be read. Close and reopen the app; your data stays on the phone.';
 }

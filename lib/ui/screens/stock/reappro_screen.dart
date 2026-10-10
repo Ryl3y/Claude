@@ -46,6 +46,28 @@ class _ReapproScreenState extends ConsumerState<ReapproScreen> {
     _produitId = widget.produitId;
     _quantite.addListener(() => setState(() {}));
     _prix.addListener(() => setState(() {}));
+    // Prix d'achat proposé = prix actuel du produit, dès qu'il est connu
+    // (jamais pendant un build).
+    ref.listenManual(produitsProvider, (_, produits) {
+      final p = produits.value?.where((x) => x.id == _produitId).firstOrNull;
+      if (p != null && _prixInitialisePour != p.id) {
+        _prixInitialisePour = p.id;
+        _prix.text = '${p.prixAchat}';
+      }
+    }, fireImmediately: true);
+  }
+
+  void _choisir(String id) {
+    setState(() => _produitId = id);
+    final p = ref
+        .read(produitsProvider)
+        .value
+        ?.where((x) => x.id == id)
+        .firstOrNull;
+    if (p != null) {
+      _prixInitialisePour = p.id;
+      _prix.text = '${p.prixAchat}';
+    }
   }
 
   @override
@@ -113,10 +135,6 @@ class _ReapproScreenState extends ConsumerState<ReapproScreen> {
                 titre: l.productNotFound,
               ),
       );
-    }
-    if (_prixInitialisePour != produit.id) {
-      _prixInitialisePour = produit.id;
-      _prix.text = '${produit.prixAchat}';
     }
     return _formulaireReappro(context, l, produit);
   }
@@ -199,7 +217,7 @@ class _ReapproScreenState extends ConsumerState<ReapproScreen> {
                               ),
                             ),
                             trailing: const Icon(Symbols.chevron_right_rounded),
-                            onTap: () => setState(() => _produitId = p.id),
+                            onTap: () => _choisir(p.id),
                           );
                         },
                       ),

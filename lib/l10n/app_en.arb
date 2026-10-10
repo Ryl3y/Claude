@@ -130,5 +130,6 @@
   "addToStock": "Add to stock",
   "errReceivedQuantity": "Enter the quantity received, greater than 0.",
   "stockUpdated": "Stock updated: {quantite}.",
-  "comingSoon": "This screen is coming in a future version."
+  "comingSoon": "This screen is coming in a future version.",
+  "loadError": "Your products could not be read. Close and reopen the app; your data stays on the phone."
 }

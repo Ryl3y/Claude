@@ -2,15 +2,18 @@
 abstract final class Saisie {
   /// Montant en FCFA : chiffres seulement (espaces tolérés). Null si invalide.
   static int? montant(String texte) {
-    final propre = texte.replaceAll(RegExp(r'[\s  ]'), '');
+    final propre = texte.replaceAll(RegExp('[\\s\\u00A0\\u202F]'), '');
     if (propre.isEmpty || !RegExp(r'^\d{1,9}$').hasMatch(propre)) return null;
     return int.parse(propre);
   }
 
-  /// Quantité décimale : « 12 », « 1,5 » ou « 1.5 ». Null si invalide.
+  /// Quantité décimale : « 12 », « 1,5 », « 1.5 » ou « -2 » (un stock peut
+  /// être négatif après des ventes non saisies en stock). Null si invalide.
   static double? quantite(String texte) {
-    final propre = texte.replaceAll(RegExp(r'[\s  ]'), '').replaceAll(',', '.');
-    if (!RegExp(r'^\d{1,7}(\.\d{1,3})?$').hasMatch(propre)) return null;
+    final propre = texte
+        .replaceAll(RegExp('[\\s\\u00A0\\u202F]'), '')
+        .replaceAll(',', '.');
+    if (!RegExp(r'^-?\d{1,7}(\.\d{1,3})?$').hasMatch(propre)) return null;
     return double.parse(propre);
   }
 

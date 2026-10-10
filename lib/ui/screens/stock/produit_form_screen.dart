@@ -46,7 +46,18 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
   final _seuil = TextEditingController();
 
   String? _categorieId;
+
+  /// Change à chaque choix de catégorie pour reconstruire la liste
+  /// déroulante (elle ne relit sa valeur initiale qu'à sa création).
+  var _versionCategorie = 0;
   String? _photo;
+
+  /// Photo enregistrée en base à l'ouverture, et photos prises pendant la
+  /// saisie : celles qui ne servent plus sont effacées du téléphone.
+  String? _photoInitiale;
+  final _photosPrises = <String>{};
+  var _enregistre = false;
+  double _quantiteAffichee = 0;
   String? _codeBarre;
   var _charge = false;
   var _introuvable = false;
@@ -71,7 +82,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       final langue = langueDe(context);
       setState(() {
         _quantite.text = '0';
-        _seuil.text = Quantite.format(seuil, langue);
+        _seuil.text = Quantite.pourSaisie(seuil, langue);
         _charge = true;
       });
       return;
@@ -88,17 +99,43 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       _categorieId = p.categorieId;
       _prixAchat.text = '${p.prixAchat}';
       _prixVente.text = '${p.prixVente}';
-      _quantite.text = Quantite.format(p.quantite, langue);
+      _quantiteAffichee = p.quantite;
+      _quantite.text = Quantite.pourSaisie(p.quantite, langue);
       _unite.text = p.unite;
-      _seuil.text = Quantite.format(p.seuilAlerte, langue);
+      _seuil.text = Quantite.pourSaisie(p.seuilAlerte, langue);
       _photo = p.photoLocale;
+      _photoInitiale = p.photoLocale;
       _codeBarre = p.codeBarre;
       _charge = true;
     });
   }
 
+  /// Après une réappro lancée depuis ce formulaire : reprend le stock et le
+  /// prix d'achat à jour, sans toucher aux autres champs déjà modifiés.
+  Future<void> _ouvrirReappro() async {
+    await context.push(Chemins.reappro(produitId: widget.produitId));
+    if (!mounted) return;
+    final p = await ref
+        .read(produitsRepositoryProvider)
+        .surveillerProduit(widget.produitId!)
+        .first;
+    if (p == null || !mounted) return;
+    final langue = langueDe(context);
+    setState(() {
+      _quantiteAffichee = p.quantite;
+      _quantite.text = Quantite.pourSaisie(p.quantite, langue);
+      _prixAchat.text = '${p.prixAchat}';
+    });
+  }
+
   @override
   void dispose() {
+    // Formulaire quitté sans enregistrer : les photos prises sont inutiles.
+    if (!_enregistre) {
+      for (final photo in _photosPrises) {
+        PhotosProduits.effacer(photo);
+      }
+    }
     for (final c in [_nom, _prixAchat, _prixVente, _quantite, _unite, _seuil]) {
       c.dispose();
     }
@@ -109,15 +146,30 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
 
   Future<void> _choisirCategorie(String? valeur) async {
     if (valeur != _valeurNouvelleCategorie) {
-      setState(() => _categorieId = valeur);
+      setState(() {
+        _categorieId = valeur;
+        _versionCategorie++;
+      });
       return;
     }
+    final l = AppLocalizations.of(context);
     final nouvelle = await demanderNouvelleCategorie(context);
-    if (nouvelle == null || !mounted) return;
-    final id = await ref
-        .read(produitsRepositoryProvider)
-        .creerCategorie(nom: nouvelle.nom, icone: nouvelle.icone);
-    if (mounted) setState(() => _categorieId = id);
+    String? id;
+    if (nouvelle != null) {
+      try {
+        id = await ref
+            .read(produitsRepositoryProvider)
+            .creerCategorie(nom: nouvelle.nom, icone: nouvelle.icone);
+      } on Object {
+        if (mounted) _message(l.saveError);
+      }
+    }
+    if (!mounted) return;
+    // Annulé ou échoué : la liste revient à la catégorie précédente.
+    setState(() {
+      _categorieId = id ?? _categorieId;
+      _versionCategorie++;
+    });
   }
 
   Future<void> _changerPhoto() async {
@@ -168,6 +220,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       );
       if (image == null) return;
       final chemin = await PhotosProduits.enregistrer(image.path);
+      _photosPrises.add(chemin);
       if (mounted) setState(() => _photo = chemin);
     } on Exception {
       if (mounted) _message(l.photoError);
@@ -198,7 +251,16 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       if (_creation) {
         await repo.creerProduit(saisie);
       } else {
-        await repo.modifierProduit(widget.produitId!, saisie);
+        await repo.modifierProduit(
+          widget.produitId!,
+          saisie,
+          quantiteAffichee: _quantiteAffichee,
+        );
+      }
+      _enregistre = true;
+      // Photos remplacées ou retirées : effacées du téléphone.
+      for (final photo in {..._photosPrises, ?_photoInitiale}) {
+        if (photo != _photo) PhotosProduits.effacer(photo);
       }
       if (!mounted) return;
       final messager = ScaffoldMessenger.of(context);
@@ -237,9 +299,15 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       ),
     );
     if (confirme != true || !mounted) return;
-    await ref
-        .read(produitsRepositoryProvider)
-        .supprimerProduit(widget.produitId!);
+    try {
+      final photo = await ref
+          .read(produitsRepositoryProvider)
+          .supprimerProduit(widget.produitId!);
+      await PhotosProduits.effacer(photo);
+    } on Object {
+      if (mounted) _message(l.saveError);
+      return;
+    }
     if (!mounted) return;
     final messager = ScaffoldMessenger.of(context);
     context.pop();
@@ -314,8 +382,16 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
 
     String? montantValide(String? v) =>
         Saisie.montant(v ?? '') == null ? l.errPriceRequired : null;
-    String? quantiteValide(String? v) =>
-        Saisie.quantite(v ?? '') == null ? l.errQuantityInvalid : null;
+    // Stock : négatif seulement en modification. Seuil : jamais négatif.
+    String? quantiteValide(String? v) {
+      final q = Saisie.quantite(v ?? '');
+      return q == null || (_creation && q < 0) ? l.errQuantityInvalid : null;
+    }
+
+    String? seuilValide(String? v) {
+      final q = Saisie.quantite(v ?? '');
+      return q == null || q < 0 ? l.errQuantityInvalid : null;
+    }
 
     return [
       // Photo
@@ -351,7 +427,11 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       ),
       espace,
       DropdownButtonFormField<String?>(
-        initialValue: _categorieId,
+        key: ValueKey(_versionCategorie),
+        // Catégorie pas encore chargée : rien de choisi plutôt qu'une erreur.
+        initialValue: categories.any((c) => c.id == _categorieId)
+            ? _categorieId
+            : null,
         isExpanded: true,
         icon: const Icon(Symbols.expand_more_rounded),
         decoration: InputDecoration(labelText: l.fieldCategory),
@@ -463,7 +543,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
           helperMaxLines: 2,
           suffixText: _unite.text.isEmpty ? null : _unite.text,
         ),
-        validator: quantiteValide,
+        validator: seuilValide,
       ),
       if (!_creation) ...[
         const SizedBox(height: KassaSpace.s6),
@@ -472,8 +552,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
           icon: Symbols.local_shipping_rounded,
           variant: KassaButtonVariant.secondary,
           fullWidth: true,
-          onPressed: () =>
-              context.push(Chemins.reappro(produitId: widget.produitId)),
+          onPressed: _ouvrirReappro,
         ),
         const SizedBox(height: KassaSpace.s2),
         KassaButton(

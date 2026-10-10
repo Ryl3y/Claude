@@ -21,4 +21,16 @@ abstract final class PhotosProduits {
     await File(cheminSource).copy(destination);
     return destination;
   }
+
+  /// Efface une photo devenue inutile (remplacée, retirée, produit supprimé).
+  /// Ne fait rien si le fichier n'existe plus.
+  static Future<void> effacer(String? chemin) async {
+    if (chemin == null) return;
+    try {
+      final fichier = File(chemin);
+      if (await fichier.exists()) await fichier.delete();
+    } on FileSystemException {
+      // Fichier déjà absent ou verrouillé : sans conséquence pour les données.
+    }
+  }
 }
