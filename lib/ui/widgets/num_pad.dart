@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/montant.dart';
@@ -8,33 +9,57 @@ import '../theme/kassa_composants.dart';
 import '../theme/kassa_tokens.dart';
 import 'contexte.dart';
 
-/// Pavé numérique pour saisir un montant en FCFA (montant reçu, avance,
-/// versement). La saisie d'une quantité en vrac (1,5 kg) sera traitée avec
-/// l'écran Nouvelle vente (étape 5).
+/// `montant` : FCFA entiers, touche « 000 ».
+/// `quantite` : vrac (1,5 kg), touche virgule à la place de « 000 ».
+enum NumPadMode { montant, quantite }
+
+/// Pavé numérique pour saisir un montant en FCFA ou une quantité.
 ///
-/// [valeur] est une chaîne de chiffres (9 au plus) que l'appelant convertit
-/// en entier. Touches de 56 px : 1-9, « 000 », 0 et Effacer (appui long :
-/// tout effacer). L'affichage reprend le format des montants, à droite.
+/// [valeur] est une chaîne de chiffres (point comme séparateur décimal en
+/// mode quantité) que l'appelant convertit avec [enEntier] ou [enQuantite].
+/// Touches de 56 px : 1-9, « 000 » ou virgule, 0 et Effacer (appui long :
+/// tout effacer). L'affichage reprend le format des montants ou l'unité.
 class NumPad extends StatelessWidget {
-  const NumPad({super.key, required this.valeur, required this.onChanged});
+  const NumPad({
+    super.key,
+    required this.valeur,
+    required this.onChanged,
+    this.mode = NumPadMode.montant,
+    this.unite = '',
+  });
 
   final String valeur;
   final ValueChanged<String> onChanged;
+  final NumPadMode mode;
+
+  /// Unité affichée en mode quantité (« kg »).
+  final String unite;
 
   static const effacer = 'effacer';
-  static const _touches = [
+  static const virgule = '.';
+
+  /// Quantités : 7 chiffres avant la virgule, 3 après.
+  static const _chiffresEntiersQuantite = 7;
+  static const _decimalesQuantite = 3;
+
+  List<String> get _touches => [
     '1', '2', '3', //
     '4', '5', '6', //
     '7', '8', '9', //
-    '000', '0', effacer,
+    if (mode == NumPadMode.montant) '000' else virgule, '0', effacer,
   ];
 
-  /// Nouvelle valeur après l'appui sur [touche]. Pas de zéro en tête,
-  /// jamais plus de [KassaComposants.paveChiffresMax] chiffres.
-  static String appuyer(String valeur, String touche) {
+  /// Nouvelle valeur après l'appui sur [touche] (règles du [mode]).
+  static String appuyer(
+    String valeur,
+    String touche, {
+    NumPadMode mode = NumPadMode.montant,
+  }) {
     if (touche == effacer) {
       return valeur.isEmpty ? '' : valeur.substring(0, valeur.length - 1);
     }
+    if (mode == NumPadMode.quantite) return _appuyerQuantite(valeur, touche);
+
     final base = valeur == '0' ? '' : valeur;
     if (base.isEmpty && touche.startsWith('0')) return touche == '0' ? '0' : '';
     final suivante = base + touche;
@@ -43,13 +68,40 @@ class NumPad extends StatelessWidget {
         : suivante;
   }
 
+  static String _appuyerQuantite(String valeur, String touche) {
+    if (touche == virgule) {
+      if (valeur.contains(virgule)) return valeur;
+      return valeur.isEmpty ? '0$virgule' : '$valeur$virgule';
+    }
+    final parties = valeur.split(virgule);
+    if (parties.length == 2) {
+      return parties[1].length >= _decimalesQuantite ? valeur : valeur + touche;
+    }
+    final entier = valeur == '0' ? '' : valeur;
+    if (entier.length >= _chiffresEntiersQuantite) return valeur;
+    return entier.isEmpty && touche == '0' ? '0' : entier + touche;
+  }
+
   /// Montant saisi en entier (0 si vide).
   static int enEntier(String valeur) => int.tryParse(valeur) ?? 0;
+
+  /// Quantité saisie (0 si vide).
+  static double enQuantite(String valeur) => double.tryParse(valeur) ?? 0;
+
+  String _affichage(BuildContext context) {
+    final langue = langueDe(context);
+    if (mode == NumPadMode.montant) {
+      return Montant.format(enEntier(valeur), langue);
+    }
+    final separateur = NumberFormat.decimalPattern(langue).symbols.DECIMAL_SEP;
+    final texte = valeur.isEmpty ? '0' : valeur.replaceAll(virgule, separateur);
+    return unite.isEmpty ? texte : '$texte $unite';
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = context.kassa;
-    final montant = Montant.format(enEntier(valeur), langueDe(context));
+    final touches = _touches;
 
     return Container(
       padding: const EdgeInsets.all(KassaSpace.s4),
@@ -70,7 +122,7 @@ class NumPad extends StatelessWidget {
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerRight,
               child: Text(
-                montant,
+                _affichage(context),
                 style: t.amountLg,
                 textAlign: TextAlign.right,
               ),
@@ -85,10 +137,10 @@ class NumPad extends StatelessWidget {
                   if (col > 0) const SizedBox(width: KassaSpace.s2),
                   Expanded(
                     child: _Touche(
-                      touche: _touches[ligne * 3 + col],
+                      touche: touches[ligne * 3 + col],
                       onAppui: (touche) {
                         HapticFeedback.selectionClick();
-                        onChanged(appuyer(valeur, touche));
+                        onChanged(appuyer(valeur, touche, mode: mode));
                       },
                       onToutEffacer: () {
                         HapticFeedback.mediumImpact();
@@ -122,6 +174,10 @@ class _Touche extends StatelessWidget {
     final t = context.kassa;
     final l = AppLocalizations.of(context);
     final estEffacer = touche == NumPad.effacer;
+    final estVirgule = touche == NumPad.virgule;
+    final separateur = NumberFormat.decimalPattern(langueDe(context))
+        .symbols
+        .DECIMAL_SEP;
 
     final contenu = estEffacer
         ? Row(
@@ -138,12 +194,19 @@ class _Touche extends StatelessWidget {
               ),
             ],
           )
-        : Text(touche, style: t.touchePave.copyWith(color: t.ink));
+        : Text(
+            estVirgule ? separateur : touche,
+            style: t.touchePave.copyWith(color: t.ink),
+          );
 
     // excludeSemantics retire les actions de l'InkWell : on les redonne ici.
     return Semantics(
       button: true,
-      label: estEffacer ? l.erase : touche,
+      label: estEffacer
+          ? l.erase
+          : estVirgule
+          ? l.decimalSeparator
+          : touche,
       onTap: () => onAppui(touche),
       onLongPress: estEffacer ? onToutEffacer : null,
       excludeSemantics: true,

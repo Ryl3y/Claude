@@ -11,6 +11,8 @@ export 'icones_categories.dart';
 export 'kassa_badge.dart';
 export 'kassa_bottom_nav.dart';
 export 'kassa_button.dart';
+export 'libelles.dart';
+export 'message_dette.dart';
 export 'num_pad.dart';
 export 'product_card.dart';
 export 'stat_tile.dart';

@@ -889,6 +889,414 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Impossible de lire vos produits. Fermez puis rouvrez l\'app ; vos données restent sur le téléphone.'**
   String get loadError;
+
+  /// No description provided for @history.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique'**
+  String get history;
+
+  /// No description provided for @productsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =1{1 produit} other{{nombre} produits}}'**
+  String productsCount(int nombre);
+
+  /// No description provided for @cartTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier'**
+  String get cartTitle;
+
+  /// No description provided for @cartEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez un produit pour l\'ajouter. Appui long pour choisir la quantité.'**
+  String get cartEmptyHint;
+
+  /// No description provided for @sellNoProductsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit à vendre'**
+  String get sellNoProductsTitle;
+
+  /// No description provided for @sellNoProductsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos produits dans l\'onglet Stock pour commencer à vendre.'**
+  String get sellNoProductsBody;
+
+  /// No description provided for @clearCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vider le panier'**
+  String get clearCart;
+
+  /// No description provided for @cartCleared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier vidé.'**
+  String get cartCleared;
+
+  /// No description provided for @undo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rétablir'**
+  String get undo;
+
+  /// No description provided for @removeFromCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get removeFromCart;
+
+  /// No description provided for @increaseQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter 1 {nom}'**
+  String increaseQuantity(String nom);
+
+  /// No description provided for @decreaseQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enlever 1 {nom}'**
+  String decreaseQuantity(String nom);
+
+  /// No description provided for @quantityOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité de {nom}'**
+  String quantityOf(String nom);
+
+  /// No description provided for @putInCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre au panier'**
+  String get putInCart;
+
+  /// No description provided for @stockInsufficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock insuffisant : il reste {quantite}. La vente reste possible.'**
+  String stockInsufficient(String quantite);
+
+  /// No description provided for @decimalSeparator.
+  ///
+  /// In fr, this message translates to:
+  /// **'Virgule'**
+  String get decimalSeparator;
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get paymentTitle;
+
+  /// No description provided for @saleTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total de la vente'**
+  String get saleTotal;
+
+  /// No description provided for @totalToPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total à payer'**
+  String get totalToPay;
+
+  /// No description provided for @payCash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces'**
+  String get payCash;
+
+  /// No description provided for @payMomo.
+  ///
+  /// In fr, this message translates to:
+  /// **'MTN MoMo'**
+  String get payMomo;
+
+  /// No description provided for @payOrange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Orange Money'**
+  String get payOrange;
+
+  /// No description provided for @payCredit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Crédit'**
+  String get payCredit;
+
+  /// No description provided for @amountReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant reçu'**
+  String get amountReceived;
+
+  /// No description provided for @amountReceivedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien à saisir si le client donne le montant exact.'**
+  String get amountReceivedHint;
+
+  /// No description provided for @changeToGive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Monnaie à rendre'**
+  String get changeToGive;
+
+  /// No description provided for @missingAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il manque {montant}. Encaissez plus, ou choisissez Crédit pour noter une dette.'**
+  String missingAmount(String montant);
+
+  /// No description provided for @mobileMoneyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez que les {montant} sont bien arrivés sur votre téléphone avant d\'encaisser.'**
+  String mobileMoneyHint(String montant);
+
+  /// No description provided for @advancePaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avance payée maintenant'**
+  String get advancePaid;
+
+  /// No description provided for @advancePaidHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laissez 0 si le client ne paie rien aujourd\'hui.'**
+  String get advancePaidHint;
+
+  /// No description provided for @remainingDebt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste à payer'**
+  String get remainingDebt;
+
+  /// No description provided for @customer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client'**
+  String get customer;
+
+  /// No description provided for @chooseCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir le client'**
+  String get chooseCustomer;
+
+  /// No description provided for @changeCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer'**
+  String get changeCustomer;
+
+  /// No description provided for @newCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau client'**
+  String get newCustomer;
+
+  /// No description provided for @customerName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du client'**
+  String get customerName;
+
+  /// No description provided for @customerPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (facultatif)'**
+  String get customerPhone;
+
+  /// No description provided for @customerPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour lui envoyer un rappel WhatsApp.'**
+  String get customerPhoneHint;
+
+  /// No description provided for @errCustomerName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le nom du client.'**
+  String get errCustomerName;
+
+  /// No description provided for @addCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter le client'**
+  String get addCustomer;
+
+  /// No description provided for @searchCustomers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un client'**
+  String get searchCustomers;
+
+  /// No description provided for @noCustomers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun client pour l\'instant. Ajoutez-le avec « Nouveau client ».'**
+  String get noCustomers;
+
+  /// No description provided for @errChooseCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le client qui prend à crédit.'**
+  String get errChooseCustomer;
+
+  /// No description provided for @collectAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser {montant}'**
+  String collectAmount(String montant);
+
+  /// No description provided for @sellOnCredit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendre à crédit'**
+  String get sellOnCredit;
+
+  /// No description provided for @saleRecorded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vente n°{numero} enregistrée : {montant}.'**
+  String saleRecorded(int numero, String montant);
+
+  /// No description provided for @saleRecordedChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vente n°{numero} enregistrée. Rendez {monnaie}.'**
+  String saleRecordedChange(int numero, String monnaie);
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des ventes'**
+  String get historyTitle;
+
+  /// No description provided for @today.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hier'**
+  String get yesterday;
+
+  /// No description provided for @chooseDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir une date'**
+  String get chooseDate;
+
+  /// No description provided for @allDates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les dates'**
+  String get allDates;
+
+  /// No description provided for @saleNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vente n°{numero}'**
+  String saleNumber(int numero);
+
+  /// No description provided for @saleNumberTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'N°{numero} · {heure}'**
+  String saleNumberTime(int numero, String heure);
+
+  /// No description provided for @historyEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune vente pour l\'instant'**
+  String get historyEmptyTitle;
+
+  /// No description provided for @historyEmptyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos ventes apparaîtront ici dès la première.'**
+  String get historyEmptyBody;
+
+  /// No description provided for @historyEmptyDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune vente ce jour-là. Choisissez une autre date.'**
+  String get historyEmptyDay;
+
+  /// No description provided for @daySummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =1{1 vente} other{{nombre} ventes}} · {montant}'**
+  String daySummary(int nombre, String montant);
+
+  /// No description provided for @saleDateTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le {date} à {heure}'**
+  String saleDateTime(String date, String heure);
+
+  /// No description provided for @products.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits'**
+  String get products;
+
+  /// No description provided for @profit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bénéfice'**
+  String get profit;
+
+  /// No description provided for @paymentMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get paymentMode;
+
+  /// No description provided for @lineDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'{quantite} × {prix}'**
+  String lineDetail(String quantite, String prix);
+
+  /// No description provided for @cancelSaleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la vente n°{numero} ?'**
+  String cancelSaleTitle(int numero);
+
+  /// No description provided for @cancelSaleBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le stock sera remis et la dette du client retirée. La vente reste dans l\'historique, marquée Annulée.'**
+  String get cancelSaleBody;
+
+  /// No description provided for @keepSale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder la vente'**
+  String get keepSale;
+
+  /// No description provided for @saleCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vente n°{numero} annulée. Le stock a été remis.'**
+  String saleCancelled(int numero);
+
+  /// No description provided for @saleNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette vente n\'existe plus.'**
+  String get saleNotFound;
 }
 
 class _AppLocalizationsDelegate

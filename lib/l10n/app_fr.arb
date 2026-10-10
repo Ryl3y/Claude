@@ -335,5 +335,210 @@
     }
   },
   "comingSoon": "Cet écran arrive dans une prochaine version.",
-  "loadError": "Impossible de lire vos produits. Fermez puis rouvrez l'app ; vos données restent sur le téléphone."
+  "loadError": "Impossible de lire vos produits. Fermez puis rouvrez l'app ; vos données restent sur le téléphone.",
+  "history": "Historique",
+  "productsCount": "{nombre, plural, =1{1 produit} other{{nombre} produits}}",
+  "@productsCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "cartTitle": "Panier",
+  "cartEmptyHint": "Touchez un produit pour l'ajouter. Appui long pour choisir la quantité.",
+  "sellNoProductsTitle": "Aucun produit à vendre",
+  "sellNoProductsBody": "Ajoutez vos produits dans l'onglet Stock pour commencer à vendre.",
+  "clearCart": "Vider le panier",
+  "cartCleared": "Panier vidé.",
+  "undo": "Rétablir",
+  "removeFromCart": "Retirer",
+  "increaseQuantity": "Ajouter 1 {nom}",
+  "@increaseQuantity": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "decreaseQuantity": "Enlever 1 {nom}",
+  "@decreaseQuantity": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityOf": "Quantité de {nom}",
+  "@quantityOf": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "putInCart": "Mettre au panier",
+  "stockInsufficient": "Stock insuffisant : il reste {quantite}. La vente reste possible.",
+  "@stockInsufficient": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "decimalSeparator": "Virgule",
+  "paymentTitle": "Paiement",
+  "saleTotal": "Total de la vente",
+  "totalToPay": "Total à payer",
+  "payCash": "Espèces",
+  "payMomo": "MTN MoMo",
+  "payOrange": "Orange Money",
+  "payCredit": "Crédit",
+  "amountReceived": "Montant reçu",
+  "amountReceivedHint": "Rien à saisir si le client donne le montant exact.",
+  "changeToGive": "Monnaie à rendre",
+  "missingAmount": "Il manque {montant}. Encaissez plus, ou choisissez Crédit pour noter une dette.",
+  "@missingAmount": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "mobileMoneyHint": "Vérifiez que les {montant} sont bien arrivés sur votre téléphone avant d'encaisser.",
+  "@mobileMoneyHint": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "advancePaid": "Avance payée maintenant",
+  "advancePaidHint": "Laissez 0 si le client ne paie rien aujourd'hui.",
+  "remainingDebt": "Reste à payer",
+  "customer": "Client",
+  "chooseCustomer": "Choisir le client",
+  "changeCustomer": "Changer",
+  "newCustomer": "Nouveau client",
+  "customerName": "Nom du client",
+  "customerPhone": "Téléphone (facultatif)",
+  "customerPhoneHint": "Pour lui envoyer un rappel WhatsApp.",
+  "errCustomerName": "Saisissez le nom du client.",
+  "addCustomer": "Ajouter le client",
+  "searchCustomers": "Rechercher un client",
+  "noCustomers": "Aucun client pour l'instant. Ajoutez-le avec « Nouveau client ».",
+  "errChooseCustomer": "Choisissez le client qui prend à crédit.",
+  "collectAmount": "Encaisser {montant}",
+  "@collectAmount": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "sellOnCredit": "Vendre à crédit",
+  "saleRecorded": "Vente n°{numero} enregistrée : {montant}.",
+  "@saleRecorded": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saleRecordedChange": "Vente n°{numero} enregistrée. Rendez {monnaie}.",
+  "@saleRecordedChange": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "monnaie": {
+        "type": "String"
+      }
+    }
+  },
+  "historyTitle": "Historique des ventes",
+  "today": "Aujourd'hui",
+  "yesterday": "Hier",
+  "chooseDate": "Choisir une date",
+  "allDates": "Toutes les dates",
+  "saleNumber": "Vente n°{numero}",
+  "@saleNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "saleNumberTime": "N°{numero} · {heure}",
+  "@saleNumberTime": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "heure": {
+        "type": "String"
+      }
+    }
+  },
+  "historyEmptyTitle": "Aucune vente pour l'instant",
+  "historyEmptyBody": "Vos ventes apparaîtront ici dès la première.",
+  "historyEmptyDay": "Aucune vente ce jour-là. Choisissez une autre date.",
+  "daySummary": "{nombre, plural, =1{1 vente} other{{nombre} ventes}} · {montant}",
+  "@daySummary": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saleDateTime": "Le {date} à {heure}",
+  "@saleDateTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "heure": {
+        "type": "String"
+      }
+    }
+  },
+  "products": "Produits",
+  "profit": "Bénéfice",
+  "paymentMode": "Paiement",
+  "lineDetail": "{quantite} × {prix}",
+  "@lineDetail": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      },
+      "prix": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSaleTitle": "Annuler la vente n°{numero} ?",
+  "@cancelSaleTitle": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelSaleBody": "Le stock sera remis et la dette du client retirée. La vente reste dans l'historique, marquée Annulée.",
+  "keepSale": "Garder la vente",
+  "saleCancelled": "Vente n°{numero} annulée. Le stock a été remis.",
+  "@saleCancelled": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "saleNotFound": "Cette vente n'existe plus."
 }

@@ -47,6 +47,9 @@ abstract final class KassaComposants {
   /// Largeur maximale du contenu (tablette, paysage) : lisible, centré.
   static const largeurContenuMax = 640.0;
 
+  /// Hauteur maximale d'une feuille du bas (part de l'écran).
+  static const hauteurMaxFeuille = 0.8;
+
   /// Nombre de colonnes de la grille « Nouvelle vente ».
   static const grilleProduitsColonnes = 3;
 

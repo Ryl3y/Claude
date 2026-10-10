@@ -483,4 +483,259 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loadError =>
       'Your products could not be read. Close and reopen the app; your data stays on the phone.';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String productsCount(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre products',
+      one: '1 product',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cartTitle => 'Cart';
+
+  @override
+  String get cartEmptyHint =>
+      'Tap a product to add it. Press and hold to choose the quantity.';
+
+  @override
+  String get sellNoProductsTitle => 'No products to sell';
+
+  @override
+  String get sellNoProductsBody =>
+      'Add your products in the Stock tab to start selling.';
+
+  @override
+  String get clearCart => 'Clear cart';
+
+  @override
+  String get cartCleared => 'Cart cleared.';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get removeFromCart => 'Remove';
+
+  @override
+  String increaseQuantity(String nom) {
+    return 'Add 1 $nom';
+  }
+
+  @override
+  String decreaseQuantity(String nom) {
+    return 'Remove 1 $nom';
+  }
+
+  @override
+  String quantityOf(String nom) {
+    return 'Quantity of $nom';
+  }
+
+  @override
+  String get putInCart => 'Put in cart';
+
+  @override
+  String stockInsufficient(String quantite) {
+    return 'Not enough stock: $quantite left. You can still sell.';
+  }
+
+  @override
+  String get decimalSeparator => 'Decimal point';
+
+  @override
+  String get paymentTitle => 'Payment';
+
+  @override
+  String get saleTotal => 'Sale total';
+
+  @override
+  String get totalToPay => 'Total to pay';
+
+  @override
+  String get payCash => 'Cash';
+
+  @override
+  String get payMomo => 'MTN MoMo';
+
+  @override
+  String get payOrange => 'Orange Money';
+
+  @override
+  String get payCredit => 'Credit';
+
+  @override
+  String get amountReceived => 'Amount received';
+
+  @override
+  String get amountReceivedHint =>
+      'Nothing to enter if the customer pays the exact amount.';
+
+  @override
+  String get changeToGive => 'Change to give';
+
+  @override
+  String missingAmount(String montant) {
+    return '$montant is missing. Collect more, or choose Credit to record a debt.';
+  }
+
+  @override
+  String mobileMoneyHint(String montant) {
+    return 'Check that the $montant has arrived on your phone before collecting.';
+  }
+
+  @override
+  String get advancePaid => 'Paid now';
+
+  @override
+  String get advancePaidHint => 'Leave 0 if the customer pays nothing today.';
+
+  @override
+  String get remainingDebt => 'Left to pay';
+
+  @override
+  String get customer => 'Customer';
+
+  @override
+  String get chooseCustomer => 'Choose customer';
+
+  @override
+  String get changeCustomer => 'Change';
+
+  @override
+  String get newCustomer => 'New customer';
+
+  @override
+  String get customerName => 'Customer name';
+
+  @override
+  String get customerPhone => 'Phone (optional)';
+
+  @override
+  String get customerPhoneHint => 'To send them a WhatsApp reminder.';
+
+  @override
+  String get errCustomerName => 'Enter the customer\'s name.';
+
+  @override
+  String get addCustomer => 'Add customer';
+
+  @override
+  String get searchCustomers => 'Search customers';
+
+  @override
+  String get noCustomers => 'No customers yet. Add one with “New customer”.';
+
+  @override
+  String get errChooseCustomer => 'Choose the customer buying on credit.';
+
+  @override
+  String collectAmount(String montant) {
+    return 'Collect $montant';
+  }
+
+  @override
+  String get sellOnCredit => 'Sell on credit';
+
+  @override
+  String saleRecorded(int numero, String montant) {
+    return 'Sale #$numero saved: $montant.';
+  }
+
+  @override
+  String saleRecordedChange(int numero, String monnaie) {
+    return 'Sale #$numero saved. Give back $monnaie.';
+  }
+
+  @override
+  String get historyTitle => 'Sales history';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get chooseDate => 'Pick a date';
+
+  @override
+  String get allDates => 'All dates';
+
+  @override
+  String saleNumber(int numero) {
+    return 'Sale #$numero';
+  }
+
+  @override
+  String saleNumberTime(int numero, String heure) {
+    return '#$numero · $heure';
+  }
+
+  @override
+  String get historyEmptyTitle => 'No sales yet';
+
+  @override
+  String get historyEmptyBody =>
+      'Your sales will show here after the first one.';
+
+  @override
+  String get historyEmptyDay => 'No sales on that day. Pick another date.';
+
+  @override
+  String daySummary(int nombre, String montant) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre sales',
+      one: '1 sale',
+    );
+    return '$_temp0 · $montant';
+  }
+
+  @override
+  String saleDateTime(String date, String heure) {
+    return 'On $date at $heure';
+  }
+
+  @override
+  String get products => 'Products';
+
+  @override
+  String get profit => 'Profit';
+
+  @override
+  String get paymentMode => 'Payment';
+
+  @override
+  String lineDetail(String quantite, String prix) {
+    return '$quantite × $prix';
+  }
+
+  @override
+  String cancelSaleTitle(int numero) {
+    return 'Cancel sale #$numero?';
+  }
+
+  @override
+  String get cancelSaleBody =>
+      'Stock will be put back and the customer\'s debt removed. The sale stays in the history, marked Cancelled.';
+
+  @override
+  String get keepSale => 'Keep sale';
+
+  @override
+  String saleCancelled(int numero) {
+    return 'Sale #$numero cancelled. Stock was put back.';
+  }
+
+  @override
+  String get saleNotFound => 'This sale no longer exists.';
 }

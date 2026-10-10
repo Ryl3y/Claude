@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 /// Dates : enregistrées en UTC, affichées à l'heure de Douala.
@@ -8,7 +9,11 @@ abstract final class HeureDouala {
   static const decalage = Duration(hours: 1);
 
   /// Maintenant, en UTC : c'est ce qu'on enregistre en base.
-  static DateTime maintenantUtc() => DateTime.now().toUtc();
+  static DateTime maintenantUtc() => horloge().toUtc();
+
+  /// Source de l'heure ; les tests la figent pour des captures stables.
+  @visibleForTesting
+  static DateTime Function() horloge = DateTime.now;
 
   /// Convertit une date (UTC ou locale) en heure murale de Douala.
   /// Le résultat est marqué UTC pour qu'aucun fuseau du téléphone ne s'y ajoute.

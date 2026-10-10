@@ -9,6 +9,10 @@ import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
 import 'screens/stock/reappro_screen.dart';
 import 'screens/stock/stock_screen.dart';
+import 'screens/vente/historique_screen.dart';
+import 'screens/vente/nouvelle_vente_screen.dart';
+import 'screens/vente/paiement_screen.dart';
+import 'screens/vente/vente_detail_screen.dart';
 
 /// Chemins de l'app. Les 15 écrans s'ajoutent ici étape par étape.
 abstract final class Chemins {
@@ -17,6 +21,10 @@ abstract final class Chemins {
   static const stock = '/stock';
   static const clients = '/clients';
   static const nouveauProduit = '/stock/produit/nouveau';
+  static const paiement = '/vendre/paiement';
+  static const historique = '/vendre/historique';
+
+  static String vente(String id) => '/vendre/historique/$id';
 
   static String produit(String id) => '/stock/produit/$id';
 
@@ -50,8 +58,28 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Chemins.vendre,
-                builder: (context, state) =>
-                    AVenirScreen(titre: AppLocalizations.of(context).navSell),
+                builder: (context, state) => const NouvelleVenteScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'paiement',
+                    parentNavigatorKey: racine,
+                    builder: (context, state) => const PaiementScreen(),
+                  ),
+                  GoRoute(
+                    path: 'historique',
+                    parentNavigatorKey: racine,
+                    builder: (context, state) => const HistoriqueScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        parentNavigatorKey: racine,
+                        builder: (context, state) => VenteDetailScreen(
+                          venteId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

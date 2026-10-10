@@ -269,6 +269,19 @@ void main() {
   });
 
   group('NumPad', () {
+    test('mode quantité : virgule, 3 décimales, pas de « 000 »', () {
+      const q = NumPadMode.quantite;
+      expect(NumPad.appuyer('', NumPad.virgule, mode: q), '0.');
+      expect(NumPad.appuyer('1', NumPad.virgule, mode: q), '1.');
+      expect(NumPad.appuyer('1.', NumPad.virgule, mode: q), '1.');
+      expect(NumPad.appuyer('1.25', '5', mode: q), '1.255');
+      expect(NumPad.appuyer('1.255', '5', mode: q), '1.255');
+      expect(NumPad.appuyer('0', '7', mode: q), '7');
+      expect(NumPad.appuyer('0.', '0', mode: q), '0.0');
+      expect(NumPad.enQuantite('1.5'), 1.5);
+      expect(NumPad.enQuantite(''), 0);
+    });
+
     test('règles de saisie', () {
       expect(NumPad.appuyer('', '5'), '5');
       expect(NumPad.appuyer('5', '000'), '5000');
