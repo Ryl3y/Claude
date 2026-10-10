@@ -1,20 +1,32 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/identifiant.dart';
+
 /// Réglages gardés sur le téléphone (hors base métier).
 ///
-/// Pour l'instant : la langue choisie dans Réglages.
-/// `null` = suivre la langue du téléphone.
+/// - la langue choisie dans Réglages (`null` = langue du téléphone) ;
+/// - l'identifiant de ce téléphone (`appareil_id` des écritures).
 class PreferencesLocales {
   PreferencesLocales(this._prefs);
 
   final SharedPreferences _prefs;
 
   static const _cleLangue = 'langue';
+  static const _cleAppareil = 'appareil_id';
 
   static Future<PreferencesLocales> ouvrir() async =>
       PreferencesLocales(await SharedPreferences.getInstance());
 
   String? get langue => _prefs.getString(_cleLangue);
+
+  /// Identifiant de ce téléphone, créé au premier lancement puis gardé.
+  Future<String> appareilId() async {
+    final existant = _prefs.getString(_cleAppareil);
+    if (existant != null) return existant;
+    final nouveau = Identifiant.nouveau();
+    await _prefs.setString(_cleAppareil, nouveau);
+    return nouveau;
+  }
 
   Future<void> enregistrerLangue(String? code) async {
     if (code == null) {
