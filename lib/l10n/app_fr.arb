@@ -1,0 +1,50 @@
+{
+  "@@locale": "fr",
+
+  "appName": "Kassa",
+  "@appName": { "description": "Nom de l'application (ne se traduit pas)." },
+  "appTagline": "Ventes, stock et dettes, même sans internet.",
+
+  "navHome": "Accueil",
+  "navSell": "Vendre",
+  "navStock": "Stock",
+  "navCustomers": "Clients",
+
+  "newSale": "Nouvelle vente",
+  "collectPayment": "Encaisser",
+  "add": "Ajouter",
+  "restock": "Réappro",
+  "owes": "Doit {montant}",
+  "@owes": {
+    "description": "Montant dû par un client. Toujours devant un montant de dette.",
+    "placeholders": { "montant": { "type": "String", "example": "7 500 F" } }
+  },
+  "paidUp": "À jour",
+  "remind": "Rappeler",
+  "lowStock": "Stock bas",
+  "todaySales": "Ventes du jour",
+  "moneyOwed": "Dettes à recevoir",
+  "saved": "Sauvegardé",
+  "@saved": { "description": "État de la sauvegarde en ligne. Ne jamais dire « synchronisation »." },
+  "goPro": "Passer à Pro",
+  "cancelSale": "Annuler la vente",
+
+  "youSoldToday": "Vous avez vendu {montant} aujourd'hui.",
+  "@youSoldToday": {
+    "placeholders": { "montant": { "type": "String", "example": "45 000 FCFA" } }
+  },
+  "todayProfit": "Bénéfice du jour",
+
+  "language": "Langue",
+  "languagePhone": "Langue du téléphone",
+  "languageFrench": "Français",
+  "languageEnglish": "English",
+
+  "previewTitle": "Charte Kassa",
+  "previewLogo": "Logo",
+  "previewColors": "Couleurs",
+  "previewText": "Textes",
+  "previewAmounts": "Montants",
+  "previewWords": "Mots de l'app",
+  "previewStepNote": "Écran provisoire de l'étape 1. Il sera remplacé par l'accueil."
+}

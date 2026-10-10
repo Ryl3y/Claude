@@ -1,0 +1,41 @@
+{
+  "@@locale": "en",
+
+  "appName": "Kassa",
+  "appTagline": "Sales, stock and debts, even offline.",
+
+  "navHome": "Home",
+  "navSell": "Sell",
+  "navStock": "Stock",
+  "navCustomers": "Customers",
+
+  "newSale": "New sale",
+  "collectPayment": "Collect payment",
+  "add": "Add",
+  "restock": "Restock",
+  "owes": "Owes {montant}",
+  "paidUp": "Paid up",
+  "remind": "Remind",
+  "lowStock": "Low stock",
+  "todaySales": "Today's sales",
+  "moneyOwed": "Money owed to you",
+  "saved": "Saved",
+  "goPro": "Go Pro",
+  "cancelSale": "Cancel sale",
+
+  "youSoldToday": "You sold {montant} today.",
+  "todayProfit": "Today's profit",
+
+  "language": "Language",
+  "languagePhone": "Phone language",
+  "languageFrench": "Français",
+  "languageEnglish": "English",
+
+  "previewTitle": "Kassa style guide",
+  "previewLogo": "Logo",
+  "previewColors": "Colors",
+  "previewText": "Text",
+  "previewAmounts": "Amounts",
+  "previewWords": "App words",
+  "previewStepNote": "Temporary screen for step 1. The home screen will replace it."
+}
