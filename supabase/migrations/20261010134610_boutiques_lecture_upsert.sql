@@ -30,10 +30,8 @@ $$;
 revoke all on function private.boutique_a_un_utilisateur(uuid) from public, anon, authenticated;
 grant execute on function private.boutique_a_un_utilisateur(uuid) to authenticated;
 
-drop policy "boutiques : lire la sienne" on public.boutiques;
-
-create policy "boutiques : lire la sienne" on public.boutiques
-  for select to authenticated
+-- ALTER POLICY : la règle est modifiée sur place, jamais supprimée.
+alter policy "boutiques : lire la sienne" on public.boutiques
   using (
     id in (select private.mes_boutiques())
     or (
@@ -50,10 +48,7 @@ create policy "boutiques : lire la sienne" on public.boutiques
 -- id = auth.uid() existe déjà, l'insertion devient forcément une mise à jour,
 -- elle-même limitée par « utilisateurs : modifier sa ligne ».
 -- -----------------------------------------------------------------------------
-drop policy "utilisateurs : créer sa ligne" on public.utilisateurs;
-
-create policy "utilisateurs : créer sa ligne" on public.utilisateurs
-  for insert to authenticated
+alter policy "utilisateurs : créer sa ligne" on public.utilisateurs
   with check (
     id = (select auth.uid())
     and (
