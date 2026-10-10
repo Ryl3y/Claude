@@ -11,7 +11,8 @@ import 'contexte.dart';
 
 /// `montant` : FCFA entiers, touche « 000 ».
 /// `quantite` : vrac (1,5 kg), touche virgule à la place de « 000 ».
-enum NumPadMode { montant, quantite }
+/// `pin` : code PIN, 4 chiffres, pas d'affichage (l'écran montre des points).
+enum NumPadMode { montant, quantite, pin }
 
 /// Pavé numérique pour saisir un montant en FCFA ou une quantité.
 ///
@@ -42,11 +43,22 @@ class NumPad extends StatelessWidget {
   static const _chiffresEntiersQuantite = 7;
   static const _decimalesQuantite = 3;
 
+  /// Case vide (mode PIN : pas de « 000 » ni de virgule).
+  static const vide = '';
+
+  /// Chiffres d'un code PIN.
+  static const _chiffresPin = 4;
+
   List<String> get _touches => [
     '1', '2', '3', //
     '4', '5', '6', //
     '7', '8', '9', //
-    if (mode == NumPadMode.montant) '000' else virgule, '0', effacer,
+    switch (mode) {
+      NumPadMode.montant => '000',
+      NumPadMode.quantite => virgule,
+      NumPadMode.pin => vide,
+    },
+    '0', effacer,
   ];
 
   /// Nouvelle valeur après l'appui sur [touche] (règles du [mode]).
@@ -59,6 +71,11 @@ class NumPad extends StatelessWidget {
       return valeur.isEmpty ? '' : valeur.substring(0, valeur.length - 1);
     }
     if (mode == NumPadMode.quantite) return _appuyerQuantite(valeur, touche);
+    if (mode == NumPadMode.pin) {
+      return touche == vide || valeur.length >= _chiffresPin
+          ? valeur
+          : valeur + touche;
+    }
 
     final base = valeur == '0' ? '' : valeur;
     if (base.isEmpty && touche.startsWith('0')) return touche == '0' ? '0' : '';
@@ -116,19 +133,21 @@ class NumPad extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(
-            liveRegion: true,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerRight,
-              child: Text(
-                _affichage(context),
-                style: t.amountLg,
-                textAlign: TextAlign.right,
+          if (mode != NumPadMode.pin) ...[
+            Semantics(
+              liveRegion: true,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  _affichage(context),
+                  style: t.amountLg,
+                  textAlign: TextAlign.right,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: KassaSpace.s4),
+            const SizedBox(height: KassaSpace.s4),
+          ],
           for (var ligne = 0; ligne < 4; ligne++) ...[
             if (ligne > 0) const SizedBox(height: KassaSpace.s2),
             Row(
@@ -136,17 +155,19 @@ class NumPad extends StatelessWidget {
                 for (var col = 0; col < 3; col++) ...[
                   if (col > 0) const SizedBox(width: KassaSpace.s2),
                   Expanded(
-                    child: _Touche(
-                      touche: touches[ligne * 3 + col],
-                      onAppui: (touche) {
-                        HapticFeedback.selectionClick();
-                        onChanged(appuyer(valeur, touche, mode: mode));
-                      },
-                      onToutEffacer: () {
-                        HapticFeedback.mediumImpact();
-                        onChanged('');
-                      },
-                    ),
+                    child: touches[ligne * 3 + col] == vide
+                        ? const SizedBox.shrink()
+                        : _Touche(
+                            touche: touches[ligne * 3 + col],
+                            onAppui: (touche) {
+                              HapticFeedback.selectionClick();
+                              onChanged(appuyer(valeur, touche, mode: mode));
+                            },
+                            onToutEffacer: () {
+                              HapticFeedback.mediumImpact();
+                              onChanged('');
+                            },
+                          ),
                   ),
                 ],
               ],

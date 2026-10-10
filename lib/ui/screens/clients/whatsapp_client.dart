@@ -18,12 +18,10 @@ abstract final class MessagesClient {
     required String nom,
     required int solde,
     String? boutique,
-  }) {
-    final montant = Montant.format(solde, langue);
-    return boutique == null
-        ? l.reminderMessageNoShop(nom, montant)
-        : l.reminderMessage(nom, montant, boutique);
-  }
+  }) => [
+    l.reminderMessageNoShop(nom, Montant.format(solde, langue)),
+    ?boutique,
+  ].join('\n');
 
   static String recu(
     AppLocalizations l,

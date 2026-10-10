@@ -59,6 +59,9 @@ abstract final class KassaComposants {
   /// Taille de texte de référence pour savoir si le téléphone grossit le
   /// texte, et l'échelle à partir de laquelle les tuiles s'empilent.
   static const texteRepere = 16.0;
+
+  /// Diamètre d'un point du code PIN.
+  static const pointPin = 16.0;
   static const echelleEmpilement = 1.3;
 }
 

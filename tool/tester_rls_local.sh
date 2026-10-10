@@ -19,4 +19,6 @@ PSQL=(psql -h "$TMP" -p "$PORT" -U postgres -d postgres -v ON_ERROR_STOP=1 -q)
 for m in "$RACINE"/supabase/migrations/*.sql; do
   "${PSQL[@]}" -f "$m"
 done
-"${PSQL[@]}" -f "$RACINE/supabase/tests/rls_kassa_test.sql" 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+for t in "$RACINE"/supabase/tests/*_test.sql; do
+  "${PSQL[@]}" -f "$t" 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+done

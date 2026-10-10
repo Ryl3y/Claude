@@ -18,3 +18,10 @@ android/**/GeneratedPluginRegistrant.java
 android/key.properties
 *.jks
 *.keystore
+
+# Réglages et clés : jamais dans le dépôt (étape 8)
+/config/kassa.json
+/android/app/google-services.json
+/lib/firebase_options.dart
+/ios/Runner/GoogleService-Info.plist
+/firebase.json

@@ -284,12 +284,6 @@ abstract class AppLocalizations {
   /// **'Rappeler {nom} sur WhatsApp'**
   String remindOnWhatsapp(String nom);
 
-  /// Message WhatsApp pré-rempli pour rappeler une dette.
-  ///
-  /// In fr, this message translates to:
-  /// **'Bonjour {nom}, il reste {montant} à payer chez {boutique}. Merci.'**
-  String reminderMessage(String nom, String montant, String boutique);
-
   /// Touche du pavé numérique qui efface le dernier chiffre.
   ///
   /// In fr, this message translates to:
@@ -1777,6 +1771,366 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{nombre, plural, =1{1 vente annulée n\'est pas comptée.} other{{nombre} ventes annulées ne sont pas comptées.}}'**
   String cancelledNotCounted(int nombre);
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre caisse, même sans internet'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes, stock et dettes de vos clients au même endroit. Il faut internet une seule fois, pour créer votre compte.'**
+  String get welcomeBody;
+
+  /// No description provided for @start.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer'**
+  String get start;
+
+  /// No description provided for @serverMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette version de l\'app n\'est pas reliée au serveur Kassa.'**
+  String get serverMissing;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre numéro'**
+  String get loginTitle;
+
+  /// No description provided for @loginBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous vous envoyons un code par SMS pour vérifier que ce numéro est à vous.'**
+  String get loginBody;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro de téléphone'**
+  String get phoneLabel;
+
+  /// No description provided for @errPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro invalide. Saisissez les 9 chiffres, par exemple 6 77 12 34 56.'**
+  String get errPhone;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir le code'**
+  String get sendCode;
+
+  /// No description provided for @codeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code reçu par SMS'**
+  String get codeTitle;
+
+  /// No description provided for @codeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le code à 6 chiffres envoyé au {numero}.'**
+  String codeBody(String numero);
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code à 6 chiffres'**
+  String get codeLabel;
+
+  /// No description provided for @verifyCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider le code'**
+  String get verifyCode;
+
+  /// No description provided for @resendIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renvoyer le code dans {secondes} s'**
+  String resendIn(int secondes);
+
+  /// No description provided for @resendCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renvoyer le code'**
+  String get resendCode;
+
+  /// No description provided for @changeNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer de numéro'**
+  String get changeNumber;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code envoyé au {numero}.'**
+  String codeSent(String numero);
+
+  /// No description provided for @errCodeRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code incorrect ou trop ancien. Vérifiez le SMS ou demandez un nouveau code.'**
+  String get errCodeRefused;
+
+  /// No description provided for @errTooManyRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop de demandes. Attendez une minute avant de réessayer.'**
+  String get errTooManyRequests;
+
+  /// No description provided for @errSmsFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le SMS n\'a pas pu partir. Vérifiez le numéro.'**
+  String get errSmsFailed;
+
+  /// No description provided for @errNetwork.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de connexion internet. Vérifiez vos données mobiles, puis réessayez.'**
+  String get errNetwork;
+
+  /// No description provided for @errOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur s\'est produite. Réessayez dans un instant.'**
+  String get errOther;
+
+  /// No description provided for @errOtherAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce téléphone est déjà relié au compte d\'un autre numéro. Connectez-vous avec ce numéro-là.'**
+  String get errOtherAccount;
+
+  /// No description provided for @restoring.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récupération de vos données…'**
+  String get restoring;
+
+  /// No description provided for @shopTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre boutique'**
+  String get shopTitle;
+
+  /// No description provided for @shopBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces informations restent modifiables plus tard dans Réglages.'**
+  String get shopBody;
+
+  /// No description provided for @shopName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la boutique'**
+  String get shopName;
+
+  /// No description provided for @shopNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par exemple : Chez Maman Brigitte'**
+  String get shopNameHint;
+
+  /// No description provided for @errShopName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le nom de la boutique.'**
+  String get errShopName;
+
+  /// No description provided for @shopType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de commerce'**
+  String get shopType;
+
+  /// No description provided for @typeFood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alimentation, épicerie'**
+  String get typeFood;
+
+  /// No description provided for @typeNeighborhood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutique de quartier'**
+  String get typeNeighborhood;
+
+  /// No description provided for @typeHardware.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quincaillerie'**
+  String get typeHardware;
+
+  /// No description provided for @typeBeauty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cosmétiques'**
+  String get typeBeauty;
+
+  /// No description provided for @typeClothes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vêtements, chaussures'**
+  String get typeClothes;
+
+  /// No description provided for @typePhones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphones, accessoires'**
+  String get typePhones;
+
+  /// No description provided for @typeOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get typeOther;
+
+  /// No description provided for @city.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get city;
+
+  /// No description provided for @cityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par exemple : Douala'**
+  String get cityHint;
+
+  /// No description provided for @errCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez la ville.'**
+  String get errCity;
+
+  /// No description provided for @district.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quartier'**
+  String get district;
+
+  /// No description provided for @districtHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par exemple : Akwa'**
+  String get districtHint;
+
+  /// No description provided for @errDistrict.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le quartier.'**
+  String get errDistrict;
+
+  /// No description provided for @pinChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code PIN à 4 chiffres'**
+  String get pinChoose;
+
+  /// No description provided for @pinChooseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il protège l\'app si quelqu\'un d\'autre prend votre téléphone.'**
+  String get pinChooseHint;
+
+  /// No description provided for @pinConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmez le code PIN'**
+  String get pinConfirm;
+
+  /// No description provided for @errPinFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code PIN doit avoir 4 chiffres.'**
+  String get errPinFormat;
+
+  /// No description provided for @errPinMismatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les deux codes ne sont pas pareils. Saisissez-les à nouveau.'**
+  String get errPinMismatch;
+
+  /// No description provided for @createShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer ma boutique'**
+  String get createShop;
+
+  /// No description provided for @pinTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez votre code PIN'**
+  String get pinTitle;
+
+  /// No description provided for @pinProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n} chiffres sur 4 saisis'**
+  String pinProgress(int n);
+
+  /// No description provided for @pinWrong.
+  ///
+  /// In fr, this message translates to:
+  /// **'{restants, plural, =1{Code incorrect. Il reste 1 essai.} other{Code incorrect. Il reste {restants} essais.}}'**
+  String pinWrong(int restants);
+
+  /// No description provided for @pinLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop d\'essais. Réessayez dans {secondes} s.'**
+  String pinLocked(int secondes);
+
+  /// No description provided for @pinForgot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code oublié'**
+  String get pinForgot;
+
+  /// No description provided for @pinForgotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous vous envoyons un code par SMS, puis vous choisissez un nouveau code PIN.'**
+  String get pinForgotBody;
+
+  /// No description provided for @newPinTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez un nouveau code PIN'**
+  String get newPinTitle;
+
+  /// No description provided for @newPinConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez-le encore une fois'**
+  String get newPinConfirmTitle;
+
+  /// No description provided for @pinChanged.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code PIN changé.'**
+  String get pinChanged;
+
+  /// No description provided for @errPinOtherNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce numéro n\'est pas celui du compte de ce téléphone.'**
+  String get errPinOtherNumber;
+
+  /// No description provided for @loading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get loading;
 }
 
 class _AppLocalizationsDelegate

@@ -47,3 +47,11 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Firebase : seulement si android/app/google-services.json existe. Ce
+// fichier vient de « flutterfire configure » et reste hors du dépôt
+// (.gitignore) : sans lui, l'app se construit et marche sans Firebase.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}

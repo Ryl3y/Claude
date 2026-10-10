@@ -116,11 +116,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String reminderMessage(String nom, String montant, String boutique) {
-    return 'Hello $nom, you still owe $montant at $boutique. Thank you.';
-  }
-
-  @override
   String get erase => 'Delete';
 
   @override
@@ -1047,4 +1042,214 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get welcomeTitle => 'Your till, even without internet';
+
+  @override
+  String get welcomeBody =>
+      'Sales, stock and customer debts in one place. You only need internet once, to create your account.';
+
+  @override
+  String get start => 'Get started';
+
+  @override
+  String get serverMissing =>
+      'This version of the app is not connected to the Kassa server.';
+
+  @override
+  String get loginTitle => 'Your phone number';
+
+  @override
+  String get loginBody =>
+      'We will text you a code to check that this number is yours.';
+
+  @override
+  String get phoneLabel => 'Phone number';
+
+  @override
+  String get errPhone =>
+      'Invalid number. Enter the 9 digits, for example 6 77 12 34 56.';
+
+  @override
+  String get sendCode => 'Get the code';
+
+  @override
+  String get codeTitle => 'Code from the text message';
+
+  @override
+  String codeBody(String numero) {
+    return 'Enter the 6-digit code sent to $numero.';
+  }
+
+  @override
+  String get codeLabel => '6-digit code';
+
+  @override
+  String get verifyCode => 'Confirm code';
+
+  @override
+  String resendIn(int secondes) {
+    return 'Resend code in $secondes s';
+  }
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get changeNumber => 'Change number';
+
+  @override
+  String codeSent(String numero) {
+    return 'Code sent to $numero.';
+  }
+
+  @override
+  String get errCodeRefused =>
+      'Wrong or expired code. Check the text message or ask for a new code.';
+
+  @override
+  String get errTooManyRequests =>
+      'Too many requests. Wait a minute before trying again.';
+
+  @override
+  String get errSmsFailed =>
+      'The text message could not be sent. Check the number.';
+
+  @override
+  String get errNetwork =>
+      'No internet connection. Check your mobile data, then try again.';
+
+  @override
+  String get errOther => 'Something went wrong. Try again in a moment.';
+
+  @override
+  String get errOtherAccount =>
+      'This phone is already linked to another number\'s account. Sign in with that number.';
+
+  @override
+  String get restoring => 'Getting your data back…';
+
+  @override
+  String get shopTitle => 'Your shop';
+
+  @override
+  String get shopBody => 'You can change this later in Settings.';
+
+  @override
+  String get shopName => 'Shop name';
+
+  @override
+  String get shopNameHint => 'For example: Mama Brigitte\'s';
+
+  @override
+  String get errShopName => 'Enter the shop name.';
+
+  @override
+  String get shopType => 'Type of business';
+
+  @override
+  String get typeFood => 'Food, grocery';
+
+  @override
+  String get typeNeighborhood => 'Corner shop';
+
+  @override
+  String get typeHardware => 'Hardware';
+
+  @override
+  String get typeBeauty => 'Beauty products';
+
+  @override
+  String get typeClothes => 'Clothes, shoes';
+
+  @override
+  String get typePhones => 'Phones, accessories';
+
+  @override
+  String get typeOther => 'Other';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get cityHint => 'For example: Douala';
+
+  @override
+  String get errCity => 'Enter the city.';
+
+  @override
+  String get district => 'Neighbourhood';
+
+  @override
+  String get districtHint => 'For example: Akwa';
+
+  @override
+  String get errDistrict => 'Enter the neighbourhood.';
+
+  @override
+  String get pinChoose => '4-digit PIN';
+
+  @override
+  String get pinChooseHint =>
+      'It protects the app if someone else picks up your phone.';
+
+  @override
+  String get pinConfirm => 'Confirm the PIN';
+
+  @override
+  String get errPinFormat => 'The PIN must have 4 digits.';
+
+  @override
+  String get errPinMismatch => 'The two PINs are different. Enter them again.';
+
+  @override
+  String get createShop => 'Create my shop';
+
+  @override
+  String get pinTitle => 'Enter your PIN';
+
+  @override
+  String pinProgress(int n) {
+    return '$n of 4 digits entered';
+  }
+
+  @override
+  String pinWrong(int restants) {
+    String _temp0 = intl.Intl.pluralLogic(
+      restants,
+      locale: localeName,
+      other: 'Wrong PIN. $restants tries left.',
+      one: 'Wrong PIN. 1 try left.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pinLocked(int secondes) {
+    return 'Too many tries. Try again in $secondes s.';
+  }
+
+  @override
+  String get pinForgot => 'Forgot PIN';
+
+  @override
+  String get pinForgotBody =>
+      'We will text you a code, then you choose a new PIN.';
+
+  @override
+  String get newPinTitle => 'Choose a new PIN';
+
+  @override
+  String get newPinConfirmTitle => 'Enter it once more';
+
+  @override
+  String get pinChanged => 'PIN changed.';
+
+  @override
+  String get errPinOtherNumber =>
+      'This number is not the one of this phone\'s account.';
+
+  @override
+  String get loading => 'Loading…';
 }

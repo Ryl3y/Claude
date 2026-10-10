@@ -4,6 +4,7 @@ import 'db/champs_synchro.dart';
 import 'db/kassa_database.dart';
 import 'repositories/boutique_repository.dart';
 import 'repositories/clients_repository.dart';
+import 'repositories/compte_repository.dart';
 import 'repositories/produits_repository.dart';
 import 'repositories/rapports_repository.dart';
 import 'repositories/ventes_repository.dart';
@@ -55,4 +56,11 @@ final ventesRepositoryProvider = Provider<VentesRepository>(
 
 final rapportsRepositoryProvider = Provider<RapportsRepository>(
   (ref) => RapportsRepository(ref.watch(kassaDatabaseProvider)),
+);
+
+final compteRepositoryProvider = Provider<CompteRepository>(
+  (ref) => CompteRepository(
+    ref.watch(kassaDatabaseProvider),
+    ref.watch(champsSynchroProvider),
+  ),
 );

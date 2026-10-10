@@ -95,24 +95,6 @@
       }
     }
   },
-  "reminderMessage": "Bonjour {nom}, il reste {montant} à payer chez {boutique}. Merci.",
-  "@reminderMessage": {
-    "description": "Message WhatsApp pré-rempli pour rappeler une dette.",
-    "placeholders": {
-      "nom": {
-        "type": "String",
-        "example": "Maman Brigitte"
-      },
-      "montant": {
-        "type": "String",
-        "example": "7 500 FCFA"
-      },
-      "boutique": {
-        "type": "String",
-        "example": "Chez Rich"
-      }
-    }
-  },
   "erase": "Effacer",
   "@erase": {
     "description": "Touche du pavé numérique qui efface le dernier chiffre."
@@ -811,5 +793,107 @@
         "type": "int"
       }
     }
-  }
+  },
+  "welcomeTitle": "Votre caisse, même sans internet",
+  "welcomeBody": "Ventes, stock et dettes de vos clients au même endroit. Il faut internet une seule fois, pour créer votre compte.",
+  "start": "Commencer",
+  "serverMissing": "Cette version de l'app n'est pas reliée au serveur Kassa.",
+  "loginTitle": "Votre numéro",
+  "loginBody": "Nous vous envoyons un code par SMS pour vérifier que ce numéro est à vous.",
+  "phoneLabel": "Numéro de téléphone",
+  "errPhone": "Numéro invalide. Saisissez les 9 chiffres, par exemple 6 77 12 34 56.",
+  "sendCode": "Recevoir le code",
+  "codeTitle": "Code reçu par SMS",
+  "codeBody": "Saisissez le code à 6 chiffres envoyé au {numero}.",
+  "@codeBody": {
+    "placeholders": {
+      "numero": {
+        "type": "String"
+      }
+    }
+  },
+  "codeLabel": "Code à 6 chiffres",
+  "verifyCode": "Valider le code",
+  "resendIn": "Renvoyer le code dans {secondes} s",
+  "@resendIn": {
+    "placeholders": {
+      "secondes": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "Renvoyer le code",
+  "changeNumber": "Changer de numéro",
+  "codeSent": "Code envoyé au {numero}.",
+  "@codeSent": {
+    "placeholders": {
+      "numero": {
+        "type": "String"
+      }
+    }
+  },
+  "errCodeRefused": "Code incorrect ou trop ancien. Vérifiez le SMS ou demandez un nouveau code.",
+  "errTooManyRequests": "Trop de demandes. Attendez une minute avant de réessayer.",
+  "errSmsFailed": "Le SMS n'a pas pu partir. Vérifiez le numéro.",
+  "errNetwork": "Pas de connexion internet. Vérifiez vos données mobiles, puis réessayez.",
+  "errOther": "Une erreur s'est produite. Réessayez dans un instant.",
+  "errOtherAccount": "Ce téléphone est déjà relié au compte d'un autre numéro. Connectez-vous avec ce numéro-là.",
+  "restoring": "Récupération de vos données…",
+  "shopTitle": "Votre boutique",
+  "shopBody": "Ces informations restent modifiables plus tard dans Réglages.",
+  "shopName": "Nom de la boutique",
+  "shopNameHint": "Par exemple : Chez Maman Brigitte",
+  "errShopName": "Saisissez le nom de la boutique.",
+  "shopType": "Type de commerce",
+  "typeFood": "Alimentation, épicerie",
+  "typeNeighborhood": "Boutique de quartier",
+  "typeHardware": "Quincaillerie",
+  "typeBeauty": "Cosmétiques",
+  "typeClothes": "Vêtements, chaussures",
+  "typePhones": "Téléphones, accessoires",
+  "typeOther": "Autre",
+  "city": "Ville",
+  "cityHint": "Par exemple : Douala",
+  "errCity": "Saisissez la ville.",
+  "district": "Quartier",
+  "districtHint": "Par exemple : Akwa",
+  "errDistrict": "Saisissez le quartier.",
+  "pinChoose": "Code PIN à 4 chiffres",
+  "pinChooseHint": "Il protège l'app si quelqu'un d'autre prend votre téléphone.",
+  "pinConfirm": "Confirmez le code PIN",
+  "errPinFormat": "Le code PIN doit avoir 4 chiffres.",
+  "errPinMismatch": "Les deux codes ne sont pas pareils. Saisissez-les à nouveau.",
+  "createShop": "Créer ma boutique",
+  "pinTitle": "Entrez votre code PIN",
+  "pinProgress": "{n} chiffres sur 4 saisis",
+  "@pinProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pinWrong": "{restants, plural, =1{Code incorrect. Il reste 1 essai.} other{Code incorrect. Il reste {restants} essais.}}",
+  "@pinWrong": {
+    "placeholders": {
+      "restants": {
+        "type": "int"
+      }
+    }
+  },
+  "pinLocked": "Trop d'essais. Réessayez dans {secondes} s.",
+  "@pinLocked": {
+    "placeholders": {
+      "secondes": {
+        "type": "int"
+      }
+    }
+  },
+  "pinForgot": "Code oublié",
+  "pinForgotBody": "Nous vous envoyons un code par SMS, puis vous choisissez un nouveau code PIN.",
+  "newPinTitle": "Choisissez un nouveau code PIN",
+  "newPinConfirmTitle": "Saisissez-le encore une fois",
+  "pinChanged": "Code PIN changé.",
+  "errPinOtherNumber": "Ce numéro n'est pas celui du compte de ce téléphone.",
+  "loading": "Chargement…"
 }

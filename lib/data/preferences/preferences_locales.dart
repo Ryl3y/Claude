@@ -1,12 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/identifiant.dart';
+import '../synchro/serveur_synchro.dart';
 
 /// Réglages gardés sur le téléphone (hors base métier).
 ///
 /// - la langue choisie dans Réglages (`null` = langue du téléphone) ;
 /// - l'identifiant de ce téléphone (`appareil_id` des écritures).
-class PreferencesLocales {
+class PreferencesLocales implements StockageCurseurs {
   PreferencesLocales(this._prefs);
 
   final SharedPreferences _prefs;
@@ -39,5 +40,46 @@ class PreferencesLocales {
     } else {
       await _prefs.setString(_cleLangue, code);
     }
+  }
+
+  // Repères de téléchargement de la synchronisation, un par table.
+  static const _prefixeCurseur = 'synchro.curseur.';
+
+  @override
+  String? lire(String table) => _prefs.getString('$_prefixeCurseur$table');
+
+  @override
+  Future<void> ecrire(String table, String curseur) =>
+      _prefs.setString('$_prefixeCurseur$table', curseur);
+
+  @override
+  Future<void> toutEffacer() async {
+    for (final cle in _prefs.getKeys().toList()) {
+      if (cle.startsWith(_prefixeCurseur)) await _prefs.remove(cle);
+    }
+  }
+
+  // Erreurs de code PIN d'affilée, gardées même si l'app est relancée.
+  static const _cleEchecsPin = 'pin.echecs';
+  static const _cleDernierEchecPin = 'pin.dernier_echec';
+
+  int get echecsPin => _prefs.getInt(_cleEchecsPin) ?? 0;
+
+  DateTime? get dernierEchecPin {
+    final t = _prefs.getString(_cleDernierEchecPin);
+    return t == null ? null : DateTime.tryParse(t)?.toUtc();
+  }
+
+  Future<void> noterEchecPin(DateTime instant) async {
+    await _prefs.setInt(_cleEchecsPin, echecsPin + 1);
+    await _prefs.setString(
+      _cleDernierEchecPin,
+      instant.toUtc().toIso8601String(),
+    );
+  }
+
+  Future<void> effacerEchecsPin() async {
+    await _prefs.remove(_cleEchecsPin);
+    await _prefs.remove(_cleDernierEchecPin);
   }
 }

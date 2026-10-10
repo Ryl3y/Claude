@@ -7,6 +7,7 @@ import '../../core/heure_douala.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/rapports_repository.dart';
 import '../../domain/periode.dart';
+import 'session.dart';
 
 /// Chiffres d'une période (accueil : le jour ; rapports : au choix).
 /// autoDispose : une période qu'on ne regarde plus arrête d'être recalculée.
@@ -27,11 +28,19 @@ enum EtatSauvegarde {
   surCeTelephone,
 }
 
-/// Avant l'inscription (étape 8), rien ne part en ligne : « Sur ce
-/// téléphone ». L'étape 8 le reliera à la synchronisation.
-final etatSauvegardeProvider = Provider<EtatSauvegarde>(
-  (ref) => EtatSauvegarde.surCeTelephone,
-);
+/// « Sur ce téléphone » sans serveur ; sinon « Sauvegardé » quand tout est
+/// envoyé et que le dernier passage a réussi, « Sauvegarde en attente »
+/// tant qu'il reste des changements ou que le réseau manque.
+final etatSauvegardeProvider = Provider<EtatSauvegarde>((ref) {
+  if (ref.watch(synchroServiceProvider) == null) {
+    return EtatSauvegarde.surCeTelephone;
+  }
+  final enAttente = ref.watch(enAttenteProvider).value ?? 0;
+  final bilan = ref.watch(dernierBilanProvider).value;
+  return enAttente == 0 && (bilan == null || bilan.reussi)
+      ? EtatSauvegarde.sauvegarde
+      : EtatSauvegarde.enAttente;
+});
 
 /// Début du jour en cours à Douala (UTC). Change tout seul à minuit :
 /// l'accueil et les rapports restés ouverts passent au nouveau jour.

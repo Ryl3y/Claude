@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kassa/app.dart';
+import 'package:kassa/data/auth/service_auth.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
 import 'package:kassa/data/preferences/preferences_locales.dart';
 import 'package:kassa/data/providers.dart';
 import 'package:kassa/data/repositories/boutique_repository.dart';
 import 'package:kassa/data/repositories/clients_repository.dart';
+import 'package:kassa/data/repositories/compte_repository.dart';
 import 'package:kassa/data/repositories/produits_repository.dart';
 import 'package:kassa/data/repositories/ventes_repository.dart';
+import 'package:kassa/data/synchro/serveur_synchro.dart';
 import 'package:kassa/domain/panier.dart';
 import 'package:kassa/domain/produit_saisie.dart';
 import 'package:kassa/ui/state/clients.dart';
 import 'package:kassa/ui/state/langue.dart';
+import 'package:kassa/ui/state/session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/aide_base.dart';
@@ -37,10 +41,42 @@ class AppDeTest {
   ProduitsRepository get produits =>
       ProduitsRepository(db, ChampsSynchro(appareilId: 'tel-test'));
 
-  static Future<AppDeTest> creer({String langue = 'fr'}) async {
+  /// Compte du téléphone de test (numéro et code PIN).
+  static const telephone = '237690000000';
+  static const codePin = '1234';
+  static const utilisateurId = '00000000-0000-4000-9000-000000000001';
+
+  /// [compte] : le téléphone a déjà sa boutique et l'app s'ouvre sans code
+  /// PIN (parcours des écrans 5 à 14). Sinon : premier lancement.
+  /// [auth] et [serveur] : connexion et sauvegarde simulées (null : pas de
+  /// serveur, comme une version sans réglages).
+  static Future<AppDeTest> creer({
+    String langue = 'fr',
+    bool compte = true,
+    bool pinAuDemarrage = false,
+    ServiceAuth? auth,
+    ServeurSynchro? serveur,
+    Stream<bool>? reseau,
+  }) async {
     SharedPreferences.setMockInitialValues({'langue': langue});
     final prefs = await PreferencesLocales.ouvrir();
     final db = baseEnMemoire();
+    if (compte) {
+      await CompteRepository(
+        db,
+        ChampsSynchro(appareilId: 'tel-test'),
+      ).creerBoutique(
+        utilisateurId: utilisateurId,
+        telephone: telephone,
+        saisie: const BoutiqueSaisie(
+          nom: 'Chez Awa',
+          typeCommerce: 'alimentation',
+          ville: 'Douala',
+          quartier: 'Akwa',
+        ),
+        pin: codePin,
+      );
+    }
     final liens = <Uri>[];
     return AppDeTest._(
       db,
@@ -53,6 +89,10 @@ class AppDeTest {
           preferencesLocalesProvider.overrideWithValue(prefs),
           appareilIdProvider.overrideWithValue('tel-test'),
           kassaDatabaseProvider.overrideWithValue(db),
+          pinAuDemarrageProvider.overrideWithValue(pinAuDemarrage),
+          serviceAuthProvider.overrideWithValue(auth),
+          serveurSynchroProvider.overrideWithValue(serveur),
+          reseauProvider.overrideWithValue(reseau ?? const Stream.empty()),
         ],
         child: const KassaApp(),
       ),

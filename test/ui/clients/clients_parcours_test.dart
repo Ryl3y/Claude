@@ -145,7 +145,8 @@ void main() {
     expect(
       lien.queryParameters['text'],
       'Bonjour Awa, le 10 oct., nous avons bien reçu 5${_e}000${_e}FCFA.\n'
-      'Il vous reste 2${_e}000${_e}FCFA à payer. Merci.',
+      'Il vous reste 2${_e}000${_e}FCFA à payer. Merci.\n'
+      'Chez Awa',
     );
 
     await _toucher(tester, find.text('Terminer'));
@@ -217,8 +218,9 @@ void main() {
       expect(
         app.liens.single.queryParameters['text'],
         langue == 'fr'
-            ? 'Bonjour Awa, il vous reste 7${_e}000${_e}FCFA à payer. Merci.'
-            : 'Hello Awa, you still owe 7,000${_e}FCFA. Thank you.',
+            ? 'Bonjour Awa, il vous reste 7${_e}000${_e}FCFA à payer. Merci.\n'
+                  'Chez Awa'
+            : 'Hello Awa, you still owe 7,000${_e}FCFA. Thank you.\nChez Awa',
       );
       await app.fermer(tester);
     });

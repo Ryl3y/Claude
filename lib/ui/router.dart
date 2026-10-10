@@ -9,10 +9,17 @@ import 'screens/clients/encaissement_screen.dart';
 import 'screens/accueil/accueil_screen.dart';
 import 'screens/accueil/rapports_screen.dart';
 import 'screens/demo_widgets_screen.dart';
+import 'screens/inscription/bienvenue_screen.dart';
+import 'screens/inscription/boutique_screen.dart';
+import 'screens/inscription/connexion_screen.dart';
+import 'screens/inscription/demarrage_screen.dart';
+import 'screens/inscription/nouveau_pin_screen.dart';
+import 'screens/inscription/pin_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
 import 'screens/stock/reappro_screen.dart';
 import 'screens/stock/stock_screen.dart';
+import 'state/session.dart';
 import 'screens/vente/historique_screen.dart';
 import 'screens/vente/nouvelle_vente_screen.dart';
 import 'screens/vente/paiement_screen.dart';
@@ -38,6 +45,15 @@ abstract final class Chemins {
   static const rapports = '/rapports';
   static const demo = '/demo';
 
+  // Inscription et code PIN (écrans 1 à 4).
+  static const demarrage = '/demarrage';
+  static const bienvenue = '/bienvenue';
+  static const connexion = '/connexion';
+  static const codeOublie = '/connexion?oublie=1';
+  static const nouvelleBoutique = '/boutique/nouvelle';
+  static const pin = '/pin';
+  static const nouveauPin = '/pin/nouveau';
+
   /// Détail d'une vente, ouvert depuis l'historique ou une fiche client.
   static String vente(String id) => '/vente/$id';
 
@@ -57,12 +73,68 @@ abstract final class Chemins {
         ).toString();
 }
 
+/// Où aller selon la session : inscription, code PIN, ou l'app.
+String? redirection(EtatSession session, String lieu) {
+  const inscription = {
+    Chemins.bienvenue,
+    Chemins.connexion,
+    Chemins.nouvelleBoutique,
+  };
+  const verrou = {Chemins.pin, Chemins.connexion, Chemins.nouveauPin};
+  return switch (session) {
+    SessionChargement() => lieu == Chemins.demarrage ? null : Chemins.demarrage,
+    SessionSansCompte() =>
+      inscription.contains(lieu) ? null : Chemins.bienvenue,
+    SessionVerrouillee() => verrou.contains(lieu) ? null : Chemins.pin,
+    SessionOuverte() =>
+      inscription.contains(lieu) ||
+              lieu == Chemins.demarrage ||
+              lieu == Chemins.pin
+          ? Chemins.accueil
+          : null,
+  };
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final racine = GlobalKey<NavigatorState>(debugLabel: 'racine');
+  // Le routeur relit la redirection à chaque changement de session.
+  final session = ValueNotifier<EtatSession>(ref.read(sessionProvider));
+  ref
+    ..listen(sessionProvider, (_, s) => session.value = s)
+    ..onDispose(session.dispose);
   return GoRouter(
     navigatorKey: racine,
     initialLocation: Chemins.accueil,
+    refreshListenable: session,
+    redirect: (context, state) =>
+        redirection(session.value, state.matchedLocation),
     routes: [
+      GoRoute(
+        path: Chemins.demarrage,
+        builder: (context, state) => const DemarrageScreen(),
+      ),
+      GoRoute(
+        path: Chemins.bienvenue,
+        builder: (context, state) => const BienvenueScreen(),
+      ),
+      GoRoute(
+        path: Chemins.connexion,
+        builder: (context, state) => ConnexionScreen(
+          codeOublie: state.uri.queryParameters['oublie'] == '1',
+        ),
+      ),
+      GoRoute(
+        path: Chemins.nouvelleBoutique,
+        builder: (context, state) => const BoutiqueScreen(),
+      ),
+      GoRoute(
+        path: Chemins.pin,
+        builder: (context, state) => const PinScreen(),
+      ),
+      GoRoute(
+        path: Chemins.nouveauPin,
+        builder: (context, state) => const NouveauPinScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigation) =>
             ShellScreen(navigation: navigation),
