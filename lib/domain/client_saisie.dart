@@ -28,10 +28,16 @@ enum ErreurClient { nomVide, telephoneInvalide }
 
 abstract final class ReglesClient {
   /// Erreurs de [s] (vide = saisie correcte). Le téléphone est facultatif ;
-  /// s'il est rempli, il doit pouvoir recevoir un message WhatsApp.
-  static Set<ErreurClient> verifier(ClientSaisie s) => {
+  /// s'il est rempli, il doit pouvoir recevoir un message WhatsApp. Un
+  /// numéro déjà enregistré ([telephoneActuel]) et non modifié est gardé
+  /// tel quel, pour pouvoir changer le nom ou la note d'un ancien client.
+  static Set<ErreurClient> verifier(
+    ClientSaisie s, {
+    String? telephoneActuel,
+  }) => {
     if (s.nomPropre.isEmpty) ErreurClient.nomVide,
     if (s.telephonePropre != null &&
+        s.telephonePropre != telephoneActuel &&
         WhatsApp.numeroInternational(s.telephonePropre) == null)
       ErreurClient.telephoneInvalide,
   };

@@ -95,7 +95,12 @@ class _ListeState extends ConsumerState<_Liste> {
                     .contains(chiffres)))
           r,
     ];
-    final total = widget.resumes.fold(0, (s, r) => s + r.client.soldeDette);
+    // Seules les dettes comptent : un solde négatif (trop-perçu après une
+    // synchronisation) ne doit pas baisser le total à recevoir.
+    final total = widget.resumes.fold(
+      0,
+      (s, r) => s + (r.client.soldeDette > 0 ? r.client.soldeDette : 0),
+    );
     final debiteurs = widget.resumes
         .where((r) => r.client.soldeDette > 0)
         .length;

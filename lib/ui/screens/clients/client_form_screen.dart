@@ -35,6 +35,9 @@ class _ClientFormScreenState extends ConsumerState<ClientFormScreen> {
   var _enCours = false;
   var _rempli = false;
 
+  /// Téléphone enregistré, accepté tel quel s'il n'est pas modifié.
+  String? _telephoneActuel;
+
   bool get _creation => widget.clientId == null;
 
   @override
@@ -50,6 +53,7 @@ class _ClientFormScreenState extends ConsumerState<ClientFormScreen> {
     _rempli = true;
     _nom.text = c.nom;
     _telephone.text = c.telephone ?? '';
+    _telephoneActuel = c.telephone;
     _note.text = c.note ?? '';
   }
 
@@ -61,7 +65,10 @@ class _ClientFormScreenState extends ConsumerState<ClientFormScreen> {
 
   Future<void> _enregistrer() async {
     if (_enCours) return;
-    final erreurs = ReglesClient.verifier(_saisie);
+    final erreurs = ReglesClient.verifier(
+      _saisie,
+      telephoneActuel: _telephoneActuel,
+    );
     setState(() => _erreurs = erreurs);
     if (erreurs.isNotEmpty) return;
     final l = AppLocalizations.of(context);

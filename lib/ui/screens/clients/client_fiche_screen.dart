@@ -30,6 +30,8 @@ class ClientFicheScreen extends ConsumerWidget {
     WidgetRef ref,
     Client client,
   ) async {
+    // Deux appuis rapides : l'écran d'encaissement n'est ouvert qu'une fois.
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
     final resultat = await context.push<VersementEnregistre>(
       Chemins.encaisser(client.id),
     );
@@ -93,18 +95,19 @@ class ClientFicheScreen extends ConsumerWidget {
                     variant: KassaButtonVariant.secondary,
                     fullWidth: true,
                     onPressed: () async {
-                      final boutique = await ref.read(
-                        signatureBoutiqueProvider.future,
-                      );
+                      final boutique = await signatureBoutique(ref);
                       if (!feuille.mounted) return;
+                      // Le client peut avoir changé pendant l'encaissement.
+                      final actuel =
+                          ref.read(clientProvider(client.id)).value ?? client;
                       await envoyerWhatsApp(
                         feuille,
                         ref,
-                        telephone: client.telephone,
+                        telephone: actuel.telephone,
                         message: MessagesClient.recu(
                           l,
                           langue,
-                          nom: client.nom,
+                          nom: actuel.nom,
                           montant: r.montant,
                           reste: r.reste,
                           date: r.date,

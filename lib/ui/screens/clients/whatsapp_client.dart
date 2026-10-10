@@ -91,7 +91,7 @@ Future<void> rappelerClient(
 }) async {
   final l = AppLocalizations.of(context);
   final langue = langueDe(context);
-  final boutique = await ref.read(signatureBoutiqueProvider.future);
+  final boutique = await signatureBoutique(ref);
   if (!context.mounted) return;
   await envoyerWhatsApp(
     context,

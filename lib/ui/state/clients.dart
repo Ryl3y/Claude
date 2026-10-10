@@ -24,11 +24,12 @@ final historiqueClientProvider =
     );
 
 /// Nom qui signe les messages aux clients ; null tant que la boutique est
-/// provisoire (avant l'inscription de l'étape 8).
-final signatureBoutiqueProvider = FutureProvider<String?>((ref) async {
-  final b = await ref.watch(boutiqueRepositoryProvider).boutiqueCourante();
+/// provisoire (avant l'inscription de l'étape 8). Relu à chaque message :
+/// un changement de nom compte tout de suite.
+Future<String?> signatureBoutique(WidgetRef ref) async {
+  final b = await ref.read(boutiqueRepositoryProvider).boutiqueCourante();
   return BoutiqueRepository.estProvisoire(b) ? null : b.nom;
-});
+}
 
 /// Ouvre un lien hors de l'app (WhatsApp). Renvoie false si rien ne s'ouvre.
 /// Remplacé dans les tests pour lire le lien sans quitter l'app.

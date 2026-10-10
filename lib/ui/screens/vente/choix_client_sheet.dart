@@ -45,6 +45,7 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
   }
 
   Future<void> _creer() async {
+    if (_enCours) return;
     final l = AppLocalizations.of(context);
     final erreurs = ReglesClient.verifier(
       ClientSaisie(nom: _nom.text, telephone: _telephone.text),

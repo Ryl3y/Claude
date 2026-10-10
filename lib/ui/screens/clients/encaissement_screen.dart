@@ -115,6 +115,14 @@ class _EncaissementScreenState extends ConsumerState<EncaissementScreen> {
                 titre: l.customerNotFound,
               ),
             )
+          : c.soldeDette <= 0
+          ? Scaffold(
+              appBar: AppBar(title: Text(l.collectDebtTitle)),
+              body: EtatVide(
+                icone: Symbols.check_circle_rounded,
+                titre: l.paymentPaidOff,
+              ),
+            )
           : _contenu(c),
     );
   }

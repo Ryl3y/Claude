@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
@@ -119,6 +120,25 @@ void main() {
       expect(c.soldeDette, 3000);
       expect(c.majLe, heure);
     });
+  });
+
+  test('ancien numéro invalide gardé tel quel ; nouveau vérifié', () async {
+    final id = await clients.creerClient(nom: 'Paul');
+    await (db.update(db.clients)..where((c) => c.id.equals(id))).write(
+      const ClientsCompanion(telephone: Value('9912345')),
+    );
+    await clients.modifierClient(
+      id,
+      const ClientSaisie(nom: 'Paul', telephone: '9912345', note: 'Samedi'),
+    );
+    expect((await lire(id)).note, 'Samedi');
+    expect(
+      () => clients.modifierClient(
+        id,
+        const ClientSaisie(nom: 'Paul', telephone: '991234'),
+      ),
+      throwsA(isA<ClientInvalide>()),
+    );
   });
 
   group('versements', () {

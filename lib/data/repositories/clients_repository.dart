@@ -83,28 +83,25 @@ class ClientsRepository {
           .watch();
 
   /// Même liste, avec la date du dernier achat de chacun (écran 12).
-  Stream<List<ClientResume>> surveillerResumes() {
-    final dernierAchat = _db.ventes.dateVente.max();
-    final achats = _db.selectOnly(_db.ventes)
-      ..addColumns([_db.ventes.clientId, dernierAchat])
-      ..where(_db.ventes.clientId.isNotNull() & _db.ventes.supprimeLe.isNull())
-      ..groupBy([_db.ventes.clientId]);
-    // Deux requêtes simples, relancées dès que clients ou ventes changent.
-    return _db
-        .customSelect('SELECT 1', readsFrom: {_db.clients, _db.ventes})
-        .watch()
-        .asyncMap((_) async {
-          final dates = {
-            for (final r in await achats.get())
-              r.read(_db.ventes.clientId)!: r.read(dernierAchat),
-          };
-          final clients = await surveillerClients().first;
-          return [
-            for (final c in clients)
-              ClientResume(client: c, dernierAchat: dates[c.id]),
-          ];
-        });
-  }
+  /// Une seule requête, relancée quand clients ou ventes changent.
+  Stream<List<ClientResume>> surveillerResumes() => _db
+      .customSelect(
+        'SELECT c.*, (SELECT MAX(v.date_vente) FROM ventes v '
+        'WHERE v.client_id = c.id AND v.supprime_le IS NULL) AS dernier_achat '
+        'FROM clients c WHERE c.supprime_le IS NULL '
+        'ORDER BY c.solde_dette DESC, c.nom COLLATE NOCASE ASC',
+        readsFrom: {_db.clients, _db.ventes},
+      )
+      .watch()
+      .asyncMap(
+        (lignes) async => [
+          for (final r in lignes)
+            ClientResume(
+              client: await _db.clients.mapFromRow(r),
+              dernierAchat: r.readNullable<DateTime>('dernier_achat'),
+            ),
+        ],
+      );
 
   /// Un client (null s'il n'existe pas ou a été supprimé).
   Stream<Client?> surveillerClient(String id) => (_db.select(
@@ -159,7 +156,8 @@ class ClientsRepository {
 
   /// Modifie le nom, le téléphone et la note (jamais le solde, recalculé).
   Future<void> modifierClient(String id, ClientSaisie s) async {
-    final erreurs = ReglesClient.verifier(s);
+    final actuel = await _client(id);
+    final erreurs = ReglesClient.verifier(s, telephoneActuel: actuel.telephone);
     if (erreurs.isNotEmpty) throw ClientInvalide(erreurs);
     final lignes =
         await (_db.update(
@@ -202,7 +200,7 @@ class ClientsRepository {
     required String clientId,
     required int montant,
     required ModeChoisi mode,
-  }) {
+  }) async {
     if (mode == ModeChoisi.credit) {
       throw ArgumentError.value(mode, 'mode', 'pas de versement à crédit');
     }
