@@ -111,6 +111,13 @@ select test_admin.egal(
 select public.admin_ajuster_abonnement('c0000000-0000-4000-8000-000000000001', 5, 'gratuit', 'Jours offerts');
 select test_admin.egal(
   (select formule from public.admin_boutiques('Boutique H')), 'pro', 'jours d''essai offerts : Pro gardé');
+select test_admin.egal(
+  (select formule from public.admin_ajustements('c0000000-0000-4000-8000-000000000001') limit 1),
+  'pro', 'historique : formule réellement appliquée');
+select test_admin.egal(
+  (select count(*)::text from public.admin_boutiques('%')), '0', 'recherche « % » prise telle quelle');
+select test_admin.egal(
+  (select ventes::text from public.admin_boutiques('Boutique H')), '0', 'ventes comptées pour la page');
 commit;
 
 do $$

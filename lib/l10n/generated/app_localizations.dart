@@ -2401,6 +2401,449 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Boutique enregistrée.'**
   String get shopSaved;
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Kassa Admin'**
+  String get adminTitle;
+
+  /// No description provided for @adminLoginTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace admin'**
+  String get adminLoginTitle;
+
+  /// No description provided for @adminLoginBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservé à l\'équipe Kassa.'**
+  String get adminLoginBody;
+
+  /// No description provided for @adminEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse e-mail'**
+  String get adminEmail;
+
+  /// No description provided for @adminPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get adminPassword;
+
+  /// No description provided for @adminLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter'**
+  String get adminLogin;
+
+  /// No description provided for @adminErrEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez l\'e-mail et le mot de passe.'**
+  String get adminErrEmpty;
+
+  /// No description provided for @adminErrCredentials.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-mail ou mot de passe incorrect.'**
+  String get adminErrCredentials;
+
+  /// No description provided for @adminErrNotAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce compte n\'a pas accès à l\'espace admin.'**
+  String get adminErrNotAdmin;
+
+  /// No description provided for @adminErrTooMany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop d\'essais. Attendez une minute, puis réessayez.'**
+  String get adminErrTooMany;
+
+  /// No description provided for @adminConfigMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages du serveur absents. Lancez l\'admin avec --dart-define-from-file=config/kassa.json.'**
+  String get adminConfigMissing;
+
+  /// No description provided for @adminHello.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour, {email}'**
+  String adminHello(String email);
+
+  /// No description provided for @adminNavDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get adminNavDashboard;
+
+  /// No description provided for @adminNavShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutiques'**
+  String get adminNavShops;
+
+  /// No description provided for @adminNavPayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiements'**
+  String get adminNavPayments;
+
+  /// No description provided for @adminNavMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte'**
+  String get adminNavMap;
+
+  /// No description provided for @adminStatShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutiques inscrites'**
+  String get adminStatShops;
+
+  /// No description provided for @adminStatNewShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n, plural, =0{Aucune en 7 jours} =1{1 nouvelle en 7 jours} other{{n} nouvelles en 7 jours}}'**
+  String adminStatNewShops(int n);
+
+  /// No description provided for @adminStatTrials.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essais en cours'**
+  String get adminStatTrials;
+
+  /// No description provided for @adminStatPro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnés Pro'**
+  String get adminStatPro;
+
+  /// No description provided for @adminStatEnded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essais ou Pro terminés'**
+  String get adminStatEnded;
+
+  /// No description provided for @adminStatEndedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture seule, à relancer'**
+  String get adminStatEndedHint;
+
+  /// No description provided for @adminStatRevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenus du mois'**
+  String get adminStatRevenue;
+
+  /// No description provided for @adminStatPayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n, plural, =0{Aucun paiement réussi} =1{1 paiement réussi} other{{n} paiements réussis}}'**
+  String adminStatPayments(int n);
+
+  /// No description provided for @adminChartSignups.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inscriptions, 30 derniers jours'**
+  String get adminChartSignups;
+
+  /// No description provided for @adminChartSignupsSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{total, plural, =0{Aucune inscription en 30 jours.} =1{1 inscription en 30 jours.} other{{total} inscriptions en 30 jours.}}'**
+  String adminChartSignupsSummary(int total);
+
+  /// No description provided for @adminSignupsOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'{date} : {n, plural, =0{aucune inscription} =1{1 inscription} other{{n} inscriptions}}'**
+  String adminSignupsOn(String date, int n);
+
+  /// No description provided for @adminChartRevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenus, 6 derniers mois'**
+  String get adminChartRevenue;
+
+  /// No description provided for @adminChartRevenueSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{total} encaissés en 6 mois.'**
+  String adminChartRevenueSummary(String total);
+
+  /// No description provided for @adminRevenueOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'{mois} : {montant}'**
+  String adminRevenueOn(String mois, String montant);
+
+  /// No description provided for @adminMapTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones couvertes'**
+  String get adminMapTitle;
+
+  /// No description provided for @adminShopsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n, plural, =1{1 boutique} other{{n} boutiques}}'**
+  String adminShopsCount(int n);
+
+  /// No description provided for @adminZoneLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'{ville} : {boutiques}, dont {pro} Pro'**
+  String adminZoneLine(String ville, String boutiques, int pro);
+
+  /// No description provided for @adminMapOffMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas sur la carte (ville inconnue)'**
+  String get adminMapOffMap;
+
+  /// No description provided for @adminMapEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune boutique inscrite pour l\'instant.'**
+  String get adminMapEmpty;
+
+  /// No description provided for @adminMapSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte du Cameroun : {n, plural, =0{aucune ville} =1{1 ville} other{{n} villes}} avec des boutiques Kassa.'**
+  String adminMapSummary(int n);
+
+  /// No description provided for @adminSearchShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher : nom, téléphone, ville, quartier'**
+  String get adminSearchShops;
+
+  /// No description provided for @adminShownOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'{affiches} sur {total}'**
+  String adminShownOf(int affiches, int total);
+
+  /// No description provided for @adminShowMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher plus'**
+  String get adminShowMore;
+
+  /// No description provided for @adminNoShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune boutique trouvée.'**
+  String get adminNoShops;
+
+  /// No description provided for @adminSubEnded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé le {date}'**
+  String adminSubEnded(String date);
+
+  /// No description provided for @adminSubNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas d\'abonnement'**
+  String get adminSubNone;
+
+  /// No description provided for @adminShopSince.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inscrite le {date}'**
+  String adminShopSince(String date);
+
+  /// No description provided for @adminLastBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière sauvegarde : {date}'**
+  String adminLastBackup(String date);
+
+  /// No description provided for @adminNoBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune sauvegarde reçue'**
+  String get adminNoBackup;
+
+  /// No description provided for @adminChooseShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez une boutique pour voir sa fiche.'**
+  String get adminChooseShop;
+
+  /// No description provided for @adminGift.
+  ///
+  /// In fr, this message translates to:
+  /// **'Offrir des jours'**
+  String get adminGift;
+
+  /// No description provided for @adminGiftTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Offrir des jours à {nom}'**
+  String adminGiftTitle(String nom);
+
+  /// No description provided for @adminGiftDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre de jours'**
+  String get adminGiftDays;
+
+  /// No description provided for @adminGiftDaysHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'De 1 à 366, ajoutés à la fin de l\'abonnement en cours.'**
+  String get adminGiftDaysHelp;
+
+  /// No description provided for @adminGiftKindTrial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jours d\'essai'**
+  String get adminGiftKindTrial;
+
+  /// No description provided for @adminGiftKindPro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jours de Pro'**
+  String get adminGiftKindPro;
+
+  /// No description provided for @adminGiftReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get adminGiftReason;
+
+  /// No description provided for @adminGiftReasonHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par exemple : geste commercial après une panne'**
+  String get adminGiftReasonHint;
+
+  /// No description provided for @adminGiftConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Offrir'**
+  String get adminGiftConfirm;
+
+  /// No description provided for @adminGiftDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nom} : abonnement jusqu\'au {date}.'**
+  String adminGiftDone(String nom, String date);
+
+  /// No description provided for @adminErrDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un nombre de jours de 1 à 366.'**
+  String get adminErrDays;
+
+  /// No description provided for @adminErrReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expliquez le geste en quelques mots.'**
+  String get adminErrReason;
+
+  /// No description provided for @adminHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestes déjà faits'**
+  String get adminHistory;
+
+  /// No description provided for @adminHistoryEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun geste pour cette boutique.'**
+  String get adminHistoryEmpty;
+
+  /// No description provided for @adminHistoryEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'{date} : +{jours} jours ({formule}), par {email}'**
+  String adminHistoryEntry(
+    String date,
+    int jours,
+    String formule,
+    String email,
+  );
+
+  /// No description provided for @adminPayAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get adminPayAll;
+
+  /// No description provided for @adminPaySuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réussis'**
+  String get adminPaySuccess;
+
+  /// No description provided for @adminPayPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get adminPayPending;
+
+  /// No description provided for @adminPayFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échoués'**
+  String get adminPayFailed;
+
+  /// No description provided for @adminPayStatusSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réussi'**
+  String get adminPayStatusSuccess;
+
+  /// No description provided for @adminPayStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get adminPayStatusPending;
+
+  /// No description provided for @adminPayStatusFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échoué'**
+  String get adminPayStatusFailed;
+
+  /// No description provided for @adminNoPayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun paiement.'**
+  String get adminNoPayments;
+
+  /// No description provided for @adminLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données. Vérifiez la connexion, puis réessayez.'**
+  String get adminLoadError;
+
+  /// No description provided for @adminRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get adminRetry;
+
+  /// No description provided for @adminClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get adminClose;
+
+  /// No description provided for @adminRefresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get adminRefresh;
 }
 
 class _AppLocalizationsDelegate

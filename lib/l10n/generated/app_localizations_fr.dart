@@ -1439,4 +1439,308 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shopSaved => 'Boutique enregistrée.';
+
+  @override
+  String get adminTitle => 'Kassa Admin';
+
+  @override
+  String get adminLoginTitle => 'Espace admin';
+
+  @override
+  String get adminLoginBody => 'Réservé à l\'équipe Kassa.';
+
+  @override
+  String get adminEmail => 'Adresse e-mail';
+
+  @override
+  String get adminPassword => 'Mot de passe';
+
+  @override
+  String get adminLogin => 'Se connecter';
+
+  @override
+  String get adminErrEmpty => 'Saisissez l\'e-mail et le mot de passe.';
+
+  @override
+  String get adminErrCredentials => 'E-mail ou mot de passe incorrect.';
+
+  @override
+  String get adminErrNotAdmin => 'Ce compte n\'a pas accès à l\'espace admin.';
+
+  @override
+  String get adminErrTooMany =>
+      'Trop d\'essais. Attendez une minute, puis réessayez.';
+
+  @override
+  String get adminConfigMissing =>
+      'Réglages du serveur absents. Lancez l\'admin avec --dart-define-from-file=config/kassa.json.';
+
+  @override
+  String adminHello(String email) {
+    return 'Bonjour, $email';
+  }
+
+  @override
+  String get adminNavDashboard => 'Tableau de bord';
+
+  @override
+  String get adminNavShops => 'Boutiques';
+
+  @override
+  String get adminNavPayments => 'Paiements';
+
+  @override
+  String get adminNavMap => 'Carte';
+
+  @override
+  String get adminStatShops => 'Boutiques inscrites';
+
+  @override
+  String adminStatNewShops(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n nouvelles en 7 jours',
+      one: '1 nouvelle en 7 jours',
+      zero: 'Aucune en 7 jours',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminStatTrials => 'Essais en cours';
+
+  @override
+  String get adminStatPro => 'Abonnés Pro';
+
+  @override
+  String get adminStatEnded => 'Essais ou Pro terminés';
+
+  @override
+  String get adminStatEndedHint => 'Lecture seule, à relancer';
+
+  @override
+  String get adminStatRevenue => 'Revenus du mois';
+
+  @override
+  String adminStatPayments(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n paiements réussis',
+      one: '1 paiement réussi',
+      zero: 'Aucun paiement réussi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminChartSignups => 'Inscriptions, 30 derniers jours';
+
+  @override
+  String adminChartSignupsSummary(int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: '$total inscriptions en 30 jours.',
+      one: '1 inscription en 30 jours.',
+      zero: 'Aucune inscription en 30 jours.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSignupsOn(String date, int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n inscriptions',
+      one: '1 inscription',
+      zero: 'aucune inscription',
+    );
+    return '$date : $_temp0';
+  }
+
+  @override
+  String get adminChartRevenue => 'Revenus, 6 derniers mois';
+
+  @override
+  String adminChartRevenueSummary(String total) {
+    return '$total encaissés en 6 mois.';
+  }
+
+  @override
+  String adminRevenueOn(String mois, String montant) {
+    return '$mois : $montant';
+  }
+
+  @override
+  String get adminMapTitle => 'Zones couvertes';
+
+  @override
+  String adminShopsCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n boutiques',
+      one: '1 boutique',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminZoneLine(String ville, String boutiques, int pro) {
+    return '$ville : $boutiques, dont $pro Pro';
+  }
+
+  @override
+  String get adminMapOffMap => 'Pas sur la carte (ville inconnue)';
+
+  @override
+  String get adminMapEmpty => 'Aucune boutique inscrite pour l\'instant.';
+
+  @override
+  String adminMapSummary(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n villes',
+      one: '1 ville',
+      zero: 'aucune ville',
+    );
+    return 'Carte du Cameroun : $_temp0 avec des boutiques Kassa.';
+  }
+
+  @override
+  String get adminSearchShops => 'Rechercher : nom, téléphone, ville, quartier';
+
+  @override
+  String adminShownOf(int affiches, int total) {
+    return '$affiches sur $total';
+  }
+
+  @override
+  String get adminShowMore => 'Afficher plus';
+
+  @override
+  String get adminNoShops => 'Aucune boutique trouvée.';
+
+  @override
+  String adminSubEnded(String date) {
+    return 'Terminé le $date';
+  }
+
+  @override
+  String get adminSubNone => 'Pas d\'abonnement';
+
+  @override
+  String adminShopSince(String date) {
+    return 'Inscrite le $date';
+  }
+
+  @override
+  String adminLastBackup(String date) {
+    return 'Dernière sauvegarde : $date';
+  }
+
+  @override
+  String get adminNoBackup => 'Aucune sauvegarde reçue';
+
+  @override
+  String get adminChooseShop => 'Choisissez une boutique pour voir sa fiche.';
+
+  @override
+  String get adminGift => 'Offrir des jours';
+
+  @override
+  String adminGiftTitle(String nom) {
+    return 'Offrir des jours à $nom';
+  }
+
+  @override
+  String get adminGiftDays => 'Nombre de jours';
+
+  @override
+  String get adminGiftDaysHelp =>
+      'De 1 à 366, ajoutés à la fin de l\'abonnement en cours.';
+
+  @override
+  String get adminGiftKindTrial => 'Jours d\'essai';
+
+  @override
+  String get adminGiftKindPro => 'Jours de Pro';
+
+  @override
+  String get adminGiftReason => 'Motif';
+
+  @override
+  String get adminGiftReasonHint =>
+      'Par exemple : geste commercial après une panne';
+
+  @override
+  String get adminGiftConfirm => 'Offrir';
+
+  @override
+  String adminGiftDone(String nom, String date) {
+    return '$nom : abonnement jusqu\'au $date.';
+  }
+
+  @override
+  String get adminErrDays => 'Saisissez un nombre de jours de 1 à 366.';
+
+  @override
+  String get adminErrReason => 'Expliquez le geste en quelques mots.';
+
+  @override
+  String get adminHistory => 'Gestes déjà faits';
+
+  @override
+  String get adminHistoryEmpty => 'Aucun geste pour cette boutique.';
+
+  @override
+  String adminHistoryEntry(
+    String date,
+    int jours,
+    String formule,
+    String email,
+  ) {
+    return '$date : +$jours jours ($formule), par $email';
+  }
+
+  @override
+  String get adminPayAll => 'Tous';
+
+  @override
+  String get adminPaySuccess => 'Réussis';
+
+  @override
+  String get adminPayPending => 'En attente';
+
+  @override
+  String get adminPayFailed => 'Échoués';
+
+  @override
+  String get adminPayStatusSuccess => 'Réussi';
+
+  @override
+  String get adminPayStatusPending => 'En attente';
+
+  @override
+  String get adminPayStatusFailed => 'Échoué';
+
+  @override
+  String get adminNoPayments => 'Aucun paiement.';
+
+  @override
+  String get adminLoadError =>
+      'Impossible de charger les données. Vérifiez la connexion, puis réessayez.';
+
+  @override
+  String get adminRetry => 'Réessayer';
+
+  @override
+  String get adminClose => 'Fermer';
+
+  @override
+  String get adminRefresh => 'Actualiser';
 }

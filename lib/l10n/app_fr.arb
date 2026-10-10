@@ -1026,5 +1026,224 @@
   "shopThreshold": "Alerte de stock bas par défaut",
   "shopThresholdHelp": "Proposée pour chaque nouveau produit. Les produits déjà créés gardent la leur.",
   "errThreshold": "Saisissez un nombre entier de 0 à 100 000, par exemple 5.",
-  "shopSaved": "Boutique enregistrée."
+  "shopSaved": "Boutique enregistrée.",
+  "adminTitle": "Kassa Admin",
+  "adminLoginTitle": "Espace admin",
+  "adminLoginBody": "Réservé à l'équipe Kassa.",
+  "adminEmail": "Adresse e-mail",
+  "adminPassword": "Mot de passe",
+  "adminLogin": "Se connecter",
+  "adminErrEmpty": "Saisissez l'e-mail et le mot de passe.",
+  "adminErrCredentials": "E-mail ou mot de passe incorrect.",
+  "adminErrNotAdmin": "Ce compte n'a pas accès à l'espace admin.",
+  "adminErrTooMany": "Trop d'essais. Attendez une minute, puis réessayez.",
+  "adminConfigMissing": "Réglages du serveur absents. Lancez l'admin avec --dart-define-from-file=config/kassa.json.",
+  "adminHello": "Bonjour, {email}",
+  "@adminHello": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNavDashboard": "Tableau de bord",
+  "adminNavShops": "Boutiques",
+  "adminNavPayments": "Paiements",
+  "adminNavMap": "Carte",
+  "adminStatShops": "Boutiques inscrites",
+  "adminStatNewShops": "{n, plural, =0{Aucune en 7 jours} =1{1 nouvelle en 7 jours} other{{n} nouvelles en 7 jours}}",
+  "@adminStatNewShops": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminStatTrials": "Essais en cours",
+  "adminStatPro": "Abonnés Pro",
+  "adminStatEnded": "Essais ou Pro terminés",
+  "adminStatEndedHint": "Lecture seule, à relancer",
+  "adminStatRevenue": "Revenus du mois",
+  "adminStatPayments": "{n, plural, =0{Aucun paiement réussi} =1{1 paiement réussi} other{{n} paiements réussis}}",
+  "@adminStatPayments": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminChartSignups": "Inscriptions, 30 derniers jours",
+  "adminChartSignupsSummary": "{total, plural, =0{Aucune inscription en 30 jours.} =1{1 inscription en 30 jours.} other{{total} inscriptions en 30 jours.}}",
+  "@adminChartSignupsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminSignupsOn": "{date} : {n, plural, =0{aucune inscription} =1{1 inscription} other{{n} inscriptions}}",
+  "@adminSignupsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminChartRevenue": "Revenus, 6 derniers mois",
+  "adminChartRevenueSummary": "{total} encaissés en 6 mois.",
+  "@adminChartRevenueSummary": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRevenueOn": "{mois} : {montant}",
+  "@adminRevenueOn": {
+    "placeholders": {
+      "mois": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMapTitle": "Zones couvertes",
+  "adminShopsCount": "{n, plural, =1{1 boutique} other{{n} boutiques}}",
+  "@adminShopsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminZoneLine": "{ville} : {boutiques}, dont {pro} Pro",
+  "@adminZoneLine": {
+    "placeholders": {
+      "ville": {
+        "type": "String"
+      },
+      "boutiques": {
+        "type": "String"
+      },
+      "pro": {
+        "type": "int"
+      }
+    }
+  },
+  "adminMapOffMap": "Pas sur la carte (ville inconnue)",
+  "adminMapEmpty": "Aucune boutique inscrite pour l'instant.",
+  "adminMapSummary": "Carte du Cameroun : {n, plural, =0{aucune ville} =1{1 ville} other{{n} villes}} avec des boutiques Kassa.",
+  "@adminMapSummary": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminSearchShops": "Rechercher : nom, téléphone, ville, quartier",
+  "adminShownOf": "{affiches} sur {total}",
+  "@adminShownOf": {
+    "placeholders": {
+      "affiches": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminShowMore": "Afficher plus",
+  "adminNoShops": "Aucune boutique trouvée.",
+  "adminSubEnded": "Terminé le {date}",
+  "@adminSubEnded": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSubNone": "Pas d'abonnement",
+  "adminShopSince": "Inscrite le {date}",
+  "@adminShopSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLastBackup": "Dernière sauvegarde : {date}",
+  "@adminLastBackup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoBackup": "Aucune sauvegarde reçue",
+  "adminChooseShop": "Choisissez une boutique pour voir sa fiche.",
+  "adminGift": "Offrir des jours",
+  "adminGiftTitle": "Offrir des jours à {nom}",
+  "@adminGiftTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "adminGiftDays": "Nombre de jours",
+  "adminGiftDaysHelp": "De 1 à 366, ajoutés à la fin de l'abonnement en cours.",
+  "adminGiftKindTrial": "Jours d'essai",
+  "adminGiftKindPro": "Jours de Pro",
+  "adminGiftReason": "Motif",
+  "adminGiftReasonHint": "Par exemple : geste commercial après une panne",
+  "adminGiftConfirm": "Offrir",
+  "adminGiftDone": "{nom} : abonnement jusqu'au {date}.",
+  "@adminGiftDone": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrDays": "Saisissez un nombre de jours de 1 à 366.",
+  "adminErrReason": "Expliquez le geste en quelques mots.",
+  "adminHistory": "Gestes déjà faits",
+  "adminHistoryEmpty": "Aucun geste pour cette boutique.",
+  "adminHistoryEntry": "{date} : +{jours} jours ({formule}), par {email}",
+  "@adminHistoryEntry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "jours": {
+        "type": "int"
+      },
+      "formule": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPayAll": "Tous",
+  "adminPaySuccess": "Réussis",
+  "adminPayPending": "En attente",
+  "adminPayFailed": "Échoués",
+  "adminPayStatusSuccess": "Réussi",
+  "adminPayStatusPending": "En attente",
+  "adminPayStatusFailed": "Échoué",
+  "adminNoPayments": "Aucun paiement.",
+  "adminLoadError": "Impossible de charger les données. Vérifiez la connexion, puis réessayez.",
+  "adminRetry": "Réessayer",
+  "adminClose": "Fermer",
+  "adminRefresh": "Actualiser"
 }
