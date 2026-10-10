@@ -28,6 +28,9 @@ abstract final class KassaComposants {
   static const ligneClientHauteur = 64.0;
   static const avatarClient = 44.0;
 
+  /// Part maximale de la largeur d'une ligne client donnée au montant.
+  static const partMaxMontantLigne = 0.45;
+
   /// Pavé numérique : 9 chiffres au plus (montants jusqu'à 999 999 999 FCFA).
   static const paveChiffresMax = 9;
 

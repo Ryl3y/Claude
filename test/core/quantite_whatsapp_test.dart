@@ -29,6 +29,13 @@ void main() {
       expect(WhatsApp.numeroInternational('+237 690 00 00 01'), '237690000001');
       expect(WhatsApp.numeroInternational('00237690000001'), '237690000001');
     });
+    test('ancien numéro à 8 chiffres ou 237 incomplet : pas de lien', () {
+      expect(WhatsApp.numeroInternational('22 12 34 56'), isNull);
+      expect(WhatsApp.numeroInternational('2376900000'), isNull);
+    });
+    test('numéro étranger complet accepté', () {
+      expect(WhatsApp.numeroInternational('+33 6 12 34 56 78'), '33612345678');
+    });
     test('numéro inutilisable : pas de lien', () {
       expect(WhatsApp.numeroInternational(null), isNull);
       expect(WhatsApp.numeroInternational('123'), isNull);

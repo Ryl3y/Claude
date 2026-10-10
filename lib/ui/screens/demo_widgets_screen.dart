@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/heure_douala.dart';
-import '../../core/montant.dart';
-import '../../core/whatsapp.dart';
 import '../../domain/calculs.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../brand/kassa_logo.dart';
@@ -31,14 +29,8 @@ class _DemoWidgetsScreenState extends State<DemoWidgetsScreen> {
       setState(() => _panier[p.id] = (_panier[p.id] ?? 0) + 1);
 
   void _rappeler(ClientDemo c) {
+    // Le lien wa.me (WhatsApp.lien) s'ouvrira à l'étape 6, sur la fiche client.
     final l = AppLocalizations.of(context);
-    final message = l.reminderMessage(
-      c.nom,
-      Montant.format(c.dette, langueDe(context)),
-      nomBoutiqueDemo,
-    );
-    // Le lien s'ouvrira dans WhatsApp à l'étape 6 (écran Fiche client).
-    WhatsApp.lien(telephone: c.telephone, message: message);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(l.demoReminderSent(c.nom))));

@@ -64,9 +64,13 @@ class ProductCard extends StatelessWidget {
       if (quantiteDansPanier > 0) l.inCart(panierTexte),
     ].join(', ');
 
+    // excludeSemantics retire les actions de l'InkWell : on les redonne ici.
     return Semantics(
       button: true,
+      enabled: onTap != null,
       label: libelle,
+      onTap: onTap,
+      onLongPress: onLongPress,
       onLongPressHint: onLongPress == null ? null : l.enterQuantity,
       excludeSemantics: true,
       child: Material(
@@ -180,10 +184,16 @@ class _Visuel extends StatelessWidget {
       ),
     );
     if (photo == null) return sansPhoto;
-    return Image.file(
-      File(photo!),
-      fit: BoxFit.cover,
-      errorBuilder: (context, erreur, pile) => sansPhoto,
+    // Décode la photo à la taille affichée (une vignette), pas à 12 Mpx.
+    return LayoutBuilder(
+      builder: (context, contraintes) => Image.file(
+        File(photo!),
+        fit: BoxFit.cover,
+        cacheWidth:
+            (contraintes.maxWidth * MediaQuery.devicePixelRatioOf(context))
+                .round(),
+        errorBuilder: (context, erreur, pile) => sansPhoto,
+      ),
     );
   }
 }

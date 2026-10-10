@@ -97,9 +97,15 @@ class ClientRow extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: KassaSpace.s2),
-                        // Avec un très grand texte, le montant rétrécit
-                        // plutôt que de déborder de la ligne.
-                        Flexible(
+                        // Le nom garde la place libre ; le montant prend au
+                        // plus 45 % de la ligne et rétrécit avec un très
+                        // grand texte plutôt que de déborder.
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                                MediaQuery.sizeOf(context).width *
+                                KassaComposants.partMaxMontantLigne,
+                          ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerRight,

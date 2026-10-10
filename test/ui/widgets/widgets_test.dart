@@ -1,4 +1,4 @@
-import 'dart:ui' show Tristate;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -196,6 +196,19 @@ void main() {
       );
     });
 
+    testWidgets('lecteur d\'écran : toucher et appui long disponibles', (
+      tester,
+    ) async {
+      var touches = 0, longs = 0;
+      await monter(tester, onTap: () => touches++, onLong: () => longs++);
+      final noeud = tester.getSemantics(find.byType(ProductCard));
+      final donnees = noeud.getSemanticsData();
+      expect(donnees.hasAction(SemanticsAction.tap), isTrue);
+      expect(donnees.hasAction(SemanticsAction.longPress), isTrue);
+      tester.semantics.tap(find.semantics.byLabel(RegExp('Ajouter Riz')));
+      expect(touches, 1);
+    });
+
     testWidgets('pastille avec la quantité au panier', (tester) async {
       await monter(tester, panier: 3);
       expect(find.text('3'), findsOneWidget);
@@ -295,6 +308,24 @@ void main() {
       await tester.pump();
       expect(valeur, '');
     });
+
+    testWidgets(
+      'lecteur d\'écran : Effacer garde l\'appui long (tout effacer)',
+      (tester) async {
+        await tester.pumpWidget(
+          await appDeTest(NumPad(valeur: '12', onChanged: (_) {})),
+        );
+        final effacer = tester.getSemantics(find.bySemanticsLabel('Effacer'));
+        expect(
+          effacer.getSemanticsData().hasAction(SemanticsAction.tap),
+          isTrue,
+        );
+        expect(
+          effacer.getSemanticsData().hasAction(SemanticsAction.longPress),
+          isTrue,
+        );
+      },
+    );
 
     testWidgets('touches d\'au moins 56 px', (tester) async {
       await tester.pumpWidget(

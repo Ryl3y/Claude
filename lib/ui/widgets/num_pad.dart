@@ -8,7 +8,9 @@ import '../theme/kassa_composants.dart';
 import '../theme/kassa_tokens.dart';
 import 'contexte.dart';
 
-/// Pavé numérique pour saisir un montant reçu ou une quantité.
+/// Pavé numérique pour saisir un montant en FCFA (montant reçu, avance,
+/// versement). La saisie d'une quantité en vrac (1,5 kg) sera traitée avec
+/// l'écran Nouvelle vente (étape 5).
 ///
 /// [valeur] est une chaîne de chiffres (9 au plus) que l'appelant convertit
 /// en entier. Touches de 56 px : 1-9, « 000 », 0 et Effacer (appui long :
@@ -138,9 +140,12 @@ class _Touche extends StatelessWidget {
           )
         : Text(touche, style: t.touchePave.copyWith(color: t.ink));
 
+    // excludeSemantics retire les actions de l'InkWell : on les redonne ici.
     return Semantics(
       button: true,
       label: estEffacer ? l.erase : touche,
+      onTap: () => onAppui(touche),
+      onLongPress: estEffacer ? onToutEffacer : null,
       excludeSemantics: true,
       child: Material(
         color: t.surface,

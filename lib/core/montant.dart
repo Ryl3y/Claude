@@ -18,9 +18,12 @@ abstract final class Montant {
 
   /// Nombre seul, avec séparateur de milliers : « 12 500 » / « 12,500 ».
   static String nombre(int valeur, String locale) =>
-      NumberFormat.decimalPattern(locale)
-          .format(valeur)
-          .replaceAll('\u202F', _insecable);
+      sansEspaceFine(NumberFormat.decimalPattern(locale).format(valeur));
+
+  /// Remplace l'espace fine (U+202F, absente de la police) par une espace
+  /// insécable. Sert aussi au format des quantités.
+  static String sansEspaceFine(String texte) =>
+      texte.replaceAll('\u202F', _insecable);
 
   /// Montant avec devise : « 12 500 FCFA » ou, si [court], « 12 500 F ».
   static String format(int valeur, String locale, {bool court = false}) {
