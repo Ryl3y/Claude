@@ -8,11 +8,14 @@ import '../../../core/heure_douala.dart';
 import '../../../core/montant.dart';
 import '../../../core/quantite.dart';
 import '../../../data/db/kassa_database.dart';
+import '../../../domain/abonnement.dart';
 import '../../../domain/calculs.dart';
 import '../../../domain/periode.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../brand/kassa_logo.dart';
 import '../../router.dart';
+import '../../state/abonnement.dart';
+import '../abonnement/garde_abonnement.dart';
 import '../../state/produits.dart';
 import '../../state/rapports.dart';
 import '../../state/vente.dart';
@@ -46,6 +49,7 @@ class AccueilScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(KassaSpace.s4),
             sliver: SliverList.list(
               children: [
+                const _BandeauAbonnement(),
                 _Chiffres(jour: jour),
                 if (produits != null && produits.isEmpty) ...[
                   const SizedBox(height: KassaSpace.s6),
@@ -53,7 +57,19 @@ class AccueilScreen extends ConsumerWidget {
                 ],
                 if (produits != null) ...[_AlertesStock(produits: produits)],
                 const SizedBox(height: KassaSpace.s6),
-                const _LienRapports(),
+                _Lien(
+                  icone: Symbols.bar_chart_rounded,
+                  titre: l.reportsTitle,
+                  aide: l.reportsHint,
+                  chemin: Chemins.rapports,
+                ),
+                const SizedBox(height: KassaSpace.s2),
+                _Lien(
+                  icone: Symbols.settings_rounded,
+                  titre: l.settingsTitle,
+                  aide: l.settingsHint,
+                  chemin: Chemins.reglages,
+                ),
               ],
             ),
           ),
@@ -66,7 +82,11 @@ class AccueilScreen extends ConsumerWidget {
           icon: Symbols.point_of_sale_rounded,
           size: KassaButtonSize.main,
           fullWidth: true,
-          onPressed: () => context.go(Chemins.vendre),
+          onPressed: () async {
+            if (await ecritureAutorisee(context, ref) && context.mounted) {
+              context.go(Chemins.vendre);
+            }
+          },
         ),
       ),
     );
@@ -310,24 +330,34 @@ class _AlertesStock extends StatelessWidget {
   }
 }
 
-class _LienRapports extends StatelessWidget {
-  const _LienRapports();
+/// Une ligne qui ouvre un autre écran (Rapports, Réglages).
+class _Lien extends StatelessWidget {
+  const _Lien({
+    required this.icone,
+    required this.titre,
+    required this.aide,
+    required this.chemin,
+  });
+
+  final IconData icone;
+  final String titre;
+  final String aide;
+  final String chemin;
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
     final t = context.kassa;
     return Material(
       color: t.surfaceRaised,
       borderRadius: BorderRadius.circular(KassaRadius.md),
       clipBehavior: Clip.antiAlias,
       // MergeSemantics autour de l'InkWell : le lecteur d'écran annonce
-      // « Rapports » sur la zone qu'on touche.
+      // le titre sur la zone qu'on touche.
       child: MergeSemantics(
         child: Semantics(
           button: true,
           child: InkWell(
-            onTap: () => context.push(Chemins.rapports),
+            onTap: () => context.push(chemin),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: KassaSize.buttonMain,
@@ -336,21 +366,21 @@ class _LienRapports extends StatelessWidget {
                 padding: const EdgeInsets.all(KassaSpace.s4),
                 child: Row(
                   children: [
-                    Icon(Symbols.bar_chart_rounded, color: t.kassa),
+                    Icon(icone, color: t.kassa),
                     const SizedBox(width: KassaSpace.s4),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l.reportsTitle,
+                            titre,
                             style: t.label.copyWith(
                               fontSize: t.body.fontSize,
                               height: t.body.height,
                             ),
                           ),
                           Text(
-                            l.reportsHint,
+                            aide,
                             style: t.caption.copyWith(color: t.inkMuted),
                           ),
                         ],
@@ -362,6 +392,74 @@ class _LienRapports extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fin d'essai proche (7 derniers jours) ou abonnement terminé : un
+/// rappel avec « Passer à Pro ». Rien le reste du temps.
+class _BandeauAbonnement extends ConsumerWidget {
+  const _BandeauAbonnement();
+
+  /// L'accueil prévient à partir de ce nombre de jours restants.
+  static const joursAvantFin = 7;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final t = context.kassa;
+    final langue = langueDe(context);
+    final etat = ref.watch(abonnementProvider).value;
+    final prix = Montant.format(prixProFcfa, langue);
+    final String titre;
+    final String texte;
+    switch (etat) {
+      case AbonnementEssai(:final joursRestants)
+          when joursRestants < joursAvantFin:
+        titre = l.trialDaysLeft(joursRestants);
+        texte = l.trialEndingBody(prix);
+      case AbonnementTermine(:final etaitPro):
+        titre = etaitPro ? l.proEnded : l.trialEnded;
+        texte = l.readOnlyBody(prix);
+      default:
+        return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: KassaSpace.s6),
+      child: Container(
+        padding: const EdgeInsets.all(KassaSpace.s4),
+        decoration: BoxDecoration(
+          color: t.orSoft,
+          borderRadius: BorderRadius.circular(KassaRadius.md),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Symbols.workspace_premium_rounded, color: t.orInk),
+                const SizedBox(width: KassaSpace.s2),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(titre, style: t.label.copyWith(color: t.orInk)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: KassaSpace.s1),
+            Text(texte, style: t.body.copyWith(color: t.orInk)),
+            const SizedBox(height: KassaSpace.s4),
+            KassaButton(
+              label: l.goPro,
+              icon: Symbols.workspace_premium_rounded,
+              variant: KassaButtonVariant.or,
+              fullWidth: true,
+              onPressed: () => context.push(Chemins.abonnement),
+            ),
+          ],
         ),
       ),
     );

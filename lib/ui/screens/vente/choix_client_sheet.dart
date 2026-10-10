@@ -11,6 +11,7 @@ import '../../state/vente.dart';
 import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
 import '../../widgets/widgets.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Choisit un client (ou en crée un : nom + téléphone) pour une vente à
 /// crédit. Renvoie l'identifiant du client, ou null si la feuille est fermée.
@@ -45,6 +46,7 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
   }
 
   Future<void> _creer() async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     if (_enCours) return;
     final l = AppLocalizations.of(context);
     final erreurs = ReglesClient.verifier(

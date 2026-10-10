@@ -13,6 +13,7 @@ import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Ce que l'écran d'encaissement renvoie à la fiche client.
 class VersementEnregistre {
@@ -55,6 +56,7 @@ class _EncaissementScreenState extends ConsumerState<EncaissementScreen> {
   int get _montant => NumPad.enEntier(_saisie);
 
   Future<void> _valider(Client client) async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     if (_enCours) return;
     final l = AppLocalizations.of(context);
     setState(() => _enCours = true);

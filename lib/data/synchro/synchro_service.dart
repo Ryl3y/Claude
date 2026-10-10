@@ -87,6 +87,15 @@ class SynchroService {
   Future<BilanSynchro> synchroniser() =>
       _enCours ??= _passage().whenComplete(() => _enCours = null);
 
+  /// Attend la fin du passage en cours, s'il y en a un (sans en lancer).
+  Future<void> attendreFin() async {
+    try {
+      await _enCours;
+    } on Object {
+      // Le résultat n'importe pas : on veut seulement qu'il soit fini.
+    }
+  }
+
   /// Nombre de lignes pas encore envoyées.
   Future<int> enAttente() async {
     var total = 0;

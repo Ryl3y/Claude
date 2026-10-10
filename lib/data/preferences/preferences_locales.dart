@@ -92,4 +92,39 @@ class PreferencesLocales implements StockageCurseurs {
     await _prefs.remove(_cleEchecsPin);
     await _prefs.remove(_cleDernierEchecPin);
   }
+
+  // Dernier abonnement lu sur le serveur, pour l'app sans réseau.
+  static const _cleAbonnement = 'abonnement.';
+
+  /// (formule, date de fin « 2026-11-09 ») gardés pour [boutiqueId].
+  (String, String)? abonnement(String boutiqueId) {
+    if (_prefs.getString('${_cleAbonnement}boutique') != boutiqueId) {
+      return null;
+    }
+    final formule = _prefs.getString('${_cleAbonnement}formule');
+    final fin = _prefs.getString('${_cleAbonnement}date_fin');
+    return formule == null || fin == null ? null : (formule, fin);
+  }
+
+  Future<void> enregistrerAbonnement(
+    String boutiqueId, {
+    required String formule,
+    required String dateFin,
+  }) async {
+    await _prefs.setString('${_cleAbonnement}boutique', boutiqueId);
+    await _prefs.setString('${_cleAbonnement}formule', formule);
+    await _prefs.setString('${_cleAbonnement}date_fin', dateFin);
+  }
+
+  /// Déconnexion : oublie tout ce qui concerne le compte (repères de
+  /// synchronisation, code PIN, abonnement). La langue et l'identifiant
+  /// du téléphone restent.
+  Future<void> oublierCompte() async {
+    await toutEffacer();
+    await marquerRestauration(enCours: false);
+    await effacerEchecsPin();
+    for (final cle in _prefs.getKeys().toList()) {
+      if (cle.startsWith(_cleAbonnement)) await _prefs.remove(cle);
+    }
+  }
 }

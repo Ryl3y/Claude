@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kassa/app.dart';
+import 'package:kassa/data/abonnement/service_abonnement.dart';
 import 'package:kassa/data/auth/service_auth.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
@@ -15,6 +16,7 @@ import 'package:kassa/data/repositories/ventes_repository.dart';
 import 'package:kassa/data/synchro/serveur_synchro.dart';
 import 'package:kassa/domain/panier.dart';
 import 'package:kassa/domain/produit_saisie.dart';
+import 'package:kassa/ui/state/abonnement.dart';
 import 'package:kassa/ui/state/clients.dart';
 import 'package:kassa/ui/state/langue.dart';
 import 'package:kassa/ui/state/session.dart';
@@ -49,7 +51,9 @@ class AppDeTest {
   /// [compte] : le téléphone a déjà sa boutique et l'app s'ouvre sans code
   /// PIN (parcours des écrans 5 à 14). Sinon : premier lancement.
   /// [auth] et [serveur] : connexion et sauvegarde simulées (null : pas de
-  /// serveur, comme une version sans réglages).
+  /// serveur, comme une version sans réglages). [abonnement] : paiement
+  /// Kassa Pro simulé. [abonnementGarde] : (formule, date de fin) déjà lus
+  /// sur le serveur.
   static Future<AppDeTest> creer({
     String langue = 'fr',
     bool compte = true,
@@ -57,26 +61,36 @@ class AppDeTest {
     ServiceAuth? auth,
     ServeurSynchro? serveur,
     Stream<bool>? reseau,
+    ServeurAbonnement? abonnement,
+    (String, String)? abonnementGarde,
   }) async {
     SharedPreferences.setMockInitialValues({'langue': langue});
     final prefs = await PreferencesLocales.ouvrir();
     final db = baseEnMemoire();
     if (compte) {
-      await CompteRepository(
-        db,
-        ChampsSynchro(appareilId: 'tel-test'),
-        calcul: surPlace,
-      ).creerBoutique(
-        utilisateurId: utilisateurId,
-        telephone: telephone,
-        saisie: const BoutiqueSaisie(
-          nom: 'Chez Awa',
-          typeCommerce: 'alimentation',
-          ville: 'Douala',
-          quartier: 'Akwa',
-        ),
-        pin: codePin,
-      );
+      final boutiqueId =
+          await CompteRepository(
+            db,
+            ChampsSynchro(appareilId: 'tel-test'),
+            calcul: surPlace,
+          ).creerBoutique(
+            utilisateurId: utilisateurId,
+            telephone: telephone,
+            saisie: const BoutiqueSaisie(
+              nom: 'Chez Awa',
+              typeCommerce: 'alimentation',
+              ville: 'Douala',
+              quartier: 'Akwa',
+            ),
+            pin: codePin,
+          );
+      if (abonnementGarde case (final formule, final fin)) {
+        await prefs.enregistrerAbonnement(
+          boutiqueId,
+          formule: formule,
+          dateFin: fin,
+        );
+      }
     }
     final liens = <Uri>[];
     return AppDeTest._(
@@ -102,6 +116,7 @@ class AppDeTest {
           serviceAuthProvider.overrideWithValue(auth),
           serveurSynchroProvider.overrideWithValue(serveur),
           reseauProvider.overrideWithValue(reseau ?? const Stream.empty()),
+          serveurAbonnementProvider.overrideWithValue(abonnement),
         ],
         child: const KassaApp(),
       ),

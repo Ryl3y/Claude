@@ -12,6 +12,7 @@ import '../../core/config.dart';
 import '../../core/heure_douala.dart';
 import '../../data/auth/service_auth.dart';
 import '../../data/db/kassa_database.dart';
+import '../../data/deconnexion.dart';
 import '../../data/firebase/notifications.dart';
 import '../../data/firebase/services_firebase.dart';
 import '../../data/inscription.dart';
@@ -106,6 +107,31 @@ class SessionController extends Notifier<EtatSession> {
   }
 
   void ouvrir(Utilisateur compte) => state = SessionOuverte(compte);
+
+  /// Déconnexion : vide le téléphone et revient à l'écran de bienvenue.
+  /// En cas d'échec, la session reste ouverte et l'erreur remonte.
+  ///
+  /// [attendreSynchro] : fin du passage de synchronisation déjà lancé
+  /// (lu par l'appelant : ce contrôleur ne peut pas dépendre de la
+  /// synchronisation, qui dépend de lui). Il ne doit pas réécrire dans la
+  /// base vidée.
+  Future<void> deconnecter({Future<void> Function()? attendreSynchro}) async {
+    final avant = state;
+    // Ferme le planificateur : plus de nouveau passage.
+    state = const SessionChargement();
+    try {
+      await attendreSynchro?.call();
+      await Deconnexion(
+        db: ref.read(kassaDatabaseProvider),
+        prefs: ref.read(preferencesLocalesProvider),
+        auth: ref.read(serviceAuthProvider),
+      ).deconnecter();
+    } on Object {
+      state = avant;
+      rethrow;
+    }
+    state = const SessionSansCompte();
+  }
 
   /// Redemande le code PIN (retour après un long moment en arrière-plan).
   void verrouiller() {

@@ -16,6 +16,9 @@ class FauxAuth implements ServiceAuth {
   /// Fait échouer le prochain envoi ou la prochaine vérification.
   ErreurConnexion? prochaineErreur;
 
+  /// Fait échouer la prochaine déconnexion (pas de réseau).
+  bool prochaineErreurDeconnexion = false;
+
   String? _connecte;
 
   @override
@@ -47,7 +50,13 @@ class FauxAuth implements ServiceAuth {
   }
 
   @override
-  Future<void> deconnecter() async => _connecte = null;
+  Future<void> deconnecter() async {
+    _connecte = null;
+    if (prochaineErreurDeconnexion) {
+      prochaineErreurDeconnexion = false;
+      throw const ConnexionImpossible(ErreurConnexion.reseau);
+    }
+  }
 
   void _echouerSiDemande() {
     final e = prochaineErreur;

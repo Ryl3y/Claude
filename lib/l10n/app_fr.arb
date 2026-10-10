@@ -895,5 +895,130 @@
   "newPinConfirmTitle": "Saisissez-le encore une fois",
   "pinChanged": "Code PIN changé.",
   "errPinOtherNumber": "Ce numéro n'est pas celui du compte de ce téléphone.",
-  "loading": "Chargement…"
+  "loading": "Chargement…",
+  "settingsTitle": "Réglages",
+  "settingsHint": "Langue, abonnement, compte",
+  "settingsSubscription": "Abonnement",
+  "settingsBackup": "Sauvegarde",
+  "settingsAccount": "Compte",
+  "backupNow": "Sauvegarder maintenant",
+  "backupDone": "Tout est sauvegardé en ligne.",
+  "backupFailed": "Sauvegarde impossible pour l'instant. Vos données restent sur ce téléphone ; Kassa réessaiera quand internet reviendra.",
+  "logout": "Se déconnecter",
+  "logoutTitle": "Se déconnecter de ce téléphone ?",
+  "logoutBody": "Les données de la boutique seront effacées de ce téléphone. Elles restent sauvegardées en ligne et reviendront quand vous vous reconnecterez avec votre numéro.",
+  "logoutPending": "{n, plural, =1{1 changement n'est pas encore sauvegardé en ligne : il sera perdu.} other{{n} changements ne sont pas encore sauvegardés en ligne : ils seront perdus.}}",
+  "@logoutPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutLocalOnly": "Cette boutique n'est pas sauvegardée en ligne : toutes ses données seront perdues.",
+  "logoutConfirm": "Effacer et se déconnecter",
+  "proTitle": "Kassa Pro",
+  "trialDaysLeft": "{jours, plural, =0{Dernier jour d'essai gratuit} =1{Essai gratuit : 1 jour restant} other{Essai gratuit : {jours} jours restants}}",
+  "@trialDaysLeft": {
+    "placeholders": {
+      "jours": {
+        "type": "int"
+      }
+    }
+  },
+  "trialUntil": "Essai gratuit jusqu'au {date}",
+  "@trialUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "proUntil": "Kassa Pro jusqu'au {date}",
+  "@proUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "trialEnded": "Votre essai gratuit est terminé",
+  "proEnded": "Votre abonnement Pro est terminé",
+  "readOnlyBody": "Vos ventes, votre stock et vos dettes restent visibles. Pour enregistrer à nouveau, passez à Kassa Pro : {prix} par mois.",
+  "@readOnlyBody": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "trialEndingBody": "Après l'essai, Kassa Pro coûte {prix} par mois pour continuer à enregistrer.",
+  "@trialEndingBody": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "proPrice": "{prix} / mois",
+  "@proPrice": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "proBenefitRecord": "Enregistrez ventes, stock et dettes sans limite.",
+  "proBenefitBackup": "Vos données restent sauvegardées en ligne.",
+  "proBenefitDays": "Les jours qui restent ne sont pas perdus : le mois payé s'ajoute à la fin.",
+  "payWith": "Payer avec",
+  "payPhoneLabel": "Numéro Mobile Money",
+  "payButton": "Payer {prix}",
+  "@payButton": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "payWaitingTitle": "Validez le paiement sur votre téléphone",
+  "payWaitingBody": "Un message {operateur} va s'afficher sur le {numero}. Entrez votre code secret Mobile Money pour payer {prix}.",
+  "@payWaitingBody": {
+    "placeholders": {
+      "operateur": {
+        "type": "String",
+        "example": "MoMo"
+      },
+      "numero": {
+        "type": "String",
+        "example": "+237 6 77 12 34 56"
+      },
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "payWaitingLater": "Revenir plus tard",
+  "paySuccess": "Merci. Kassa Pro est activé jusqu'au {date}.",
+  "@paySuccess": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "payFailed": "Le paiement n'a pas abouti. Vérifiez votre solde Mobile Money, puis réessayez.",
+  "payTimeout": "Pas encore de réponse. Si vous avez payé, Kassa Pro s'activera tout seul dans quelques minutes.",
+  "payPending": "Un paiement attend déjà votre validation. Regardez votre téléphone, ou réessayez dans 5 minutes.",
+  "payRefused": "La demande de paiement a été refusée. Vérifiez le numéro et l'opérateur, puis réessayez.",
+  "payUnavailable": "Le paiement en ligne n'est pas disponible sur cette version de Kassa.",
+  "payExtend": "Payer un mois de plus"
 }

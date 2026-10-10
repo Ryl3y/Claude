@@ -13,6 +13,7 @@ import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
+import '../abonnement/garde_abonnement.dart';
 
 final _venteProvider = StreamProvider.family<VenteDetaillee?, String>(
   (ref, id) => ref.watch(ventesRepositoryProvider).surveillerVente(id),
@@ -32,6 +33,7 @@ class _VenteDetailScreenState extends ConsumerState<VenteDetailScreen> {
   var _enCours = false;
 
   Future<void> _annuler(int numero) async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     final confirme = await showDialog<bool>(
       context: context,

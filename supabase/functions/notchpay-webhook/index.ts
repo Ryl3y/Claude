@@ -49,7 +49,11 @@ export default {
             p_reference_notch: notch,
             p_montant: montant,
           });
+          // Référence « kassa-… » absente de la base (autre environnement) :
+          // définitif, inutile que Notch Pay réessaie.
+          if (error?.message?.startsWith("paiement inconnu")) return false;
           if (error) throw error;
+          return true;
         },
         echouer: async (reference) => {
           const { error } = await admin.rpc("echouer_paiement_abonnement", {

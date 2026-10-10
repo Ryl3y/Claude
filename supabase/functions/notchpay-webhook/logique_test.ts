@@ -36,7 +36,7 @@ function faux(trx: Transaction | null) {
     },
     confirmer: (ref, notch, montant) => {
       journal.push(`confirmer ${ref} ${notch} ${montant}`);
-      return Promise.resolve();
+      return Promise.resolve(true);
     },
     echouer: (ref) => {
       journal.push(`echouer ${ref}`);
@@ -89,4 +89,25 @@ Deno.test("base injoignable : l'erreur remonte (Notch Pay réessaiera)", async (
   const { d } = faux(payee);
   d.confirmer = () => Promise.reject(new Error("base"));
   await assertRejects(() => traiterEvenement({ data: { reference: "trx.1" } }, d));
+});
+
+Deno.test("montant trop petit : noté en échec, sans prolonger", async () => {
+  const { d, journal } = faux({ ...payee, amount: 4999 });
+  assertEquals(
+    await traiterEvenement({ data: { reference: "trx.1" } }, d),
+    "montant_insuffisant",
+  );
+  assertEquals(journal, [
+    "lire trx.1",
+    "echouer kassa-00000000-0000-4000-8000-000000000001",
+  ]);
+});
+
+Deno.test("paiement inconnu de la base : ignoré, sans erreur", async () => {
+  const { d } = faux(payee);
+  d.confirmer = () => Promise.resolve(false);
+  assertEquals(
+    await traiterEvenement({ data: { reference: "trx.1" } }, d),
+    "ignore",
+  );
 });

@@ -2131,6 +2131,240 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Chargement…'**
   String get loading;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue, abonnement, compte'**
+  String get settingsHint;
+
+  /// No description provided for @settingsSubscription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnement'**
+  String get settingsSubscription;
+
+  /// No description provided for @settingsBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde'**
+  String get settingsBackup;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get settingsAccount;
+
+  /// No description provided for @backupNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarder maintenant'**
+  String get backupNow;
+
+  /// No description provided for @backupDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est sauvegardé en ligne.'**
+  String get backupDone;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde impossible pour l\'instant. Vos données restent sur ce téléphone ; Kassa réessaiera quand internet reviendra.'**
+  String get backupFailed;
+
+  /// No description provided for @logout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get logout;
+
+  /// No description provided for @logoutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter de ce téléphone ?'**
+  String get logoutTitle;
+
+  /// No description provided for @logoutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données de la boutique seront effacées de ce téléphone. Elles restent sauvegardées en ligne et reviendront quand vous vous reconnecterez avec votre numéro.'**
+  String get logoutBody;
+
+  /// No description provided for @logoutPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n, plural, =1{1 changement n\'est pas encore sauvegardé en ligne : il sera perdu.} other{{n} changements ne sont pas encore sauvegardés en ligne : ils seront perdus.}}'**
+  String logoutPending(int n);
+
+  /// No description provided for @logoutLocalOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette boutique n\'est pas sauvegardée en ligne : toutes ses données seront perdues.'**
+  String get logoutLocalOnly;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer et se déconnecter'**
+  String get logoutConfirm;
+
+  /// No description provided for @proTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Kassa Pro'**
+  String get proTitle;
+
+  /// No description provided for @trialDaysLeft.
+  ///
+  /// In fr, this message translates to:
+  /// **'{jours, plural, =0{Dernier jour d\'essai gratuit} =1{Essai gratuit : 1 jour restant} other{Essai gratuit : {jours} jours restants}}'**
+  String trialDaysLeft(int jours);
+
+  /// No description provided for @trialUntil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essai gratuit jusqu\'au {date}'**
+  String trialUntil(String date);
+
+  /// No description provided for @proUntil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Kassa Pro jusqu\'au {date}'**
+  String proUntil(String date);
+
+  /// No description provided for @trialEnded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre essai gratuit est terminé'**
+  String get trialEnded;
+
+  /// No description provided for @proEnded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre abonnement Pro est terminé'**
+  String get proEnded;
+
+  /// No description provided for @readOnlyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos ventes, votre stock et vos dettes restent visibles. Pour enregistrer à nouveau, passez à Kassa Pro : {prix} par mois.'**
+  String readOnlyBody(String prix);
+
+  /// No description provided for @trialEndingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après l\'essai, Kassa Pro coûte {prix} par mois pour continuer à enregistrer.'**
+  String trialEndingBody(String prix);
+
+  /// No description provided for @proPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'{prix} / mois'**
+  String proPrice(String prix);
+
+  /// No description provided for @proBenefitRecord.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrez ventes, stock et dettes sans limite.'**
+  String get proBenefitRecord;
+
+  /// No description provided for @proBenefitBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données restent sauvegardées en ligne.'**
+  String get proBenefitBackup;
+
+  /// No description provided for @proBenefitDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les jours qui restent ne sont pas perdus : le mois payé s\'ajoute à la fin.'**
+  String get proBenefitDays;
+
+  /// No description provided for @payWith.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer avec'**
+  String get payWith;
+
+  /// No description provided for @payPhoneLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro Mobile Money'**
+  String get payPhoneLabel;
+
+  /// No description provided for @payButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer {prix}'**
+  String payButton(String prix);
+
+  /// No description provided for @payWaitingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validez le paiement sur votre téléphone'**
+  String get payWaitingTitle;
+
+  /// No description provided for @payWaitingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un message {operateur} va s\'afficher sur le {numero}. Entrez votre code secret Mobile Money pour payer {prix}.'**
+  String payWaitingBody(String operateur, String numero, String prix);
+
+  /// No description provided for @payWaitingLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenir plus tard'**
+  String get payWaitingLater;
+
+  /// No description provided for @paySuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci. Kassa Pro est activé jusqu\'au {date}.'**
+  String paySuccess(String date);
+
+  /// No description provided for @payFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement n\'a pas abouti. Vérifiez votre solde Mobile Money, puis réessayez.'**
+  String get payFailed;
+
+  /// No description provided for @payTimeout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore de réponse. Si vous avez payé, Kassa Pro s\'activera tout seul dans quelques minutes.'**
+  String get payTimeout;
+
+  /// No description provided for @payPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un paiement attend déjà votre validation. Regardez votre téléphone, ou réessayez dans 5 minutes.'**
+  String get payPending;
+
+  /// No description provided for @payRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande de paiement a été refusée. Vérifiez le numéro et l\'opérateur, puis réessayez.'**
+  String get payRefused;
+
+  /// No description provided for @payUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement en ligne n\'est pas disponible sur cette version de Kassa.'**
+  String get payUnavailable;
+
+  /// No description provided for @payExtend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer un mois de plus'**
+  String get payExtend;
 }
 
 class _AppLocalizationsDelegate

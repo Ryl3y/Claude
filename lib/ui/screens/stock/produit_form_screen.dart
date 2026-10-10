@@ -20,6 +20,7 @@ import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
 import 'nouvelle_categorie_dialog.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Écran 10 : ajouter ou modifier un produit.
 ///
@@ -152,6 +153,10 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
       });
       return;
     }
+    if (!await ecritureAutorisee(context, ref) || !mounted) {
+      if (mounted) setState(() => _versionCategorie++);
+      return;
+    }
     final l = AppLocalizations.of(context);
     final nouvelle = await demanderNouvelleCategorie(context);
     String? id;
@@ -232,6 +237,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
     ..showSnackBar(SnackBar(content: Text(texte)));
 
   Future<void> _enregistrer() async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     if (!_formulaire.currentState!.validate()) return;
     final saisie = ProduitSaisie(
@@ -277,6 +283,7 @@ class _ProduitFormScreenState extends ConsumerState<ProduitFormScreen> {
   }
 
   Future<void> _supprimer() async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     final nom = _nom.text.trim();
     final confirme = await showDialog<bool>(

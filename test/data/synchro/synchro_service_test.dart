@@ -1,3 +1,5 @@
+import 'dart:async';
+
 // Synchronisation drift ↔ serveur : envoi, coupure réseau, conflits,
 // restauration sur un nouveau téléphone. Le serveur est un faux en mémoire
 // qui suit les règles du vrai (voir faux_serveur.dart).
@@ -463,6 +465,20 @@ void main() {
     await a.synchro.synchroniser();
     expect(serveur.envois, envois); // plus rien à envoyer
   });
+
+  test(
+    'attendre la fin : attend le passage en cours, sans en lancer',
+    () async {
+      await riz(a);
+      await a.synchro.attendreFin(); // rien en cours : rend la main
+      expect(serveur.envois, 0);
+      var fini = false;
+      unawaited(a.synchro.synchroniser().then((_) => fini = true));
+      await a.synchro.attendreFin();
+      expect(fini, isTrue);
+      expect(serveur.envois, greaterThan(0));
+    },
+  );
 }
 
 /// Serveur qui exécute [pendant] au milieu de l'envoi des produits.

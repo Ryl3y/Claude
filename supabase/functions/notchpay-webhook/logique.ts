@@ -4,6 +4,9 @@
 
 export const NOTCH_API = "https://api.notchpay.co";
 
+/** Prix de Kassa Pro (FCFA) : un paiement plus petit ne prolonge rien. */
+export const PRIX_FCFA = 5000;
+
 const encodeur = new TextEncoder();
 
 /** HMAC-SHA256 en hexadécimal, comme Notch Pay (x-notch-signature). */
@@ -49,7 +52,12 @@ export type Transaction = {
 export type Dependances = {
   /** Relit le paiement chez Notch Pay ; null s'il est introuvable. */
   lirePaiement: (referenceNotch: string) => Promise<Transaction | null>;
-  confirmer: (reference: string, notch: string, montant: number) => Promise<void>;
+  /** Prolonge l'abonnement ; faux si le paiement est inconnu de la base. */
+  confirmer: (
+    reference: string,
+    notch: string,
+    montant: number,
+  ) => Promise<boolean>;
   echouer: (reference: string) => Promise<void>;
 };
 
@@ -59,6 +67,7 @@ export type Issue =
   | "ignore"
   | "confirme"
   | "echoue"
+  | "montant_insuffisant"
   | "en_cours";
 
 const ECHECS = new Set(["failed", "canceled", "cancelled", "expired"]);
@@ -86,8 +95,13 @@ export async function traiterEvenement(
 
   if (trx.status === "complete") {
     if (trx.currency !== "XAF") return "ignore";
-    await d.confirmer(trx.trxref, trx.reference, trx.amount);
-    return "confirme";
+    // Cas définitifs : réponse normale, Notch Pay n'a pas à réessayer.
+    if (!(trx.amount >= PRIX_FCFA)) {
+      await d.echouer(trx.trxref);
+      return "montant_insuffisant";
+    }
+    const connu = await d.confirmer(trx.trxref, trx.reference, trx.amount);
+    return connu ? "confirme" : "ignore";
   }
   if (ECHECS.has(trx.status)) {
     await d.echouer(trx.trxref);

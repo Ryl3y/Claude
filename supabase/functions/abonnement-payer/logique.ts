@@ -11,8 +11,12 @@ export const NOTCH_API = "https://api.notchpay.co";
 export const OPERATEURS = ["cm.mtn", "cm.orange"] as const;
 export type Operateur = (typeof OPERATEURS)[number];
 
-/** Une demande en attente bloque les nouvelles pendant ce temps. */
-export const DELAI_ENTRE_DEMANDES_MS = 2 * 60 * 1000;
+/**
+ * Une demande en attente bloque les nouvelles pendant ce temps : plus que
+ * les 3 minutes d'attente de l'app, pour qu'une validation tardive sur le
+ * téléphone ne se cumule pas avec une nouvelle demande (double débit).
+ */
+export const DELAI_ENTRE_DEMANDES_MS = 5 * 60 * 1000;
 
 export type Saisie = { operateur: Operateur; telephone: string };
 

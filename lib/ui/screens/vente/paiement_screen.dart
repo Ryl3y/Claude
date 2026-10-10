@@ -14,6 +14,7 @@ import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
 import 'choix_client_sheet.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Écran 7 : paiement de la vente.
 ///
@@ -53,6 +54,7 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
   }
 
   Future<void> _valider(Panier panier, CalculPaiement paiement) async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     if (_mode == ModeChoisi.credit && _clientId == null) {
       setState(() => _clientManquant = true);

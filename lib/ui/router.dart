@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'screens/abonnement/abonnement_screen.dart';
 import 'screens/clients/client_fiche_screen.dart';
 import 'screens/clients/client_form_screen.dart';
 import 'screens/clients/clients_screen.dart';
@@ -15,6 +16,7 @@ import 'screens/inscription/connexion_screen.dart';
 import 'screens/inscription/demarrage_screen.dart';
 import 'screens/inscription/nouveau_pin_screen.dart';
 import 'screens/inscription/pin_screen.dart';
+import 'screens/reglages/reglages_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
 import 'screens/stock/reappro_screen.dart';
@@ -43,6 +45,8 @@ abstract final class Chemins {
     queryParameters: {'filtre': 'bas', 'demande': demande},
   ).toString();
   static const rapports = '/rapports';
+  static const reglages = '/reglages';
+  static const abonnement = '/abonnement';
   static const demo = '/demo';
 
   // Inscription et code PIN (écrans 1 à 4).
@@ -244,6 +248,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Chemins.rapports,
         builder: (context, state) => const RapportsScreen(),
+      ),
+      GoRoute(
+        path: Chemins.reglages,
+        builder: (context, state) => const ReglagesScreen(),
+      ),
+      GoRoute(
+        path: Chemins.abonnement,
+        builder: (context, state) => const AbonnementScreen(),
       ),
       // Page de démonstration des composants (étape 3), sans lien dans l'app.
       GoRoute(

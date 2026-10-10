@@ -15,6 +15,7 @@ import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Ajouter un client (sans [clientId]) ou le modifier : nom, téléphone et
 /// note. En modification : « Supprimer le client » (refusé s'il doit encore).
@@ -64,6 +65,7 @@ class _ClientFormScreenState extends ConsumerState<ClientFormScreen> {
   );
 
   Future<void> _enregistrer() async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     if (_enCours) return;
     final erreurs = ReglesClient.verifier(
       _saisie,
@@ -95,6 +97,7 @@ class _ClientFormScreenState extends ConsumerState<ClientFormScreen> {
   }
 
   Future<void> _supprimer(Client c) async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     final langue = langueDe(context);
     final messager = ScaffoldMessenger.of(context);

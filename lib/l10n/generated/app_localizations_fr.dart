@@ -1258,4 +1258,166 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loading => 'Chargement…';
+
+  @override
+  String get settingsTitle => 'Réglages';
+
+  @override
+  String get settingsHint => 'Langue, abonnement, compte';
+
+  @override
+  String get settingsSubscription => 'Abonnement';
+
+  @override
+  String get settingsBackup => 'Sauvegarde';
+
+  @override
+  String get settingsAccount => 'Compte';
+
+  @override
+  String get backupNow => 'Sauvegarder maintenant';
+
+  @override
+  String get backupDone => 'Tout est sauvegardé en ligne.';
+
+  @override
+  String get backupFailed =>
+      'Sauvegarde impossible pour l\'instant. Vos données restent sur ce téléphone ; Kassa réessaiera quand internet reviendra.';
+
+  @override
+  String get logout => 'Se déconnecter';
+
+  @override
+  String get logoutTitle => 'Se déconnecter de ce téléphone ?';
+
+  @override
+  String get logoutBody =>
+      'Les données de la boutique seront effacées de ce téléphone. Elles restent sauvegardées en ligne et reviendront quand vous vous reconnecterez avec votre numéro.';
+
+  @override
+  String logoutPending(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other:
+          '$n changements ne sont pas encore sauvegardés en ligne : ils seront perdus.',
+      one:
+          '1 changement n\'est pas encore sauvegardé en ligne : il sera perdu.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get logoutLocalOnly =>
+      'Cette boutique n\'est pas sauvegardée en ligne : toutes ses données seront perdues.';
+
+  @override
+  String get logoutConfirm => 'Effacer et se déconnecter';
+
+  @override
+  String get proTitle => 'Kassa Pro';
+
+  @override
+  String trialDaysLeft(int jours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      jours,
+      locale: localeName,
+      other: 'Essai gratuit : $jours jours restants',
+      one: 'Essai gratuit : 1 jour restant',
+      zero: 'Dernier jour d\'essai gratuit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialUntil(String date) {
+    return 'Essai gratuit jusqu\'au $date';
+  }
+
+  @override
+  String proUntil(String date) {
+    return 'Kassa Pro jusqu\'au $date';
+  }
+
+  @override
+  String get trialEnded => 'Votre essai gratuit est terminé';
+
+  @override
+  String get proEnded => 'Votre abonnement Pro est terminé';
+
+  @override
+  String readOnlyBody(String prix) {
+    return 'Vos ventes, votre stock et vos dettes restent visibles. Pour enregistrer à nouveau, passez à Kassa Pro : $prix par mois.';
+  }
+
+  @override
+  String trialEndingBody(String prix) {
+    return 'Après l\'essai, Kassa Pro coûte $prix par mois pour continuer à enregistrer.';
+  }
+
+  @override
+  String proPrice(String prix) {
+    return '$prix / mois';
+  }
+
+  @override
+  String get proBenefitRecord =>
+      'Enregistrez ventes, stock et dettes sans limite.';
+
+  @override
+  String get proBenefitBackup => 'Vos données restent sauvegardées en ligne.';
+
+  @override
+  String get proBenefitDays =>
+      'Les jours qui restent ne sont pas perdus : le mois payé s\'ajoute à la fin.';
+
+  @override
+  String get payWith => 'Payer avec';
+
+  @override
+  String get payPhoneLabel => 'Numéro Mobile Money';
+
+  @override
+  String payButton(String prix) {
+    return 'Payer $prix';
+  }
+
+  @override
+  String get payWaitingTitle => 'Validez le paiement sur votre téléphone';
+
+  @override
+  String payWaitingBody(String operateur, String numero, String prix) {
+    return 'Un message $operateur va s\'afficher sur le $numero. Entrez votre code secret Mobile Money pour payer $prix.';
+  }
+
+  @override
+  String get payWaitingLater => 'Revenir plus tard';
+
+  @override
+  String paySuccess(String date) {
+    return 'Merci. Kassa Pro est activé jusqu\'au $date.';
+  }
+
+  @override
+  String get payFailed =>
+      'Le paiement n\'a pas abouti. Vérifiez votre solde Mobile Money, puis réessayez.';
+
+  @override
+  String get payTimeout =>
+      'Pas encore de réponse. Si vous avez payé, Kassa Pro s\'activera tout seul dans quelques minutes.';
+
+  @override
+  String get payPending =>
+      'Un paiement attend déjà votre validation. Regardez votre téléphone, ou réessayez dans 5 minutes.';
+
+  @override
+  String get payRefused =>
+      'La demande de paiement a été refusée. Vérifiez le numéro et l\'opérateur, puis réessayez.';
+
+  @override
+  String get payUnavailable =>
+      'Le paiement en ligne n\'est pas disponible sur cette version de Kassa.';
+
+  @override
+  String get payExtend => 'Payer un mois de plus';
 }

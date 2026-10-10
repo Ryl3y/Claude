@@ -1252,4 +1252,164 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loading => 'Loading…';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsHint => 'Language, subscription, account';
+
+  @override
+  String get settingsSubscription => 'Subscription';
+
+  @override
+  String get settingsBackup => 'Backup';
+
+  @override
+  String get settingsAccount => 'Account';
+
+  @override
+  String get backupNow => 'Back up now';
+
+  @override
+  String get backupDone => 'Everything is backed up online.';
+
+  @override
+  String get backupFailed =>
+      'Backup isn\'t possible right now. Your data stays on this phone; Kassa will try again when the internet is back.';
+
+  @override
+  String get logout => 'Log out';
+
+  @override
+  String get logoutTitle => 'Log out of this phone?';
+
+  @override
+  String get logoutBody =>
+      'Your shop\'s data will be erased from this phone. It stays backed up online and comes back when you log in again with your number.';
+
+  @override
+  String logoutPending(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n changes aren\'t backed up online yet: they will be lost.',
+      one: '1 change isn\'t backed up online yet: it will be lost.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get logoutLocalOnly =>
+      'This shop isn\'t backed up online: all its data will be lost.';
+
+  @override
+  String get logoutConfirm => 'Erase and log out';
+
+  @override
+  String get proTitle => 'Kassa Pro';
+
+  @override
+  String trialDaysLeft(int jours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      jours,
+      locale: localeName,
+      other: 'Free trial: $jours days left',
+      one: 'Free trial: 1 day left',
+      zero: 'Last day of your free trial',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialUntil(String date) {
+    return 'Free trial until $date';
+  }
+
+  @override
+  String proUntil(String date) {
+    return 'Kassa Pro until $date';
+  }
+
+  @override
+  String get trialEnded => 'Your free trial has ended';
+
+  @override
+  String get proEnded => 'Your Pro subscription has ended';
+
+  @override
+  String readOnlyBody(String prix) {
+    return 'Your sales, stock and debts stay visible. To record again, go Pro: $prix a month.';
+  }
+
+  @override
+  String trialEndingBody(String prix) {
+    return 'After the trial, Kassa Pro costs $prix a month to keep recording.';
+  }
+
+  @override
+  String proPrice(String prix) {
+    return '$prix / month';
+  }
+
+  @override
+  String get proBenefitRecord =>
+      'Record sales, stock and debts without limits.';
+
+  @override
+  String get proBenefitBackup => 'Your data stays backed up online.';
+
+  @override
+  String get proBenefitDays =>
+      'Days left aren\'t lost: the paid month is added at the end.';
+
+  @override
+  String get payWith => 'Pay with';
+
+  @override
+  String get payPhoneLabel => 'Mobile Money number';
+
+  @override
+  String payButton(String prix) {
+    return 'Pay $prix';
+  }
+
+  @override
+  String get payWaitingTitle => 'Approve the payment on your phone';
+
+  @override
+  String payWaitingBody(String operateur, String numero, String prix) {
+    return 'A $operateur message will appear on $numero. Enter your Mobile Money PIN to pay $prix.';
+  }
+
+  @override
+  String get payWaitingLater => 'Come back later';
+
+  @override
+  String paySuccess(String date) {
+    return 'Thank you. Kassa Pro is active until $date.';
+  }
+
+  @override
+  String get payFailed =>
+      'The payment didn\'t go through. Check your Mobile Money balance, then try again.';
+
+  @override
+  String get payTimeout =>
+      'No answer yet. If you paid, Kassa Pro will turn on by itself in a few minutes.';
+
+  @override
+  String get payPending =>
+      'A payment is already waiting for your approval. Check your phone, or try again in 5 minutes.';
+
+  @override
+  String get payRefused =>
+      'The payment request was refused. Check the number and the operator, then try again.';
+
+  @override
+  String get payUnavailable =>
+      'Online payment isn\'t available in this version of Kassa.';
+
+  @override
+  String get payExtend => 'Pay for another month';
 }

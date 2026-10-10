@@ -17,6 +17,7 @@ import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
 import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
+import '../abonnement/garde_abonnement.dart';
 
 /// Écran 11 : réapprovisionnement.
 ///
@@ -79,6 +80,7 @@ class _ReapproScreenState extends ConsumerState<ReapproScreen> {
   }
 
   Future<void> _valider(Produit p) async {
+    if (!await ecritureAutorisee(context, ref) || !mounted) return;
     final l = AppLocalizations.of(context);
     if (!_formulaire.currentState!.validate()) return;
     final quantite = Saisie.quantite(_quantite.text)!;
