@@ -39,9 +39,12 @@ export type Dependances = {
   fetch: typeof fetch;
   /** Nouvelle référence « kassa-<uuid> ». */
   nouvelleReference: () => string;
-  /** Vrai si la boutique a déjà une demande en attente récente. */
-  demandeRecente: () => Promise<boolean>;
-  noterDemande: (reference: string, saisie: Saisie) => Promise<void>;
+  /**
+   * Note la demande, sauf si la boutique en a déjà une en attente récente
+   * (vérification et écriture en une seule opération verrouillée) ; faux
+   * dans ce cas.
+   */
+  reserverDemande: (reference: string, saisie: Saisie) => Promise<boolean>;
   noterReferenceNotch: (reference: string, notch: string) => Promise<void>;
   noterEchec: (reference: string) => Promise<void>;
 };
@@ -54,11 +57,10 @@ export async function demanderPaiement(
   saisie: Saisie,
   d: Dependances,
 ): Promise<Resultat> {
-  if (await d.demandeRecente()) {
+  const reference = d.nouvelleReference();
+  if (!(await d.reserverDemande(reference, saisie))) {
     return { statut: 429, corps: { code: "demande_en_cours" } };
   }
-  const reference = d.nouvelleReference();
-  await d.noterDemande(reference, saisie);
   const entetes = {
     Authorization: d.clePublique,
     "Content-Type": "application/json",

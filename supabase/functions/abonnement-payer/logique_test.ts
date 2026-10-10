@@ -34,10 +34,10 @@ function faux(reponses: Response[], recente = false) {
       return Promise.resolve(r);
     }) as typeof fetch,
     nouvelleReference: () => "kassa-00000000-0000-4000-8000-000000000001",
-    demandeRecente: () => Promise.resolve(recente),
-    noterDemande: (ref, s) => {
+    reserverDemande: (ref, s) => {
+      if (recente) return Promise.resolve(false);
       journal.push(`demande ${ref} ${s.operateur}`);
-      return Promise.resolve();
+      return Promise.resolve(true);
     },
     noterReferenceNotch: (ref, notch) => {
       journal.push(`notch ${ref} ${notch}`);
@@ -96,8 +96,9 @@ Deno.test("paiement : Notch Pay injoignable", async () => {
 });
 
 Deno.test("paiement : une demande déjà en cours bloque la suivante", async () => {
-  const { d, appels } = faux([], true);
+  const { d, appels, journal } = faux([], true);
   const r = await demanderPaiement(saisie, d);
   assertEquals(r, { statut: 429, corps: { code: "demande_en_cours" } });
   assertEquals(appels.length, 0);
+  assertEquals(journal, []);
 });

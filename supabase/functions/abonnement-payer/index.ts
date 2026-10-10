@@ -47,26 +47,20 @@ export default {
       clePublique,
       fetch,
       nouvelleReference: () => `kassa-${crypto.randomUUID()}`,
-      demandeRecente: async () => {
-        const depuis = new Date(Date.now() - DELAI_ENTRE_DEMANDES_MS)
-          .toISOString();
-        const { count } = await admin
-          .from("paiements_abonnement")
-          .select("reference", { count: "exact", head: true })
-          .eq("boutique_id", boutiqueId)
-          .eq("statut", "en_attente")
-          .gte("cree_le", depuis);
-        return (count ?? 0) > 0;
-      },
-      noterDemande: async (reference, s) => {
-        const { error } = await admin.from("paiements_abonnement").insert({
-          reference,
-          boutique_id: boutiqueId,
-          utilisateur_id: utilisateurId,
-          montant: PRIX_FCFA,
-          operateur: s.operateur,
-        });
+      reserverDemande: async (reference, s) => {
+        const { data, error } = await admin.rpc(
+          "reserver_paiement_abonnement",
+          {
+            p_reference: reference,
+            p_boutique_id: boutiqueId,
+            p_utilisateur_id: utilisateurId,
+            p_montant: PRIX_FCFA,
+            p_operateur: s.operateur,
+            p_delai_secondes: DELAI_ENTRE_DEMANDES_MS / 1000,
+          },
+        );
         if (error) throw error;
+        return data === true;
       },
       noterReferenceNotch: async (reference, notch) => {
         await admin
