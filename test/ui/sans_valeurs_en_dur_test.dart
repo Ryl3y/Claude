@@ -28,8 +28,9 @@ void main() {
           final ligne = lignes[i].trim();
           if (ligne.startsWith('//')) continue;
           _interdits.forEach((motif, regle) {
-            if (regle.hasMatch(ligne))
+            if (regle.hasMatch(ligne)) {
               fautes.add('${f.path}:${i + 1} $motif : $ligne');
+            }
           });
         }
       }
