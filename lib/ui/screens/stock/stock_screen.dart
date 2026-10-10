@@ -40,10 +40,11 @@ class _Categorie extends _Filtre {
 
 /// Écran 9 : liste du stock, recherche, filtre par catégorie, alertes.
 class StockScreen extends ConsumerStatefulWidget {
-  const StockScreen({super.key, this.stockBas = false});
+  const StockScreen({super.key, this.demandeStockBas});
 
-  /// Ouvre la liste filtrée sur le stock bas (depuis l'accueil).
-  final bool stockBas;
+  /// Demande de l'accueil (« Voir le stock ») : chaque nouvelle valeur
+  /// remet le filtre sur le stock bas et vide la recherche.
+  final String? demandeStockBas;
 
   @override
   ConsumerState<StockScreen> createState() => _StockScreenState();
@@ -51,13 +52,20 @@ class StockScreen extends ConsumerStatefulWidget {
 
 class _StockScreenState extends ConsumerState<StockScreen> {
   final _recherche = TextEditingController();
-  late _Filtre _filtre = widget.stockBas ? const _StockBas() : const _Tous();
+  late _Filtre _filtre = widget.demandeStockBas != null
+      ? const _StockBas()
+      : const _Tous();
 
   @override
   void didUpdateWidget(StockScreen ancien) {
     super.didUpdateWidget(ancien);
-    // L'onglet garde son état : l'accueil peut demander le stock bas.
-    if (widget.stockBas && !ancien.stockBas) _filtre = const _StockBas();
+    // L'onglet garde son état : une nouvelle demande de l'accueil remet
+    // toujours le filtre, même si l'utilisateur l'avait changé entre-temps.
+    if (widget.demandeStockBas != null &&
+        widget.demandeStockBas != ancien.demandeStockBas) {
+      _filtre = const _StockBas();
+      _recherche.clear();
+    }
   }
 
   @override

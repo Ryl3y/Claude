@@ -155,4 +155,44 @@ void main() {
     expect(find.text('Août 2026'), findsOneWidget);
     await app.fermer(tester);
   });
+
+  testWidgets('à minuit, l\'accueil passe au nouveau jour', (tester) async {
+    // Samedi 10 octobre, 23 h 59 à Douala.
+    var maintenant = DateTime.utc(2026, 10, 10, 22, 59);
+    HeureDouala.horloge = () => maintenant;
+    addTearDown(
+      () => HeureDouala.horloge = () => DateTime.utc(2026, 10, 10, 9, 18),
+    );
+    final app = await _demarrer(tester);
+    final riz = await app.ajouterProduit(tester, nom: 'Riz', prixVente: 3500);
+    await app.vendreComptant(tester, produitId: riz);
+    expect(find.text('Samedi 10 octobre'), findsOneWidget);
+    expect(find.text('3${_e}500${_e}FCFA'), findsOneWidget);
+
+    maintenant = DateTime.utc(2026, 10, 10, 23, 1);
+    await tester.pump(const Duration(minutes: 2));
+    await stabiliser(tester);
+    expect(find.text('Dimanche 11 octobre'), findsOneWidget);
+    expect(find.text('Aucune vente · bénéfice 0${_e}F'), findsOneWidget);
+    await app.fermer(tester);
+  });
+
+  testWidgets('« Voir le stock » remet le filtre à chaque appui', (
+    tester,
+  ) async {
+    final app = await _demarrer(tester);
+    await app.ajouterProduit(tester, nom: 'Riz', quantite: 20, seuil: 3);
+    await app.ajouterProduit(tester, nom: 'Huile', quantite: 2, seuil: 4);
+    await _toucher(tester, find.text('Voir le stock'));
+    expect(find.text('Riz'), findsNothing);
+    await _toucher(tester, find.text('Tous'));
+    expect(find.text('Riz'), findsOneWidget);
+
+    await tester.tap(find.text('Accueil').last);
+    await stabiliser(tester);
+    await _toucher(tester, find.text('Voir le stock'));
+    expect(find.text('Riz'), findsNothing);
+    expect(find.text('Huile'), findsOneWidget);
+    await app.fermer(tester);
+  });
 }

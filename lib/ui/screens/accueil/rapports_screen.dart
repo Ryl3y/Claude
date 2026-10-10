@@ -59,6 +59,9 @@ class _RapportsScreenState extends ConsumerState<RapportsScreen> {
     final t = context.kassa;
     final langue = langueDe(context);
     final rapport = ref.watch(rapportProvider(_periode));
+    // Reconstruit à minuit : « Aujourd'hui » devient « Hier » et « Après »
+    // redevient possible.
+    ref.watch(jourCourantProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.reportsTitle)),

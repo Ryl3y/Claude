@@ -33,18 +33,20 @@ class AccueilScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final produits = ref.watch(produitsProvider).value;
+    // Change à minuit : la date et les chiffres passent au nouveau jour.
+    final jour = ref.watch(jourCourantProvider);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: _EnTete(etat: ref.watch(etatSauvegardeProvider)),
+            child: _EnTete(etat: ref.watch(etatSauvegardeProvider), jour: jour),
           ),
           SliverPadding(
             padding: const EdgeInsets.all(KassaSpace.s4),
             sliver: SliverList.list(
               children: [
-                const _Chiffres(),
+                _Chiffres(jour: jour),
                 if (produits != null && produits.isEmpty) ...[
                   const SizedBox(height: KassaSpace.s6),
                   const _PremiersProduits(),
@@ -72,9 +74,12 @@ class AccueilScreen extends ConsumerWidget {
 }
 
 class _EnTete extends StatelessWidget {
-  const _EnTete({required this.etat});
+  const _EnTete({required this.etat, required this.jour});
 
   final EtatSauvegarde etat;
+
+  /// Début du jour en cours (UTC).
+  final DateTime jour;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +88,7 @@ class _EnTete extends StatelessWidget {
     final aujourdhui = DateFormat(
       'EEEE d MMMM',
       langue,
-    ).format(HeureDouala.versDouala(HeureDouala.maintenantUtc()));
+    ).format(HeureDouala.versDouala(jour));
 
     return Container(
       decoration: BoxDecoration(
@@ -135,28 +140,46 @@ class _EnTete extends StatelessWidget {
 /// Ventes du jour et dettes à recevoir, côte à côte (l'une sous l'autre
 /// quand le texte est très grand).
 class _Chiffres extends ConsumerWidget {
-  const _Chiffres();
+  const _Chiffres({required this.jour});
+
+  /// Début du jour en cours (UTC).
+  final DateTime jour;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final langue = langueDe(context);
     final rapport = ref
-        .watch(rapportProvider(Periode.actuelle(TypePeriode.jour)))
+        .watch(rapportProvider(Periode.contenant(TypePeriode.jour, jour)))
         .value;
     final clients = ref.watch(clientsProvider).value ?? const <Client>[];
     final debiteurs = clients.where((c) => c.soldeDette > 0);
     final dettes = debiteurs.fold(0, (s, c) => s + c.soldeDette);
 
-    final ventes = StatTile(
-      label: l.todaySales,
-      value: rapport?.total ?? 0,
-      tone: AmountTone.encaisse,
-      hint: l.salesAndProfit(
-        l.salesCount(rapport?.nombreVentes ?? 0),
-        Montant.format(rapport?.benefice ?? 0, langue, court: true),
-      ),
-    );
+    // Pendant le premier calcul, pas de « 0 FCFA » qui ferait croire à
+    // une journée sans vente : un indicateur de chargement.
+    final Widget ventes = rapport == null
+        ? Container(
+            padding: const EdgeInsets.all(KassaSpace.s4),
+            decoration: BoxDecoration(
+              color: context.kassa.surfaceRaised,
+              borderRadius: BorderRadius.circular(KassaRadius.md),
+            ),
+            alignment: Alignment.center,
+            child: Semantics(
+              label: l.todaySales,
+              child: const CircularProgressIndicator(),
+            ),
+          )
+        : StatTile(
+            label: l.todaySales,
+            value: rapport.total,
+            tone: AmountTone.encaisse,
+            hint: l.salesAndProfit(
+              l.salesCount(rapport.nombreVentes),
+              Montant.format(rapport.benefice, langue, court: true),
+            ),
+          );
     final aRecevoir = StatTile(
       label: l.moneyOwed,
       value: dettes,
@@ -276,7 +299,9 @@ class _AlertesStock extends StatelessWidget {
               icon: Symbols.inventory_2_rounded,
               variant: KassaButtonVariant.secondary,
               fullWidth: true,
-              onPressed: () => context.go(Chemins.stockBas),
+              onPressed: () => context.go(
+                Chemins.stockBas('${DateTime.now().microsecondsSinceEpoch}'),
+              ),
             ),
           ],
         ),

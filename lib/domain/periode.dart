@@ -9,12 +9,14 @@ class Periode {
 
   /// La période de [type] qui contient [instant] (heure de Douala).
   factory Periode.contenant(TypePeriode type, DateTime instant) {
+    if (type == TypePeriode.jour) {
+      // Même définition du jour que l'historique et les numéros de vente.
+      final debut = HeureDouala.debutDuJourUtc(instant);
+      return Periode._(type, debut, debut.add(const Duration(days: 1)));
+    }
     final d = HeureDouala.versDouala(instant);
     final (debut, fin) = switch (type) {
-      TypePeriode.jour => (
-        DateTime.utc(d.year, d.month, d.day),
-        DateTime.utc(d.year, d.month, d.day + 1),
-      ),
+      TypePeriode.jour => throw StateError('traité plus haut'),
       TypePeriode.semaine => (
         DateTime.utc(d.year, d.month, d.day - (d.weekday - 1)),
         DateTime.utc(d.year, d.month, d.day - (d.weekday - 1) + 7),

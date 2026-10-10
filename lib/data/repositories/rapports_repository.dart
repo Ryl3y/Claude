@@ -79,17 +79,13 @@ class RapportsRepository {
   /// Nombre de produits dans le classement.
   static const tailleTop = 5;
 
-  /// Rapport de la période, recalculé dès qu'une vente, une ligne, un
-  /// versement ou un produit change.
+  /// Rapport de la période, recalculé dès qu'une vente, une ligne ou un
+  /// versement change. Pas sur les produits : le stock est réécrit à chaque
+  /// vente et réappro, sans changer les chiffres.
   Stream<Rapport> surveillerRapport(Periode periode) => _db
       .customSelect(
         'SELECT 1',
-        readsFrom: {
-          _db.ventes,
-          _db.lignesVente,
-          _db.versementsDette,
-          _db.produits,
-        },
+        readsFrom: {_db.ventes, _db.lignesVente, _db.versementsDette},
       )
       .watch()
       .asyncMap((_) => calculer(periode));
@@ -132,22 +128,41 @@ class RapportsRepository {
       venduACredit: valides.fold(0, (s, v) => s + v.resteAPayer),
       versements: totalVersements,
       parMode: parMode,
-      top: await _top(valides.map((v) => v.id).toList()),
+      top: await _top(periode),
       annulees: ventes.length - valides.length,
     );
   }
 
-  Future<List<TopProduit>> _top(List<String> venteIds) async {
-    if (venteIds.isEmpty) return const [];
-    final lignes = await (_db.select(
-      _db.lignesVente,
-    )..where((l) => l.venteId.isIn(venteIds) & l.supprimeLe.isNull())).get();
-    final produits = {
-      for (final p in await (_db.select(
-        _db.produits,
-      )..where((p) => p.id.isIn(lignes.map((l) => l.produitId).toSet()))).get())
-        p.id: p,
-    };
+  Future<List<TopProduit>> _top(Periode periode) async {
+    // Une jointure plutôt qu'une liste d'identifiants : pas de limite de
+    // variables SQLite, et les lignes viennent dans l'ordre des ventes.
+    final requete =
+        _db.select(_db.lignesVente).join([
+            innerJoin(
+              _db.ventes,
+              _db.ventes.id.equalsExp(_db.lignesVente.venteId),
+            ),
+            leftOuterJoin(
+              _db.produits,
+              _db.produits.id.equalsExp(_db.lignesVente.produitId),
+            ),
+          ])
+          ..where(
+            _db.lignesVente.supprimeLe.isNull() &
+                _db.ventes.supprimeLe.isNull() &
+                _db.ventes.annulee.equals(false) &
+                _db.ventes.dateVente.isBiggerOrEqualValue(periode.debut) &
+                _db.ventes.dateVente.isSmallerThanValue(periode.fin),
+          )
+          ..orderBy([OrderingTerm.asc(_db.ventes.dateVente)]);
+    final resultats = await requete.get();
+    if (resultats.isEmpty) return const [];
+    final lignes = [for (final r in resultats) r.readTable(_db.lignesVente)];
+    final produits = <String, Produit>{};
+    for (final r in resultats) {
+      final p = r.readTableOrNull(_db.produits);
+      if (p != null) produits[p.id] = p;
+    }
 
     final groupes = <String, List<LigneVente>>{};
     for (final l in lignes) {
@@ -179,8 +194,8 @@ class RapportsRepository {
     ];
     return TopProduit(
       produitId: id,
-      // Le nom actuel du produit, ou celui copié dans la vente s'il a été
-      // supprimé.
+      // Le nom actuel du produit, ou celui copié dans sa vente la plus
+      // récente s'il a été supprimé (lignes triées par date de vente).
       nom: produit != null && produit.supprimeLe == null
           ? produit.nom
           : lignes.last.nomProduit,

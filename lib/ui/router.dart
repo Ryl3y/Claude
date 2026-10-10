@@ -29,7 +29,12 @@ abstract final class Chemins {
   static const historique = '/vendre/historique';
 
   static const nouveauClient = '/clients/nouveau';
-  static const stockBas = '/stock?filtre=bas';
+
+  /// Stock filtré sur le stock bas ; [demande] change à chaque appui.
+  static String stockBas(String demande) => Uri(
+    path: stock,
+    queryParameters: {'filtre': 'bas', 'demande': demande},
+  ).toString();
   static const rapports = '/rapports';
   static const demo = '/demo';
 
@@ -95,7 +100,9 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Chemins.stock,
                 builder: (context, state) => StockScreen(
-                  stockBas: state.uri.queryParameters['filtre'] == 'bas',
+                  demandeStockBas: state.uri.queryParameters['filtre'] == 'bas'
+                      ? state.uri.queryParameters['demande'] ?? ''
+                      : null,
                 ),
                 routes: [
                   // Écrans plein écran, au-dessus de la barre du bas.
