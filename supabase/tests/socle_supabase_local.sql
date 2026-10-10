@@ -6,7 +6,7 @@ create role service_role nologin bypassrls;
 grant anon, authenticated, service_role to postgres;
 
 create schema auth;
-create table auth.users (id uuid primary key, phone text);
+create table auth.users (id uuid primary key, phone text, phone_confirmed_at timestamptz);
 
 create function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb

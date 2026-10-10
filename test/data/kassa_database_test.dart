@@ -114,6 +114,30 @@ void main() {
       );
     });
 
+    test('téléphone de boutique au mauvais format refusé (comme le serveur)', () async {
+      expect(
+        () => (db.update(db.boutiques)..where((b) => b.id.equals(Donnees.boutiqueId)))
+            .write(const BoutiquesCompanion(telephone: Value('+237 690 00 00 00'))),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('prix d\'achat négatif refusé dans un mouvement', () async {
+      expect(
+        () => db.into(db.mouvementsStock).insert(MouvementsStockCompanion.insert(
+              id: uuid(151),
+              produitId: Donnees.produitId,
+              type: TypeMouvement.entree,
+              quantite: 1,
+              prixAchatUnitaire: const Value(-1),
+              dateMouvement: maintenant,
+              majLe: maintenant,
+              appareilId: appareil,
+            )),
+        throwsA(isA<Exception>()),
+      );
+    });
+
     test('type de mouvement inconnu refusé', () async {
       expect(() => Donnees.mouvement(db, 1, 1, type: 'vol'), throwsA(isA<Exception>()));
     });
@@ -215,14 +239,29 @@ void main() {
       expect(await db.calculerSoldeDette(Donnees.clientId), 0);
     });
 
-    test('recalculerSoldeDette et recalculerTout', () async {
+    test('recalculerSoldeDette', () async {
       await Donnees.vente(db, 1, total: 6000, paye: 1000);
-      await Donnees.mouvement(db, 1, 4);
+      expect(await db.recalculerSoldeDette(Donnees.clientId), 5000);
+      final c = await db.select(db.clients).getSingle();
+      expect(c.soldeDette, 5000);
+    });
+
+    test('recalculerTout donne les mêmes résultats que les calculs un par un', () async {
+      await Donnees.vente(db, 1, total: 6000, paye: 1000);
+      await Donnees.vente(db, 2, total: 2000, paye: 0, annulee: true);
+      await Donnees.versement(db, 1, 1500);
+      await Donnees.versement(db, 2, 700, supprimeLe: maintenant);
+      await Donnees.mouvement(db, 1, 5);
+      await Donnees.mouvement(db, 2, -1.5, type: TypeMouvement.vente);
+      await Donnees.mouvement(db, 3, -0.25, type: TypeMouvement.perte);
+      await Donnees.mouvement(db, 4, -9, type: TypeMouvement.perte, supprimeLe: maintenant);
       await db.recalculerTout();
       final c = await db.select(db.clients).getSingle();
       final p = await db.select(db.produits).getSingle();
-      expect(c.soldeDette, 5000);
-      expect(p.quantite, 4);
+      expect(c.soldeDette, 3500);
+      expect(c.soldeDette, await db.calculerSoldeDette(Donnees.clientId));
+      expect(p.quantite, 3.25);
+      expect(p.quantite, await db.calculerStock(Donnees.produitId));
     });
   });
 
@@ -238,6 +277,17 @@ void main() {
         'versements_dette',
         'mouvements_stock',
       ]);
+    });
+
+    test('ChampsSynchro : suppression avec une seule heure', () {
+      var appels = 0;
+      final champs = ChampsSynchro(
+        appareilId: 'tel-1',
+        horloge: () => DateTime.utc(2026, 10, 10, 12, 0, 0, appels++),
+      );
+      final s = champs.suppression();
+      expect(s.majLe.value, s.supprimeLe.value);
+      expect(appels, 1);
     });
 
     test('ChampsSynchro : maj_le en UTC, synchro=false, appareil', () {

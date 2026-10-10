@@ -101,7 +101,36 @@
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
-            "dsl_features": []
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "telephone",
+                        "tag": "telephone"
+                      },
+                      ".length).isBetweenValues(8,15) & const ",
+                      {
+                        "lexeme": "CustomExpression",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "<",
+                      {
+                        "lexeme": "bool",
+                        "import_uri": "dart:core"
+                      },
+                      ">(\"telephone NOT GLOB '*[^0-9]*'\")"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
             "name": "ville",
@@ -1686,7 +1715,26 @@
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
-            "dsl_features": []
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "prixAchatUnitaire",
+                        "tag": "prixAchatUnitaire"
+                      },
+                      ").isBiggerOrEqualValue(0)"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
             "name": "reference_id",
@@ -1857,7 +1905,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"boutiques\" (\"id\" TEXT NOT NULL, \"maj_le\" TEXT NOT NULL, \"supprime_le\" TEXT NULL, \"synchro\" INTEGER NOT NULL DEFAULT 0 CHECK (\"synchro\" IN (0, 1)), \"appareil_id\" TEXT NOT NULL, \"nom\" TEXT NOT NULL, \"telephone\" TEXT NOT NULL, \"ville\" TEXT NOT NULL, \"quartier\" TEXT NOT NULL, \"type_commerce\" TEXT NOT NULL, \"seuil_alerte_defaut\" INTEGER NOT NULL CHECK(\"seuil_alerte_defaut\" >= 0), \"cree_le\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"boutiques\" (\"id\" TEXT NOT NULL, \"maj_le\" TEXT NOT NULL, \"supprime_le\" TEXT NULL, \"synchro\" INTEGER NOT NULL DEFAULT 0 CHECK (\"synchro\" IN (0, 1)), \"appareil_id\" TEXT NOT NULL, \"nom\" TEXT NOT NULL, \"telephone\" TEXT NOT NULL CHECK(LENGTH(\"telephone\") BETWEEN 8 AND 15 AND (telephone NOT GLOB '*[^0-9]*')), \"ville\" TEXT NOT NULL, \"quartier\" TEXT NOT NULL, \"type_commerce\" TEXT NOT NULL, \"seuil_alerte_defaut\" INTEGER NOT NULL CHECK(\"seuil_alerte_defaut\" >= 0), \"cree_le\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -1929,7 +1977,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"mouvements_stock\" (\"id\" TEXT NOT NULL, \"maj_le\" TEXT NOT NULL, \"supprime_le\" TEXT NULL, \"synchro\" INTEGER NOT NULL DEFAULT 0 CHECK (\"synchro\" IN (0, 1)), \"appareil_id\" TEXT NOT NULL, \"produit_id\" TEXT NOT NULL REFERENCES produits (id), \"type\" TEXT NOT NULL CHECK(\"type\" IN ('entree', 'vente', 'perte', 'correction', 'annulation')), \"quantite\" REAL NOT NULL, \"prix_achat_unitaire\" INTEGER NULL, \"reference_id\" TEXT NULL, \"date_mouvement\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"mouvements_stock\" (\"id\" TEXT NOT NULL, \"maj_le\" TEXT NOT NULL, \"supprime_le\" TEXT NULL, \"synchro\" INTEGER NOT NULL DEFAULT 0 CHECK (\"synchro\" IN (0, 1)), \"appareil_id\" TEXT NOT NULL, \"produit_id\" TEXT NOT NULL REFERENCES produits (id), \"type\" TEXT NOT NULL CHECK(\"type\" IN ('entree', 'vente', 'perte', 'correction', 'annulation')), \"quantite\" REAL NOT NULL, \"prix_achat_unitaire\" INTEGER NULL CHECK(\"prix_achat_unitaire\" >= 0), \"reference_id\" TEXT NULL, \"date_mouvement\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },

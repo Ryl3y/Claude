@@ -113,14 +113,27 @@ class KassaDatabase extends _$KassaDatabase {
     return solde;
   }
 
-  /// Recalcule tous les stocks et toutes les dettes
-  /// (après une synchronisation ou une restauration).
+  /// Recalcule tous les stocks et toutes les dettes en deux requêtes
+  /// (après une synchronisation ou une restauration). Mêmes règles que
+  /// [calculerStock] et [calculerSoldeDette].
   Future<void> recalculerTout() => transaction(() async {
-        for (final p in await select(produits).get()) {
-          await recalculerStock(p.id);
-        }
-        for (final c in await select(clients).get()) {
-          await recalculerSoldeDette(c.id);
-        }
+        await customUpdate(
+          'UPDATE produits SET quantite = ROUND(COALESCE(('
+          'SELECT SUM(m.quantite) FROM mouvements_stock m '
+          'WHERE m.produit_id = produits.id AND m.supprime_le IS NULL'
+          '), 0), 3)',
+          updates: {produits},
+        );
+        await customUpdate(
+          'UPDATE clients SET solde_dette = COALESCE(('
+          'SELECT SUM(v.reste_a_payer) FROM ventes v '
+          'WHERE v.client_id = clients.id AND v.annulee = 0 '
+          'AND v.supprime_le IS NULL'
+          '), 0) - COALESCE(('
+          'SELECT SUM(d.montant) FROM versements_dette d '
+          'WHERE d.client_id = clients.id AND d.supprime_le IS NULL'
+          '), 0)',
+          updates: {clients},
+        );
       });
 }

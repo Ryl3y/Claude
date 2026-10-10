@@ -86,6 +86,9 @@ class $BoutiquesTable extends Boutiques
     'telephone',
     aliasedName,
     false,
+    check: () =>
+        ComparableExpr(telephone.length).isBetweenValues(8, 15) &
+        const CustomExpression<bool>("telephone NOT GLOB '*[^0-9]*'"),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -336,6 +339,10 @@ class Boutique extends DataClass implements Insertable<Boutique> {
   final bool synchro;
   final String appareilId;
   final String nom;
+
+  /// Numéro du propriétaire, chiffres seulement (ex. 237690000000),
+  /// même règle que sur le serveur.
+  /// (REGEXP est interdit dans un CHECK SQLite : on utilise GLOB.)
   final String telephone;
   final String ville;
   final String quartier;
@@ -5465,6 +5472,7 @@ class $MouvementsStockTable extends MouvementsStock
     'prix_achat_unitaire',
     aliasedName,
     true,
+    check: () => ComparableExpr(prixAchatUnitaire).isBiggerOrEqualValue(0),
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );

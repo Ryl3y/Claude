@@ -60,7 +60,14 @@ mixin ColonneId on Table {
 @DataClassName('Boutique')
 class Boutiques extends Table with ColonneId, ColonnesSynchro {
   TextColumn get nom => text().withLength(min: 1)();
-  TextColumn get telephone => text()();
+
+  /// Numéro du propriétaire, chiffres seulement (ex. 237690000000),
+  /// même règle que sur le serveur.
+  /// (REGEXP est interdit dans un CHECK SQLite : on utilise GLOB.)
+  TextColumn get telephone => text().check(
+        telephone.length.isBetweenValues(8, 15) &
+            const CustomExpression<bool>("telephone NOT GLOB '*[^0-9]*'"),
+      )();
   TextColumn get ville => text()();
   TextColumn get quartier => text()();
   TextColumn get typeCommerce => text()();
@@ -188,7 +195,9 @@ class MouvementsStock extends Table with ColonneId, ColonnesSynchro {
   RealColumn get quantite => real()();
 
   /// Pour les entrées : nouveau coût d'achat.
-  IntColumn get prixAchatUnitaire => integer().nullable()();
+  IntColumn get prixAchatUnitaire => integer()
+      .nullable()
+      .check(prixAchatUnitaire.isBiggerOrEqualValue(0))();
 
   /// Vente liée (mouvements « vente » et « annulation »).
   TextColumn get referenceId => text().nullable()();

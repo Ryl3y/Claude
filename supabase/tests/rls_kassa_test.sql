@@ -32,9 +32,12 @@ $$;
 grant execute on all functions in schema test_kassa to anon, authenticated;
 
 -- Deux commerçants : A (237690000001) et B (237690000002).
-insert into auth.users (id, phone) values
-  ('aaaaaaaa-0000-4000-8000-000000000001', '237690000001'),
-  ('bbbbbbbb-0000-4000-8000-000000000002', '237690000002');
+insert into auth.users (id, phone, phone_confirmed_at) values
+  ('aaaaaaaa-0000-4000-8000-000000000001', '237690000001', now()),
+  ('bbbbbbbb-0000-4000-8000-000000000002', '237690000002', now()),
+  -- C : numéro non confirmé. D : a récupéré le numéro de A chez l'opérateur.
+  ('cccccccc-0000-4000-8000-000000000003', '237690000003', null),
+  ('dddddddd-0000-4000-8000-000000000004', '237690000001', now());
 
 -- ---------------------------------------------------------------- Commerçant A
 begin;
@@ -57,7 +60,7 @@ values ('a1000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-0000000
 
 insert into public.produits (id, boutique_id, categorie_id, nom, prix_achat, prix_vente, unite, seuil_alerte, maj_le, appareil_id)
 values ('a2000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', 'a1000000-0000-4000-8000-000000000001',
-        'Riz 5 kg', 3000, 3500, 'sac', 2, '2026-10-10 09:00:00+00', 'tel-a');
+        'Riz 5 kg', 3000, 3500, 'sac', 2, now() - interval '2 hours', 'tel-a');
 
 insert into public.clients (id, boutique_id, nom, maj_le, appareil_id)
 values ('a3000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', 'Maman Brigitte', now(), 'tel-a');
@@ -95,17 +98,17 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","phone":"237690000001","role":"authenticated"}';
 
 -- Version plus ancienne : ignorée.
-update public.produits set prix_vente = 1, maj_le = '2026-10-10 08:00:00+00'
+update public.produits set prix_vente = 1, maj_le = now() - interval '3 hours'
 where id = 'a2000000-0000-4000-8000-000000000001';
 select test_kassa.egal((select prix_vente from public.produits), 3500, 'version plus ancienne ignorée');
 
 -- Version plus récente : appliquée.
-update public.produits set prix_vente = 4000, maj_le = '2026-10-10 10:00:00+00'
+update public.produits set prix_vente = 4000, maj_le = now() - interval '1 hour'
 where id = 'a2000000-0000-4000-8000-000000000001';
 select test_kassa.egal((select prix_vente from public.produits), 4000, 'version plus récente appliquée');
 
 -- L'heure serveur est imposée par le serveur.
-update public.produits set serveur_maj_le = '2000-01-01', maj_le = '2026-10-10 11:00:00+00'
+update public.produits set serveur_maj_le = '2000-01-01', maj_le = now()
 where id = 'a2000000-0000-4000-8000-000000000001';
 select test_kassa.egal(
   (select (serveur_maj_le > '2020-01-01')::int from public.produits), 1,
@@ -155,6 +158,38 @@ commit;
 -- Après la tentative de B, le produit de A est intact.
 select test_kassa.egal((select prix_vente from public.produits where id = 'a2000000-0000-4000-8000-000000000001'), 4000,
   'B n''a pas pu modifier le produit de A');
+
+-- ------------------------------------------------- Numéro non confirmé (C)
+begin;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"cccccccc-0000-4000-8000-000000000003","phone":"237690000003","role":"authenticated"}';
+select test_kassa.doit_echouer($q$
+  insert into public.boutiques (id, nom, telephone, ville, quartier, type_commerce, seuil_alerte_defaut, cree_le, maj_le, appareil_id)
+  values ('c0000000-0000-4000-8000-000000000003', 'Boutique C', '237690000003', 'Douala', 'Deido', 'quincaillerie', 5, now(), now(), 'tel-c')
+$q$, 'numéro non confirmé : création refusée');
+commit;
+
+-- ------------------------------------- Numéro de A réattribué à quelqu'un (D)
+begin;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"dddddddd-0000-4000-8000-000000000004","phone":"237690000001","role":"authenticated"}';
+select test_kassa.egal((select count(*) from public.boutiques), 0, 'numéro réattribué : la boutique de A reste invisible');
+select test_kassa.doit_echouer($q$
+  insert into public.utilisateurs (id, boutique_id, nom, telephone, code_pin, maj_le, appareil_id)
+  values ('dddddddd-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000001', 'D', '237690000001', 'x', now(), 'tel-d')
+$q$, 'numéro réattribué : rattachement refusé');
+commit;
+
+-- ----------------------------------------------- Horloge du téléphone en avance
+begin;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","phone":"237690000001","role":"authenticated"}';
+update public.clients set note = 'futur', maj_le = now() + interval '1 year'
+where id = 'a3000000-0000-4000-8000-000000000001';
+select test_kassa.egal(
+  (select (maj_le <= now() + interval '5 minutes')::int from public.clients), 1,
+  'maj_le dans le futur ramené à l''heure du serveur');
+commit;
 
 -- ------------------------------------------------------------------- Anonyme
 begin;

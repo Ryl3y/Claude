@@ -19,8 +19,13 @@ class PreferencesLocales {
 
   String? get langue => _prefs.getString(_cleLangue);
 
+  Future<String>? _appareilId;
+
   /// Identifiant de ce téléphone, créé au premier lancement puis gardé.
-  Future<String> appareilId() async {
+  /// Deux appels simultanés reçoivent le même identifiant.
+  Future<String> appareilId() => _appareilId ??= _lireOuCreerAppareilId();
+
+  Future<String> _lireOuCreerAppareilId() async {
     final existant = _prefs.getString(_cleAppareil);
     if (existant != null) return existant;
     final nouveau = Identifiant.nouveau();

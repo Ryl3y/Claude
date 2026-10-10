@@ -36,6 +36,11 @@ language plpgsql
 set search_path = ''
 as $$
 begin
+  -- Un téléphone dont l'horloge avance ne doit pas bloquer les corrections
+  -- futures : maj_le ne peut pas dépasser l'heure du serveur (+ 5 min de marge).
+  if new.maj_le > now() + interval '5 minutes' then
+    new.maj_le := now();
+  end if;
   if tg_op = 'UPDATE' and new.maj_le < old.maj_le then
     -- Version plus ancienne que celle déjà sauvegardée : on l'ignore.
     return null;
@@ -72,7 +77,9 @@ create table public.boutiques (
 comment on table public.boutiques is 'Une boutique cliente de Kassa.';
 
 create table public.utilisateurs (
-  id uuid primary key references auth.users (id) on delete cascade,
+  -- Pas de suppression en cascade : l'historique des ventes doit rester.
+  -- Pour retirer un compte : supprime_le sur cette ligne, puis bannir le compte Auth.
+  id uuid primary key references auth.users (id),
   boutique_id uuid not null references public.boutiques (id),
   nom text not null,
   telephone text not null,
@@ -249,9 +256,47 @@ as $$
     and u.supprime_le is null
 $$;
 
+-- Boutiques que l'utilisateur connecté peut rejoindre : enregistrées à son
+-- numéro (confirmé par SMS) et sans aucun utilisateur. Une fois le propriétaire
+-- rattaché, le numéro ne donne plus accès : un numéro réattribué par
+-- l'opérateur ne permet donc pas de prendre une boutique existante.
+create function private.boutiques_a_rattacher()
+returns setof uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select b.id
+  from public.boutiques b
+  join auth.users au on au.id = (select auth.uid())
+  where au.phone_confirmed_at is not null
+    and b.telephone = regexp_replace(coalesce(au.phone, ''), '[^0-9]', '', 'g')
+    and not exists (select 1 from public.utilisateurs u where u.boutique_id = b.id)
+$$;
+
+-- Numéro confirmé de l'utilisateur connecté (chiffres seulement), ou null.
+create function private.mon_telephone_confirme()
+returns text
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select regexp_replace(au.phone, '[^0-9]', '', 'g')
+  from auth.users au
+  where au.id = (select auth.uid())
+    and au.phone_confirmed_at is not null
+    and coalesce(au.phone, '') <> ''
+$$;
+
 revoke all on function private.mes_boutiques() from public, anon, authenticated;
+revoke all on function private.boutiques_a_rattacher() from public, anon, authenticated;
+revoke all on function private.mon_telephone_confirme() from public, anon, authenticated;
 grant usage on schema private to authenticated;
 grant execute on function private.mes_boutiques() to authenticated;
+grant execute on function private.boutiques_a_rattacher() to authenticated;
+grant execute on function private.mon_telephone_confirme() to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- 3. Index : RLS (boutique_id), téléchargement (serveur_maj_le), clés étrangères
@@ -337,42 +382,35 @@ create policy "utilisateurs : lire sa ligne" on public.utilisateurs
   for select to authenticated
   using (id = (select auth.uid()));
 
--- On ne peut se rattacher qu'à une boutique enregistrée à son propre numéro
--- (numéro vérifié par SMS, lu dans le jeton, jamais dans user_metadata).
+-- On ne peut se rattacher qu'à une boutique enregistrée à son numéro confirmé
+-- et encore sans utilisateur (lu dans auth.users, jamais dans user_metadata).
 create policy "utilisateurs : créer sa ligne" on public.utilisateurs
   for insert to authenticated
   with check (
     id = (select auth.uid())
-    and boutique_id in (
-      select b.id from public.boutiques b
-      where b.telephone = regexp_replace(coalesce((select auth.jwt() ->> 'phone'), ''), '[^0-9]', '', 'g')
-    )
+    and boutique_id in (select private.boutiques_a_rattacher())
   );
 
+-- Modifier son nom, son PIN… sans changer de boutique.
 create policy "utilisateurs : modifier sa ligne" on public.utilisateurs
   for update to authenticated
   using (id = (select auth.uid()))
   with check (
     id = (select auth.uid())
-    and boutique_id in (
-      select b.id from public.boutiques b
-      where b.telephone = regexp_replace(coalesce((select auth.jwt() ->> 'phone'), ''), '[^0-9]', '', 'g')
-    )
+    and boutique_id in (select private.mes_boutiques())
   );
 
--- boutiques : la sienne, ou celle enregistrée à son numéro (création du compte).
+-- boutiques : la sienne, ou celle qu'on vient de créer à son numéro.
 create policy "boutiques : lire la sienne" on public.boutiques
   for select to authenticated
   using (
     id in (select private.mes_boutiques())
-    or telephone = regexp_replace(coalesce((select auth.jwt() ->> 'phone'), ''), '[^0-9]', '', 'g')
+    or id in (select private.boutiques_a_rattacher())
   );
 
 create policy "boutiques : créer à son numéro" on public.boutiques
   for insert to authenticated
-  with check (
-    telephone = regexp_replace(coalesce((select auth.jwt() ->> 'phone'), ''), '[^0-9]', '', 'g')
-  );
+  with check (telephone = (select private.mon_telephone_confirme()));
 
 create policy "boutiques : modifier la sienne" on public.boutiques
   for update to authenticated

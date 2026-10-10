@@ -20,6 +20,10 @@ class ChampsSynchro {
   Value<bool> get synchro => const Value(false);
   Value<String> get appareil => Value(appareilId);
 
-  /// Pour une suppression logique : `supprime_le` = maintenant.
-  Value<DateTime?> get supprimeMaintenant => Value(maintenant());
+  /// Pour une suppression logique : `maj_le` et `supprime_le` reçoivent
+  /// exactement la même heure (une seule lecture de l'horloge).
+  ({Value<DateTime> majLe, Value<DateTime?> supprimeLe}) suppression() {
+    final instant = maintenant();
+    return (majLe: Value(instant), supprimeLe: Value(instant));
+  }
 }

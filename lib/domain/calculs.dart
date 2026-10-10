@@ -64,7 +64,8 @@ abstract final class Calculs {
       restesAPayer.fold(0, (s, r) => s + r) -
       versements.fold(0, (s, v) => s + v);
 
-  /// Vrai si le stock est sous le seuil d'alerte (« Stock bas »).
+  /// Vrai si le stock est au seuil d'alerte ou en dessous (« Stock bas »).
+  /// L'alerte disparaît dès que le seuil est dépassé (spécification, réappro).
   static bool stockBas({required double quantite, required double seuil}) =>
       quantite <= seuil;
 }
