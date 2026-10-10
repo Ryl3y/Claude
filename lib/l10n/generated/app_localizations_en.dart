@@ -918,4 +918,133 @@ class AppLocalizationsEn extends AppLocalizations {
   String dateAndTotal(String date, String total) {
     return '$date · Total $total';
   }
+
+  @override
+  String salesAndProfit(String ventes, String montant) {
+    return '$ventes · profit $montant';
+  }
+
+  @override
+  String get saveStatePending => 'Waiting to save';
+
+  @override
+  String get saveStateLocal => 'On this phone';
+
+  @override
+  String get saveStateSavedHelp => 'Everything is backed up online.';
+
+  @override
+  String get saveStatePendingHelp =>
+      'Some changes are waiting for internet to be saved.';
+
+  @override
+  String get saveStateLocalHelp =>
+      'Your data is stored on this phone. Online backup will start when you create your account.';
+
+  @override
+  String get seeStock => 'See stock';
+
+  @override
+  String get reportsTitle => 'Reports';
+
+  @override
+  String get reportsHint => 'Day, week, month and best sellers';
+
+  @override
+  String get homeNoProductsTitle => 'Add your products to get started';
+
+  @override
+  String get homeNoProductsBody =>
+      'Once your products and prices are in, a sale takes just a few taps.';
+
+  @override
+  String get periodDay => 'Day';
+
+  @override
+  String get periodWeek => 'Week';
+
+  @override
+  String get periodMonth => 'Month';
+
+  @override
+  String get periodEarlier => 'Earlier';
+
+  @override
+  String get periodLater => 'Later';
+
+  @override
+  String get periodEarlierHint => 'Previous period';
+
+  @override
+  String get periodLaterHint => 'Next period';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get lastWeek => 'Last week';
+
+  @override
+  String weekRange(String debut, String fin) {
+    return '$debut to $fin';
+  }
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get lastMonth => 'Last month';
+
+  @override
+  String get salesLabel => 'Sales';
+
+  @override
+  String averageSale(String montant) {
+    return 'Average sale: $montant';
+  }
+
+  @override
+  String get moneyReceivedTitle => 'Money received';
+
+  @override
+  String get paidAtSale => 'Paid at sale';
+
+  @override
+  String get soldOnCredit => 'Sold on credit';
+
+  @override
+  String get debtsCollected => 'Debts collected';
+
+  @override
+  String get totalReceived => 'Total received';
+
+  @override
+  String get salesByMode => 'Sales by payment method';
+
+  @override
+  String get bestSellers => 'Best sellers';
+
+  @override
+  String bestSellerDetail(String quantite, String benefice) {
+    return '$quantite sold · profit $benefice';
+  }
+
+  @override
+  String bestSellerRank(int rang) {
+    return '#$rang';
+  }
+
+  @override
+  String get reportEmpty => 'No sales in this period.';
+
+  @override
+  String cancelledNotCounted(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre cancelled sales are not counted.',
+      one: '1 cancelled sale is not counted.',
+    );
+    return '$_temp0';
+  }
 }

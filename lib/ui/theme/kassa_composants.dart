@@ -55,6 +55,11 @@ abstract final class KassaComposants {
 
   /// Opacité d'un bouton désactivé.
   static const opaciteDesactive = 0.45;
+
+  /// Taille de texte de référence pour savoir si le téléphone grossit le
+  /// texte, et l'échelle à partir de laquelle les tuiles s'empilent.
+  static const texteRepere = 16.0;
+  static const echelleEmpilement = 1.3;
 }
 
 /// Styles de texte des composants.

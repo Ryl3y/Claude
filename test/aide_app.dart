@@ -73,6 +73,49 @@ class AppDeTest {
     return id!;
   }
 
+  /// Vend [quantite] × [produitId] au montant exact, payé en [mode].
+  /// Une vente par appel : la base et l'écran se mettent à jour entre deux
+  /// ventes (plusieurs écritures dans un seul runAsync peuvent bloquer).
+  Future<void> vendreComptant(
+    WidgetTester tester, {
+    required String produitId,
+    double quantite = 1,
+    ModeChoisi mode = ModeChoisi.especes,
+  }) async {
+    await tester.runAsync(() async {
+      final panier = await _panier(produitId, quantite);
+      await ventes.enregistrerVente(
+        panier: panier,
+        mode: mode,
+        paiement: CalculPaiement.pour(mode: mode, total: panier.total),
+        utilisateurId: (await _utilisateur()).id,
+      );
+    });
+    await stabiliser(tester);
+  }
+
+  Future<Panier> _panier(String produitId, double quantite) async {
+    final p = await (db.select(
+      db.produits,
+    )..where((x) => x.id.equals(produitId))).getSingle();
+    return const Panier().ajouter(
+      LignePanier(
+        produitId: p.id,
+        nom: p.nom,
+        unite: p.unite,
+        prixUnitaire: p.prixVente,
+        prixAchatUnitaire: p.prixAchat,
+        quantite: quantite,
+        stockDisponible: p.quantite,
+      ),
+    );
+  }
+
+  Future<Utilisateur> _utilisateur() => BoutiqueRepository(
+    db,
+    ChampsSynchro(appareilId: 'tel-test'),
+  ).utilisateurCourant();
+
   /// Vend [quantite] × [produitId] à crédit à [clientId], avec [avance].
   Future<void> vendreACredit(
     WidgetTester tester, {
@@ -82,24 +125,8 @@ class AppDeTest {
     int avance = 0,
   }) async {
     await tester.runAsync(() async {
-      final p = await (db.select(
-        db.produits,
-      )..where((x) => x.id.equals(produitId))).getSingle();
-      final panier = const Panier().ajouter(
-        LignePanier(
-          produitId: p.id,
-          nom: p.nom,
-          unite: p.unite,
-          prixUnitaire: p.prixVente,
-          prixAchatUnitaire: p.prixAchat,
-          quantite: quantite,
-          stockDisponible: p.quantite,
-        ),
-      );
-      final utilisateur = await BoutiqueRepository(
-        db,
-        ChampsSynchro(appareilId: 'tel-test'),
-      ).utilisateurCourant();
+      final panier = await _panier(produitId, quantite);
+      final utilisateur = await _utilisateur();
       await ventes.enregistrerVente(
         panier: panier,
         mode: ModeChoisi.credit,

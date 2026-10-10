@@ -6,6 +6,8 @@ import 'screens/clients/client_fiche_screen.dart';
 import 'screens/clients/client_form_screen.dart';
 import 'screens/clients/clients_screen.dart';
 import 'screens/clients/encaissement_screen.dart';
+import 'screens/accueil/accueil_screen.dart';
+import 'screens/accueil/rapports_screen.dart';
 import 'screens/demo_widgets_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
@@ -27,6 +29,9 @@ abstract final class Chemins {
   static const historique = '/vendre/historique';
 
   static const nouveauClient = '/clients/nouveau';
+  static const stockBas = '/stock?filtre=bas';
+  static const rapports = '/rapports';
+  static const demo = '/demo';
 
   /// Détail d'une vente, ouvert depuis l'historique ou une fiche client.
   static String vente(String id) => '/vente/$id';
@@ -61,7 +66,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Chemins.accueil,
-                builder: (context, state) => const DemoWidgetsScreen(),
+                builder: (context, state) => const AccueilScreen(),
               ),
             ],
           ),
@@ -89,7 +94,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Chemins.stock,
-                builder: (context, state) => const StockScreen(),
+                builder: (context, state) => StockScreen(
+                  stockBas: state.uri.queryParameters['filtre'] == 'bas',
+                ),
                 routes: [
                   // Écrans plein écran, au-dessus de la barre du bas.
                   GoRoute(
@@ -154,6 +161,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: Chemins.rapports,
+        builder: (context, state) => const RapportsScreen(),
+      ),
+      // Page de démonstration des composants (étape 3), sans lien dans l'app.
+      GoRoute(
+        path: Chemins.demo,
+        builder: (context, state) => const DemoWidgetsScreen(),
       ),
       // Hors des onglets : ouvert depuis Vendre ou depuis une fiche client.
       GoRoute(

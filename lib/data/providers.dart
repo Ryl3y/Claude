@@ -5,6 +5,7 @@ import 'db/kassa_database.dart';
 import 'repositories/boutique_repository.dart';
 import 'repositories/clients_repository.dart';
 import 'repositories/produits_repository.dart';
+import 'repositories/rapports_repository.dart';
 import 'repositories/ventes_repository.dart';
 
 /// Base locale de l'app, ouverte une seule fois et fermée avec l'app.
@@ -50,4 +51,8 @@ final ventesRepositoryProvider = Provider<VentesRepository>(
     ref.watch(kassaDatabaseProvider),
     ref.watch(champsSynchroProvider),
   ),
+);
+
+final rapportsRepositoryProvider = Provider<RapportsRepository>(
+  (ref) => RapportsRepository(ref.watch(kassaDatabaseProvider)),
 );

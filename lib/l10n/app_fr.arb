@@ -724,5 +724,92 @@
         "type": "String"
       }
     }
+  },
+  "salesAndProfit": "{ventes} · bénéfice {montant}",
+  "@salesAndProfit": {
+    "placeholders": {
+      "ventes": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saveStatePending": "Sauvegarde en attente",
+  "saveStateLocal": "Sur ce téléphone",
+  "saveStateSavedHelp": "Tout est sauvegardé en ligne.",
+  "saveStatePendingHelp": "Des changements attendent internet pour être sauvegardés.",
+  "saveStateLocalHelp": "Vos données sont enregistrées sur ce téléphone. La sauvegarde en ligne commencera quand vous créerez votre compte.",
+  "seeStock": "Voir le stock",
+  "reportsTitle": "Rapports",
+  "reportsHint": "Jour, semaine, mois et meilleurs produits",
+  "homeNoProductsTitle": "Ajoutez vos produits pour commencer",
+  "homeNoProductsBody": "Avec vos produits et leurs prix, une vente se fait en quelques touchers.",
+  "periodDay": "Jour",
+  "periodWeek": "Semaine",
+  "periodMonth": "Mois",
+  "periodEarlier": "Avant",
+  "periodLater": "Après",
+  "periodEarlierHint": "Période précédente",
+  "periodLaterHint": "Période suivante",
+  "thisWeek": "Cette semaine",
+  "lastWeek": "La semaine dernière",
+  "weekRange": "Du {debut} au {fin}",
+  "@weekRange": {
+    "placeholders": {
+      "debut": {
+        "type": "String"
+      },
+      "fin": {
+        "type": "String"
+      }
+    }
+  },
+  "thisMonth": "Ce mois-ci",
+  "lastMonth": "Le mois dernier",
+  "salesLabel": "Ventes",
+  "averageSale": "Vente moyenne : {montant}",
+  "@averageSale": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyReceivedTitle": "Argent reçu",
+  "paidAtSale": "Payé à la vente",
+  "soldOnCredit": "Vendu à crédit",
+  "debtsCollected": "Dettes encaissées",
+  "totalReceived": "Total reçu",
+  "salesByMode": "Ventes par mode de paiement",
+  "bestSellers": "Meilleurs produits",
+  "bestSellerDetail": "{quantite} vendus · bénéfice {benefice}",
+  "@bestSellerDetail": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      },
+      "benefice": {
+        "type": "String"
+      }
+    }
+  },
+  "bestSellerRank": "N°{rang}",
+  "@bestSellerRank": {
+    "placeholders": {
+      "rang": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEmpty": "Aucune vente sur cette période.",
+  "cancelledNotCounted": "{nombre, plural, =1{1 vente annulée n'est pas comptée.} other{{nombre} ventes annulées ne sont pas comptées.}}",
+  "@cancelledNotCounted": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
   }
 }

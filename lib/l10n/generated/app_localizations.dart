@@ -1561,6 +1561,222 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{date} · Total {total}'**
   String dateAndTotal(String date, String total);
+
+  /// No description provided for @salesAndProfit.
+  ///
+  /// In fr, this message translates to:
+  /// **'{ventes} · bénéfice {montant}'**
+  String salesAndProfit(String ventes, String montant);
+
+  /// No description provided for @saveStatePending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde en attente'**
+  String get saveStatePending;
+
+  /// No description provided for @saveStateLocal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sur ce téléphone'**
+  String get saveStateLocal;
+
+  /// No description provided for @saveStateSavedHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est sauvegardé en ligne.'**
+  String get saveStateSavedHelp;
+
+  /// No description provided for @saveStatePendingHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des changements attendent internet pour être sauvegardés.'**
+  String get saveStatePendingHelp;
+
+  /// No description provided for @saveStateLocalHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données sont enregistrées sur ce téléphone. La sauvegarde en ligne commencera quand vous créerez votre compte.'**
+  String get saveStateLocalHelp;
+
+  /// No description provided for @seeStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le stock'**
+  String get seeStock;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour, semaine, mois et meilleurs produits'**
+  String get reportsHint;
+
+  /// No description provided for @homeNoProductsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos produits pour commencer'**
+  String get homeNoProductsTitle;
+
+  /// No description provided for @homeNoProductsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec vos produits et leurs prix, une vente se fait en quelques touchers.'**
+  String get homeNoProductsBody;
+
+  /// No description provided for @periodDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour'**
+  String get periodDay;
+
+  /// No description provided for @periodWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semaine'**
+  String get periodWeek;
+
+  /// No description provided for @periodMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois'**
+  String get periodMonth;
+
+  /// No description provided for @periodEarlier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant'**
+  String get periodEarlier;
+
+  /// No description provided for @periodLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après'**
+  String get periodLater;
+
+  /// No description provided for @periodEarlierHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période précédente'**
+  String get periodEarlierHint;
+
+  /// No description provided for @periodLaterHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période suivante'**
+  String get periodLaterHint;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get thisWeek;
+
+  /// No description provided for @lastWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'La semaine dernière'**
+  String get lastWeek;
+
+  /// No description provided for @weekRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Du {debut} au {fin}'**
+  String weekRange(String debut, String fin);
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce mois-ci'**
+  String get thisMonth;
+
+  /// No description provided for @lastMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le mois dernier'**
+  String get lastMonth;
+
+  /// No description provided for @salesLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes'**
+  String get salesLabel;
+
+  /// No description provided for @averageSale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vente moyenne : {montant}'**
+  String averageSale(String montant);
+
+  /// No description provided for @moneyReceivedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Argent reçu'**
+  String get moneyReceivedTitle;
+
+  /// No description provided for @paidAtSale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payé à la vente'**
+  String get paidAtSale;
+
+  /// No description provided for @soldOnCredit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendu à crédit'**
+  String get soldOnCredit;
+
+  /// No description provided for @debtsCollected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dettes encaissées'**
+  String get debtsCollected;
+
+  /// No description provided for @totalReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total reçu'**
+  String get totalReceived;
+
+  /// No description provided for @salesByMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes par mode de paiement'**
+  String get salesByMode;
+
+  /// No description provided for @bestSellers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Meilleurs produits'**
+  String get bestSellers;
+
+  /// No description provided for @bestSellerDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'{quantite} vendus · bénéfice {benefice}'**
+  String bestSellerDetail(String quantite, String benefice);
+
+  /// No description provided for @bestSellerRank.
+  ///
+  /// In fr, this message translates to:
+  /// **'N°{rang}'**
+  String bestSellerRank(int rang);
+
+  /// No description provided for @reportEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune vente sur cette période.'**
+  String get reportEmpty;
+
+  /// No description provided for @cancelledNotCounted.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =1{1 vente annulée n\'est pas comptée.} other{{nombre} ventes annulées ne sont pas comptées.}}'**
+  String cancelledNotCounted(int nombre);
 }
 
 class _AppLocalizationsDelegate
