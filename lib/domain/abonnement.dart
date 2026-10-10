@@ -27,7 +27,7 @@ sealed class EtatAbonnement {
     if (jours < 0) return AbonnementTermine(fin, etaitPro: formule == 'pro');
     return formule == 'pro'
         ? AbonnementPro(fin)
-        : AbonnementEssai(fin, joursRestants: jours);
+        : AbonnementEssai(fin, joursRestants: jours + 1);
   }
 
   /// La date de Douala d'un instant, à minuit (marquée UTC).
@@ -36,10 +36,10 @@ sealed class EtatAbonnement {
     return DateTime.utc(d.year, d.month, d.day);
   }
 
-  /// Fin de l'essai quand le serveur n'a pas encore répondu : 7 jours
-  /// après la création de la boutique (comme le serveur).
+  /// Dernier jour de l'essai quand le serveur n'a pas encore répondu :
+  /// le jour de création compte comme 1er jour (comme le serveur).
   static DateTime finEssaiDepuis(DateTime creeLe) =>
-      jourDouala(creeLe).add(const Duration(days: dureeEssaiJours));
+      jourDouala(creeLe).add(const Duration(days: dureeEssaiJours - 1));
 
   /// Lit une date « 2026-11-09 » du serveur ; null si illisible.
   static DateTime? lireDate(String? texte) {
@@ -55,7 +55,8 @@ sealed class EtatAbonnement {
       '${jour.day.toString().padLeft(2, '0')}';
 }
 
-/// Essai gratuit en cours ; 0 jour restant = dernier jour.
+/// Essai gratuit en cours. [joursRestants] compte aujourd'hui : 7 le jour
+/// de création, 1 le dernier jour.
 class AbonnementEssai extends EtatAbonnement {
   const AbonnementEssai(super.fin, {required this.joursRestants});
 

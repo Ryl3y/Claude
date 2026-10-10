@@ -12,19 +12,22 @@ void main() {
           fin: DateTime.utc(2026, 11, 9),
           aujourdhui: aujourdhui,
         ),
-        AbonnementEssai(DateTime.utc(2026, 11, 9), joursRestants: 30),
+        AbonnementEssai(DateTime.utc(2026, 11, 9), joursRestants: 31),
       );
     });
 
-    test('dernier jour : 0 jour restant, on peut encore écrire', () {
-      final e = EtatAbonnement.calculer(
-        formule: 'gratuit',
-        fin: aujourdhui,
-        aujourdhui: aujourdhui,
-      );
-      expect(e, AbonnementEssai(aujourdhui, joursRestants: 0));
-      expect(e.peutEcrire, isTrue);
-    });
+    test(
+      'dernier jour : 1 jour restant (aujourd\'hui), on peut encore écrire',
+      () {
+        final e = EtatAbonnement.calculer(
+          formule: 'gratuit',
+          fin: aujourdhui,
+          aujourdhui: aujourdhui,
+        );
+        expect(e, AbonnementEssai(aujourdhui, joursRestants: 1));
+        expect(e.peutEcrire, isTrue);
+      },
+    );
 
     test('le lendemain : terminé, lecture seule', () {
       final e = EtatAbonnement.calculer(
@@ -66,7 +69,24 @@ void main() {
   test('fin d\'essai sans serveur : 7 jours après la création (Douala)', () {
     expect(
       EtatAbonnement.finEssaiDepuis(DateTime.utc(2026, 10, 9, 23, 30)),
-      DateTime.utc(2026, 10, 17),
+      DateTime.utc(2026, 10, 16),
+    );
+  });
+
+  test('essai de 7 jours : du 1er au 7e jour, puis terminé', () {
+    final creation = DateTime.utc(2026, 10, 10, 9);
+    final fin = EtatAbonnement.finEssaiDepuis(creation);
+    int? reste(int jour) => switch (EtatAbonnement.calculer(
+      formule: 'gratuit',
+      fin: fin,
+      aujourdhui: DateTime.utc(2026, 10, 10 + jour - 1),
+    )) {
+      AbonnementEssai(:final joursRestants) => joursRestants,
+      _ => null,
+    };
+    expect(
+      [for (var j = 1; j <= 8; j++) reste(j)],
+      [7, 6, 5, 4, 3, 2, 1, null],
     );
   });
 

@@ -1315,8 +1315,7 @@ class AppLocalizationsEn extends AppLocalizations {
       jours,
       locale: localeName,
       other: 'Free trial: $jours days left',
-      one: 'Free trial: 1 day left',
-      zero: 'Last day of your free trial',
+      one: 'Last day of your free trial',
     );
     return '$_temp0';
   }

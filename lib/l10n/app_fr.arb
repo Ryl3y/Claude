@@ -918,7 +918,7 @@
   "logoutLocalOnly": "Cette boutique n'est pas sauvegardée en ligne : toutes ses données seront perdues.",
   "logoutConfirm": "Effacer et se déconnecter",
   "proTitle": "Kassa Pro",
-  "trialDaysLeft": "{jours, plural, =0{Dernier jour d'essai gratuit} =1{Essai gratuit : 1 jour restant} other{Essai gratuit : {jours} jours restants}}",
+  "trialDaysLeft": "{jours, plural, =1{Dernier jour d'essai gratuit} other{Essai gratuit : {jours} jours restants}}",
   "@trialDaysLeft": {
     "placeholders": {
       "jours": {

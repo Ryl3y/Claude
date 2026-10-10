@@ -354,7 +354,7 @@
   "logoutLocalOnly": "This shop isn't backed up online: all its data will be lost.",
   "logoutConfirm": "Erase and log out",
   "proTitle": "Kassa Pro",
-  "trialDaysLeft": "{jours, plural, =0{Last day of your free trial} =1{Free trial: 1 day left} other{Free trial: {jours} days left}}",
+  "trialDaysLeft": "{jours, plural, =1{Last day of your free trial} other{Free trial: {jours} days left}}",
   "trialUntil": "Free trial until {date}",
   "proUntil": "Kassa Pro until {date}",
   "trialEnded": "Your free trial has ended",

@@ -1323,8 +1323,7 @@ class AppLocalizationsFr extends AppLocalizations {
       jours,
       locale: localeName,
       other: 'Essai gratuit : $jours jours restants',
-      one: 'Essai gratuit : 1 jour restant',
-      zero: 'Dernier jour d\'essai gratuit',
+      one: 'Dernier jour d\'essai gratuit',
     );
     return '$_temp0';
   }

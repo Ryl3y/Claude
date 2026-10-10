@@ -403,7 +403,7 @@ class _Lien extends StatelessWidget {
 class _BandeauAbonnement extends ConsumerWidget {
   const _BandeauAbonnement();
 
-  /// L'accueil prévient à partir de ce nombre de jours restants.
+  /// L'accueil prévient pendant ce nombre de derniers jours (5e au 7e).
   static const joursAvantFin = 3;
 
   @override
@@ -417,7 +417,7 @@ class _BandeauAbonnement extends ConsumerWidget {
     final String texte;
     switch (etat) {
       case AbonnementEssai(:final joursRestants)
-          when joursRestants < joursAvantFin:
+          when joursRestants <= joursAvantFin:
         titre = l.trialDaysLeft(joursRestants);
         texte = l.trialEndingBody(prix);
       case AbonnementTermine(:final etaitPro):

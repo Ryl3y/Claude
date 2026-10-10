@@ -2225,7 +2225,7 @@ abstract class AppLocalizations {
   /// No description provided for @trialDaysLeft.
   ///
   /// In fr, this message translates to:
-  /// **'{jours, plural, =0{Dernier jour d\'essai gratuit} =1{Essai gratuit : 1 jour restant} other{Essai gratuit : {jours} jours restants}}'**
+  /// **'{jours, plural, =1{Dernier jour d\'essai gratuit} other{Essai gratuit : {jours} jours restants}}'**
   String trialDaysLeft(int jours);
 
   /// No description provided for @trialUntil.

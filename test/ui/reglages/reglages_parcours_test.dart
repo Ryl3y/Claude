@@ -109,15 +109,18 @@ void main() {
     final app = await AppDeTest.creer(abonnementGarde: ('gratuit', _dans(2)));
     await tester.pumpWidget(app.widget);
     await stabiliser(tester);
-    expect(find.text('Essai gratuit : 2 jours restants'), findsOneWidget);
+    // 5e jour sur 7 : le rappel commence.
+    expect(find.text('Essai gratuit : 3 jours restants'), findsOneWidget);
     expect(find.text('Passer à Pro'), findsOneWidget);
     await app.fermer(tester);
   });
 
   testWidgets('début d\'essai : pas de rappel sur l\'accueil', (tester) async {
+    // 4e jour sur 7 : pas encore de rappel.
     final app = await AppDeTest.creer(abonnementGarde: ('gratuit', _dans(3)));
     await tester.pumpWidget(app.widget);
     await stabiliser(tester);
+    expect(find.text('Essai gratuit : 4 jours restants'), findsNothing);
     expect(find.text('Passer à Pro'), findsNothing);
     await app.fermer(tester);
   });
