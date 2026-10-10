@@ -2,8 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../l10n/generated/app_localizations.dart';
-import 'screens/a_venir_screen.dart';
+import 'screens/clients/client_fiche_screen.dart';
+import 'screens/clients/client_form_screen.dart';
+import 'screens/clients/clients_screen.dart';
+import 'screens/clients/encaissement_screen.dart';
 import 'screens/demo_widgets_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
@@ -24,7 +26,16 @@ abstract final class Chemins {
   static const paiement = '/vendre/paiement';
   static const historique = '/vendre/historique';
 
-  static String vente(String id) => '/vendre/historique/$id';
+  static const nouveauClient = '/clients/nouveau';
+
+  /// Détail d'une vente, ouvert depuis l'historique ou une fiche client.
+  static String vente(String id) => '/vente/$id';
+
+  static String client(String id) => '/clients/$id';
+
+  static String modifierClient(String id) => '/clients/$id/modifier';
+
+  static String encaisser(String id) => '/clients/$id/encaisser';
 
   static String produit(String id) => '/stock/produit/$id';
 
@@ -69,15 +80,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'historique',
                     parentNavigatorKey: racine,
                     builder: (context, state) => const HistoriqueScreen(),
-                    routes: [
-                      GoRoute(
-                        path: ':id',
-                        parentNavigatorKey: racine,
-                        builder: (context, state) => VenteDetailScreen(
-                          venteId: state.pathParameters['id']!,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -117,13 +119,47 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Chemins.clients,
-                builder: (context, state) => AVenirScreen(
-                  titre: AppLocalizations.of(context).navCustomers,
-                ),
+                builder: (context, state) => const ClientsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'nouveau',
+                    parentNavigatorKey: racine,
+                    builder: (context, state) => const ClientFormScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    parentNavigatorKey: racine,
+                    builder: (context, state) => ClientFicheScreen(
+                      clientId: state.pathParameters['id']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'modifier',
+                        parentNavigatorKey: racine,
+                        builder: (context, state) => ClientFormScreen(
+                          clientId: state.pathParameters['id'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'encaisser',
+                        parentNavigatorKey: racine,
+                        builder: (context, state) => EncaissementScreen(
+                          clientId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
         ],
+      ),
+      // Hors des onglets : ouvert depuis Vendre ou depuis une fiche client.
+      GoRoute(
+        path: '/vente/:id',
+        builder: (context, state) =>
+            VenteDetailScreen(venteId: state.pathParameters['id']!),
       ),
     ],
   );

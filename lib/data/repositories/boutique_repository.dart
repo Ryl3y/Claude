@@ -76,4 +76,16 @@ class BoutiqueRepository {
       _db.utilisateurs,
     )..where((u) => u.id.equals(id))).getSingle();
   });
+
+  /// La boutique du téléphone (créée avec l'utilisateur si besoin).
+  Future<Boutique> boutiqueCourante() async {
+    final utilisateur = await utilisateurCourant();
+    return (_db.select(
+      _db.boutiques,
+    )..where((b) => b.id.equals(utilisateur.boutiqueId))).getSingle();
+  }
+
+  /// Vrai pour la boutique provisoire (avant l'inscription) : son nom
+  /// « Kassa » ne doit pas signer les messages envoyés aux clients.
+  static bool estProvisoire(Boutique b) => b.telephone == telephoneProvisoire;
 }

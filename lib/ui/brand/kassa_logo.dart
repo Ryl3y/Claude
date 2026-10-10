@@ -69,6 +69,9 @@ class KassaNom extends StatelessWidget {
         color: couleur ?? context.kassa.ink,
       ),
       semanticsLabel: 'Kassa',
+      // Le nom fait partie du logo : il garde sa taille, comme le symbole,
+      // même quand le téléphone grossit le texte.
+      textScaler: TextScaler.noScaling,
     );
   }
 }

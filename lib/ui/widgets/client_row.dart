@@ -79,7 +79,7 @@ class ClientRow extends StatelessWidget {
                             children: [
                               Text(
                                 nom,
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: t.label.copyWith(
                                   fontSize: t.body.fontSize,
@@ -89,7 +89,7 @@ class ClientRow extends StatelessWidget {
                               if (meta.isNotEmpty)
                                 Text(
                                   meta,
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: t.caption.copyWith(color: t.inkMuted),
                                 ),

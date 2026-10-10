@@ -745,4 +745,181 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get saleNotFound => 'Cette vente n\'existe plus.';
+
+  @override
+  String debtorsCount(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre clients vous doivent de l\'argent',
+      one: '1 client vous doit de l\'argent',
+      zero: 'Personne ne vous doit d\'argent',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastPurchaseOn(String date) {
+    return 'Dernier achat le $date';
+  }
+
+  @override
+  String get lastPurchaseToday => 'Dernier achat aujourd\'hui';
+
+  @override
+  String get lastPurchaseYesterday => 'Dernier achat hier';
+
+  @override
+  String get customersEmptyTitle => 'Aucun client pour l\'instant';
+
+  @override
+  String get customersEmptyBody =>
+      'Ajoutez vos clients pour suivre ce qu\'ils vous doivent.';
+
+  @override
+  String noCustomerMatch(String texte) {
+    return 'Aucun client ne correspond à « $texte ».';
+  }
+
+  @override
+  String reminderMessageNoShop(String nom, String montant) {
+    return 'Bonjour $nom, il vous reste $montant à payer. Merci.';
+  }
+
+  @override
+  String get whatsappError =>
+      'WhatsApp ne s\'ouvre pas. Vérifiez qu\'il est installé sur ce téléphone.';
+
+  @override
+  String get addPhoneToRemind =>
+      'Ajoutez son numéro pour lui envoyer un rappel WhatsApp.';
+
+  @override
+  String get edit => 'Modifier';
+
+  @override
+  String get balance => 'Solde';
+
+  @override
+  String get customerHistoryEmpty =>
+      'Aucun achat ni versement pour l\'instant.';
+
+  @override
+  String purchaseNumber(int numero) {
+    return 'Achat · N°$numero';
+  }
+
+  @override
+  String creditPurchaseNumber(int numero) {
+    return 'Achat à crédit · N°$numero';
+  }
+
+  @override
+  String debtPayment(String mode) {
+    return 'Versement · $mode';
+  }
+
+  @override
+  String get customerNotFound => 'Ce client n\'existe plus.';
+
+  @override
+  String get collectDebtTitle => 'Encaisser une dette';
+
+  @override
+  String get amountPaidNow => 'Montant versé';
+
+  @override
+  String get amountPaidNowHint =>
+      'Touchez « Toute la dette » si le client paie tout.';
+
+  @override
+  String wholeDebt(String montant) {
+    return 'Toute la dette · $montant';
+  }
+
+  @override
+  String get remainingAfterPayment => 'Il restera à payer';
+
+  @override
+  String get debtPaidOffLabel => 'Dette soldée';
+
+  @override
+  String errPaymentTooHigh(String nom, String montant) {
+    return '$nom ne doit que $montant. Baissez le montant.';
+  }
+
+  @override
+  String get paymentRecordedTitle => 'Versement enregistré';
+
+  @override
+  String paymentRecordedBody(String montant, String nom) {
+    return '$montant reçus de $nom.';
+  }
+
+  @override
+  String paymentRemaining(String montant) {
+    return 'Il reste $montant à payer.';
+  }
+
+  @override
+  String get paymentPaidOff => 'Sa dette est soldée.';
+
+  @override
+  String get sendReceipt => 'Envoyer le reçu';
+
+  @override
+  String get done => 'Terminer';
+
+  @override
+  String receiptMessage(String nom, String montant, String date) {
+    return 'Bonjour $nom, le $date, nous avons bien reçu $montant.';
+  }
+
+  @override
+  String receiptRemaining(String montant) {
+    return 'Il vous reste $montant à payer. Merci.';
+  }
+
+  @override
+  String get receiptPaidOff => 'Votre dette est soldée. Merci.';
+
+  @override
+  String get editCustomerTitle => 'Modifier le client';
+
+  @override
+  String get customerNote => 'Note (facultatif)';
+
+  @override
+  String get customerNoteHint => 'Par exemple : paie en fin de mois.';
+
+  @override
+  String get errCustomerPhone =>
+      'Numéro invalide. Saisissez 9 chiffres, par exemple 6 77 12 34 56.';
+
+  @override
+  String get deleteCustomer => 'Supprimer le client';
+
+  @override
+  String deleteCustomerTitle(String nom) {
+    return 'Supprimer $nom ?';
+  }
+
+  @override
+  String get deleteCustomerBody =>
+      'Il ne sera plus dans votre liste. Ses achats restent dans l\'historique des ventes.';
+
+  @override
+  String errDeleteIndebted(String nom, String montant) {
+    return '$nom doit encore $montant. Encaissez sa dette avant de le supprimer.';
+  }
+
+  @override
+  String customerDeleted(String nom) {
+    return '$nom a été supprimé.';
+  }
+
+  @override
+  String dateAndTotal(String date, String total) {
+    return '$date · Total $total';
+  }
 }

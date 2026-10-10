@@ -1303,6 +1303,264 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Cette vente n\'existe plus.'**
   String get saleNotFound;
+
+  /// No description provided for @debtorsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =0{Personne ne vous doit d\'argent} =1{1 client vous doit de l\'argent} other{{nombre} clients vous doivent de l\'argent}}'**
+  String debtorsCount(int nombre);
+
+  /// No description provided for @lastPurchaseOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier achat le {date}'**
+  String lastPurchaseOn(String date);
+
+  /// No description provided for @lastPurchaseToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier achat aujourd\'hui'**
+  String get lastPurchaseToday;
+
+  /// No description provided for @lastPurchaseYesterday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier achat hier'**
+  String get lastPurchaseYesterday;
+
+  /// No description provided for @customersEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun client pour l\'instant'**
+  String get customersEmptyTitle;
+
+  /// No description provided for @customersEmptyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos clients pour suivre ce qu\'ils vous doivent.'**
+  String get customersEmptyBody;
+
+  /// No description provided for @noCustomerMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun client ne correspond à « {texte} ».'**
+  String noCustomerMatch(String texte);
+
+  /// No description provided for @reminderMessageNoShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour {nom}, il vous reste {montant} à payer. Merci.'**
+  String reminderMessageNoShop(String nom, String montant);
+
+  /// No description provided for @whatsappError.
+  ///
+  /// In fr, this message translates to:
+  /// **'WhatsApp ne s\'ouvre pas. Vérifiez qu\'il est installé sur ce téléphone.'**
+  String get whatsappError;
+
+  /// No description provided for @addPhoneToRemind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez son numéro pour lui envoyer un rappel WhatsApp.'**
+  String get addPhoneToRemind;
+
+  /// No description provided for @edit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get edit;
+
+  /// No description provided for @balance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde'**
+  String get balance;
+
+  /// No description provided for @customerHistoryEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun achat ni versement pour l\'instant.'**
+  String get customerHistoryEmpty;
+
+  /// No description provided for @purchaseNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achat · N°{numero}'**
+  String purchaseNumber(int numero);
+
+  /// No description provided for @creditPurchaseNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achat à crédit · N°{numero}'**
+  String creditPurchaseNumber(int numero);
+
+  /// No description provided for @debtPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Versement · {mode}'**
+  String debtPayment(String mode);
+
+  /// No description provided for @customerNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce client n\'existe plus.'**
+  String get customerNotFound;
+
+  /// No description provided for @collectDebtTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser une dette'**
+  String get collectDebtTitle;
+
+  /// No description provided for @amountPaidNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant versé'**
+  String get amountPaidNow;
+
+  /// No description provided for @amountPaidNowHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez « Toute la dette » si le client paie tout.'**
+  String get amountPaidNowHint;
+
+  /// No description provided for @wholeDebt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toute la dette · {montant}'**
+  String wholeDebt(String montant);
+
+  /// No description provided for @remainingAfterPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il restera à payer'**
+  String get remainingAfterPayment;
+
+  /// No description provided for @debtPaidOffLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dette soldée'**
+  String get debtPaidOffLabel;
+
+  /// No description provided for @errPaymentTooHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nom} ne doit que {montant}. Baissez le montant.'**
+  String errPaymentTooHigh(String nom, String montant);
+
+  /// No description provided for @paymentRecordedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Versement enregistré'**
+  String get paymentRecordedTitle;
+
+  /// No description provided for @paymentRecordedBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{montant} reçus de {nom}.'**
+  String paymentRecordedBody(String montant, String nom);
+
+  /// No description provided for @paymentRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il reste {montant} à payer.'**
+  String paymentRemaining(String montant);
+
+  /// No description provided for @paymentPaidOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sa dette est soldée.'**
+  String get paymentPaidOff;
+
+  /// No description provided for @sendReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer le reçu'**
+  String get sendReceipt;
+
+  /// No description provided for @done.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer'**
+  String get done;
+
+  /// No description provided for @receiptMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour {nom}, le {date}, nous avons bien reçu {montant}.'**
+  String receiptMessage(String nom, String montant, String date);
+
+  /// No description provided for @receiptRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il vous reste {montant} à payer. Merci.'**
+  String receiptRemaining(String montant);
+
+  /// No description provided for @receiptPaidOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre dette est soldée. Merci.'**
+  String get receiptPaidOff;
+
+  /// No description provided for @editCustomerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le client'**
+  String get editCustomerTitle;
+
+  /// No description provided for @customerNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note (facultatif)'**
+  String get customerNote;
+
+  /// No description provided for @customerNoteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par exemple : paie en fin de mois.'**
+  String get customerNoteHint;
+
+  /// No description provided for @errCustomerPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro invalide. Saisissez 9 chiffres, par exemple 6 77 12 34 56.'**
+  String get errCustomerPhone;
+
+  /// No description provided for @deleteCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le client'**
+  String get deleteCustomer;
+
+  /// No description provided for @deleteCustomerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer {nom} ?'**
+  String deleteCustomerTitle(String nom);
+
+  /// No description provided for @deleteCustomerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il ne sera plus dans votre liste. Ses achats restent dans l\'historique des ventes.'**
+  String get deleteCustomerBody;
+
+  /// No description provided for @errDeleteIndebted.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nom} doit encore {montant}. Encaissez sa dette avant de le supprimer.'**
+  String errDeleteIndebted(String nom, String montant);
+
+  /// No description provided for @customerDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nom} a été supprimé.'**
+  String customerDeleted(String nom);
+
+  /// No description provided for @dateAndTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'{date} · Total {total}'**
+  String dateAndTotal(String date, String total);
 }
 
 class _AppLocalizationsDelegate

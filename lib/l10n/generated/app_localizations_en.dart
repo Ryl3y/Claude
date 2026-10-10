@@ -742,4 +742,180 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saleNotFound => 'This sale no longer exists.';
+
+  @override
+  String debtorsCount(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre customers owe you money',
+      one: '1 customer owes you money',
+      zero: 'No one owes you money',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastPurchaseOn(String date) {
+    return 'Last purchase on $date';
+  }
+
+  @override
+  String get lastPurchaseToday => 'Last purchase today';
+
+  @override
+  String get lastPurchaseYesterday => 'Last purchase yesterday';
+
+  @override
+  String get customersEmptyTitle => 'No customers yet';
+
+  @override
+  String get customersEmptyBody =>
+      'Add your customers to keep track of what they owe you.';
+
+  @override
+  String noCustomerMatch(String texte) {
+    return 'No customer matches \"$texte\".';
+  }
+
+  @override
+  String reminderMessageNoShop(String nom, String montant) {
+    return 'Hello $nom, you still owe $montant. Thank you.';
+  }
+
+  @override
+  String get whatsappError =>
+      'WhatsApp won\'t open. Check that it is installed on this phone.';
+
+  @override
+  String get addPhoneToRemind =>
+      'Add their phone number to send a WhatsApp reminder.';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get customerHistoryEmpty => 'No purchases or payments yet.';
+
+  @override
+  String purchaseNumber(int numero) {
+    return 'Purchase · #$numero';
+  }
+
+  @override
+  String creditPurchaseNumber(int numero) {
+    return 'Credit purchase · #$numero';
+  }
+
+  @override
+  String debtPayment(String mode) {
+    return 'Payment · $mode';
+  }
+
+  @override
+  String get customerNotFound => 'This customer no longer exists.';
+
+  @override
+  String get collectDebtTitle => 'Collect a debt';
+
+  @override
+  String get amountPaidNow => 'Amount paid';
+
+  @override
+  String get amountPaidNowHint =>
+      'Tap \"Whole debt\" if the customer pays everything.';
+
+  @override
+  String wholeDebt(String montant) {
+    return 'Whole debt · $montant';
+  }
+
+  @override
+  String get remainingAfterPayment => 'Still to pay after this';
+
+  @override
+  String get debtPaidOffLabel => 'Debt paid off';
+
+  @override
+  String errPaymentTooHigh(String nom, String montant) {
+    return '$nom only owes $montant. Lower the amount.';
+  }
+
+  @override
+  String get paymentRecordedTitle => 'Payment recorded';
+
+  @override
+  String paymentRecordedBody(String montant, String nom) {
+    return '$montant received from $nom.';
+  }
+
+  @override
+  String paymentRemaining(String montant) {
+    return '$montant still to pay.';
+  }
+
+  @override
+  String get paymentPaidOff => 'Their debt is paid off.';
+
+  @override
+  String get sendReceipt => 'Send receipt';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String receiptMessage(String nom, String montant, String date) {
+    return 'Hello $nom, on $date we received $montant.';
+  }
+
+  @override
+  String receiptRemaining(String montant) {
+    return 'You still owe $montant. Thank you.';
+  }
+
+  @override
+  String get receiptPaidOff => 'Your debt is fully paid. Thank you.';
+
+  @override
+  String get editCustomerTitle => 'Edit customer';
+
+  @override
+  String get customerNote => 'Note (optional)';
+
+  @override
+  String get customerNoteHint => 'For example: pays at the end of the month.';
+
+  @override
+  String get errCustomerPhone =>
+      'Invalid number. Enter 9 digits, for example 6 77 12 34 56.';
+
+  @override
+  String get deleteCustomer => 'Delete customer';
+
+  @override
+  String deleteCustomerTitle(String nom) {
+    return 'Delete $nom?';
+  }
+
+  @override
+  String get deleteCustomerBody =>
+      'They will no longer be in your list. Their purchases stay in the sales history.';
+
+  @override
+  String errDeleteIndebted(String nom, String montant) {
+    return '$nom still owes $montant. Collect the debt before deleting them.';
+  }
+
+  @override
+  String customerDeleted(String nom) {
+    return '$nom was deleted.';
+  }
+
+  @override
+  String dateAndTotal(String date, String total) {
+    return '$date · Total $total';
+  }
 }

@@ -6,7 +6,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../core/montant.dart';
 import '../../../data/db/kassa_database.dart';
 import '../../../data/providers.dart';
-import '../../../data/repositories/ventes_repository.dart';
 import '../../../domain/panier.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../state/vente.dart';
@@ -156,7 +155,11 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
                 ),
               ),
               const SizedBox(height: KassaSpace.s4),
-              _ChoixMode(mode: _mode, onChanged: _changerMode),
+              ChoixModePaiement(
+                modes: ModeChoisi.values,
+                mode: _mode,
+                onChanged: _changerMode,
+              ),
               const SizedBox(height: KassaSpace.s4),
               ...switch (_mode) {
                 ModeChoisi.especes => _especes(l, t, langue, panier, paiement),
@@ -232,7 +235,7 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
           texte: l.missingAmount(Montant.format(paiement.manque, langue)),
         )
       else
-        _Resultat(
+        ResultatMontant(
           libelle: l.changeToGive,
           montant: paiement.monnaie,
           tone: AmountTone.encaisse,
@@ -294,14 +297,14 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
       const SizedBox(height: KassaSpace.s2),
       // Le reste à payer passe au-dessus du pavé pour rester visible
       // sans défiler, même avec le bloc client.
-      _Resultat(
+      ResultatMontant(
         libelle: l.remainingDebt,
         montant: paiement.resteAPayer,
         tone: AmountTone.dette,
       ),
       if (paiement.monnaie > 0) ...[
         const SizedBox(height: KassaSpace.s2),
-        _Resultat(
+        ResultatMontant(
           libelle: l.changeToGive,
           montant: paiement.monnaie,
           tone: AmountTone.encaisse,
@@ -310,150 +313,5 @@ class _PaiementScreenState extends ConsumerState<PaiementScreen> {
       const SizedBox(height: KassaSpace.s2),
       NumPad(valeur: _saisie, onChanged: (v) => setState(() => _saisie = v)),
     ];
-  }
-}
-
-class _ChoixMode extends StatelessWidget {
-  const _ChoixMode({required this.mode, required this.onChanged});
-
-  final ModeChoisi mode;
-  final ValueChanged<ModeChoisi> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final t = context.kassa;
-    final modes = ModeChoisi.values;
-    return Column(
-      children: [
-        for (var ligne = 0; ligne < 2; ligne++) ...[
-          if (ligne > 0) const SizedBox(height: KassaSpace.s2),
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var col = 0; col < 2; col++) ...[
-                  if (col > 0) const SizedBox(width: KassaSpace.s2),
-                  Expanded(
-                    child: _TuileMode(
-                      mode: modes[ligne * 2 + col],
-                      choisi: mode == modes[ligne * 2 + col],
-                      libelle: libelleMode(
-                        l,
-                        VentesRepository.codeMode(modes[ligne * 2 + col]),
-                      ),
-                      onTap: () => onChanged(modes[ligne * 2 + col]),
-                      tokens: t,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _TuileMode extends StatelessWidget {
-  const _TuileMode({
-    required this.mode,
-    required this.choisi,
-    required this.libelle,
-    required this.onTap,
-    required this.tokens,
-  });
-
-  final ModeChoisi mode;
-  final bool choisi;
-  final String libelle;
-  final VoidCallback onTap;
-  final KassaTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = tokens;
-    final couleur = choisi ? t.kassa : t.ink;
-    return Semantics(
-      inMutuallyExclusiveGroup: true,
-      selected: choisi,
-      button: true,
-      child: Material(
-        color: choisi ? t.kassaSoft : t.surfaceRaised,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(KassaRadius.md),
-          side: BorderSide(
-            color: choisi ? t.kassa : t.line,
-            width: KassaComposants.trait,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: KassaSize.buttonMain),
-            child: Padding(
-              padding: const EdgeInsets.all(KassaSpace.s2),
-              child: Row(
-                children: [
-                  Icon(iconeMode(mode), color: couleur),
-                  const SizedBox(width: KassaSpace.s2),
-                  Expanded(
-                    child: Text(
-                      libelle,
-                      style: t.label.copyWith(color: couleur),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Resultat extends StatelessWidget {
-  const _Resultat({
-    required this.libelle,
-    required this.montant,
-    required this.tone,
-  });
-
-  final String libelle;
-  final int montant;
-  final AmountTone tone;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.kassa;
-    return MergeSemantics(
-      child: Semantics(
-        liveRegion: true,
-        child: Container(
-          padding: const EdgeInsets.all(KassaSpace.s4),
-          decoration: BoxDecoration(
-            color: tone == AmountTone.dette ? t.detteSoft : t.kassaSoft,
-            borderRadius: BorderRadius.circular(KassaRadius.md),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(libelle, style: t.label.copyWith(color: t.ink)),
-              ),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: AmountText(
-                  value: montant,
-                  tone: montant == 0 ? AmountTone.neutre : tone,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

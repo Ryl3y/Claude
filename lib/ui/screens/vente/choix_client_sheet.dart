@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../core/saisie.dart';
 import '../../../data/db/kassa_database.dart';
 import '../../../data/providers.dart';
+import '../../../domain/client_saisie.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../state/vente.dart';
 import '../../theme/kassa_composants.dart';
@@ -33,7 +34,7 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
   final _telephone = TextEditingController();
   var _creation = false;
   var _enCours = false;
-  String? _erreurNom;
+  Set<ErreurClient> _erreurs = const {};
 
   @override
   void dispose() {
@@ -45,10 +46,11 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
 
   Future<void> _creer() async {
     final l = AppLocalizations.of(context);
-    if (_nom.text.trim().isEmpty) {
-      setState(() => _erreurNom = l.errCustomerName);
-      return;
-    }
+    final erreurs = ReglesClient.verifier(
+      ClientSaisie(nom: _nom.text, telephone: _telephone.text),
+    );
+    setState(() => _erreurs = erreurs);
+    if (erreurs.isNotEmpty) return;
     setState(() => _enCours = true);
     try {
       final id = await ref
@@ -107,11 +109,18 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               onChanged: (_) {
-                if (_erreurNom != null) setState(() => _erreurNom = null);
+                if (_erreurs.contains(ErreurClient.nomVide)) {
+                  setState(
+                    () =>
+                        _erreurs = {..._erreurs}..remove(ErreurClient.nomVide),
+                  );
+                }
               },
               decoration: InputDecoration(
                 labelText: l.customerName,
-                errorText: _erreurNom,
+                errorText: _erreurs.contains(ErreurClient.nomVide)
+                    ? l.errCustomerName
+                    : null,
               ),
             ),
             const SizedBox(height: KassaSpace.s4),
@@ -120,9 +129,22 @@ class _ChoixClientState extends ConsumerState<_ChoixClient> {
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _creer(),
+              onChanged: (_) {
+                if (_erreurs.contains(ErreurClient.telephoneInvalide)) {
+                  setState(
+                    () =>
+                        _erreurs = {..._erreurs}
+                          ..remove(ErreurClient.telephoneInvalide),
+                  );
+                }
+              },
               decoration: InputDecoration(
                 labelText: l.customerPhone,
                 helperText: l.customerPhoneHint,
+                errorMaxLines: 2,
+                errorText: _erreurs.contains(ErreurClient.telephoneInvalide)
+                    ? l.errCustomerPhone
+                    : null,
               ),
             ),
             const SizedBox(height: KassaSpace.s6),

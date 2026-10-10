@@ -541,5 +541,188 @@
       }
     }
   },
-  "saleNotFound": "Cette vente n'existe plus."
+  "saleNotFound": "Cette vente n'existe plus.",
+  "debtorsCount": "{nombre, plural, =0{Personne ne vous doit d'argent} =1{1 client vous doit de l'argent} other{{nombre} clients vous doivent de l'argent}}",
+  "@debtorsCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPurchaseOn": "Dernier achat le {date}",
+  "@lastPurchaseOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lastPurchaseToday": "Dernier achat aujourd'hui",
+  "lastPurchaseYesterday": "Dernier achat hier",
+  "customersEmptyTitle": "Aucun client pour l'instant",
+  "customersEmptyBody": "Ajoutez vos clients pour suivre ce qu'ils vous doivent.",
+  "noCustomerMatch": "Aucun client ne correspond à « {texte} ».",
+  "@noCustomerMatch": {
+    "placeholders": {
+      "texte": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderMessageNoShop": "Bonjour {nom}, il vous reste {montant} à payer. Merci.",
+  "@reminderMessageNoShop": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsappError": "WhatsApp ne s'ouvre pas. Vérifiez qu'il est installé sur ce téléphone.",
+  "addPhoneToRemind": "Ajoutez son numéro pour lui envoyer un rappel WhatsApp.",
+  "edit": "Modifier",
+  "balance": "Solde",
+  "customerHistoryEmpty": "Aucun achat ni versement pour l'instant.",
+  "purchaseNumber": "Achat · N°{numero}",
+  "@purchaseNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "creditPurchaseNumber": "Achat à crédit · N°{numero}",
+  "@creditPurchaseNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "debtPayment": "Versement · {mode}",
+  "@debtPayment": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "customerNotFound": "Ce client n'existe plus.",
+  "collectDebtTitle": "Encaisser une dette",
+  "amountPaidNow": "Montant versé",
+  "amountPaidNowHint": "Touchez « Toute la dette » si le client paie tout.",
+  "wholeDebt": "Toute la dette · {montant}",
+  "@wholeDebt": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "remainingAfterPayment": "Il restera à payer",
+  "debtPaidOffLabel": "Dette soldée",
+  "errPaymentTooHigh": "{nom} ne doit que {montant}. Baissez le montant.",
+  "@errPaymentTooHigh": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRecordedTitle": "Versement enregistré",
+  "paymentRecordedBody": "{montant} reçus de {nom}.",
+  "@paymentRecordedBody": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      },
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRemaining": "Il reste {montant} à payer.",
+  "@paymentRemaining": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentPaidOff": "Sa dette est soldée.",
+  "sendReceipt": "Envoyer le reçu",
+  "done": "Terminer",
+  "receiptMessage": "Bonjour {nom}, le {date}, nous avons bien reçu {montant}.",
+  "@receiptMessage": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptRemaining": "Il vous reste {montant} à payer. Merci.",
+  "@receiptRemaining": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptPaidOff": "Votre dette est soldée. Merci.",
+  "editCustomerTitle": "Modifier le client",
+  "customerNote": "Note (facultatif)",
+  "customerNoteHint": "Par exemple : paie en fin de mois.",
+  "errCustomerPhone": "Numéro invalide. Saisissez 9 chiffres, par exemple 6 77 12 34 56.",
+  "deleteCustomer": "Supprimer le client",
+  "deleteCustomerTitle": "Supprimer {nom} ?",
+  "@deleteCustomerTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteCustomerBody": "Il ne sera plus dans votre liste. Ses achats restent dans l'historique des ventes.",
+  "errDeleteIndebted": "{nom} doit encore {montant}. Encaissez sa dette avant de le supprimer.",
+  "@errDeleteIndebted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "customerDeleted": "{nom} a été supprimé.",
+  "@customerDeleted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "dateAndTotal": "{date} · Total {total}",
+  "@dateAndTotal": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }
