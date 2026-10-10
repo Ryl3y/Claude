@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:drift/drift.dart';
 
 import '../../core/identifiant.dart';
@@ -6,6 +8,9 @@ import '../db/champs_synchro.dart';
 import '../db/kassa_database.dart';
 import '../db/tables.dart';
 import 'boutique_repository.dart';
+
+/// Lance un calcul long et renvoie son résultat.
+typedef CalculLourd = Future<T> Function<T>(T Function() calcul);
 
 /// Ce qu'on saisit pour créer sa boutique (écran 3).
 class BoutiqueSaisie {
@@ -25,10 +30,27 @@ class BoutiqueSaisie {
 /// Le compte du propriétaire sur ce téléphone : création de la boutique,
 /// reprise des données saisies avant l'inscription, code PIN.
 class CompteRepository {
-  CompteRepository(this._db, this._champs);
+  CompteRepository(this._db, this._champs, {CalculLourd? calcul})
+    : _calcul = calcul ?? _horsDuFilPrincipal;
 
   final KassaDatabase _db;
   final ChampsSynchro _champs;
+
+  /// Où faire le calcul du code PIN (PBKDF2, plusieurs centaines de
+  /// millisecondes sur un petit téléphone) : hors du fil de l'écran, pour
+  /// qu'il ne se fige pas. Les tests le font sur place.
+  final CalculLourd _calcul;
+
+  static Future<T> _horsDuFilPrincipal<T>(T Function() calcul) =>
+      Isolate.run(calcul);
+
+  // Fonctions statiques : la fermeture n'emporte que le code PIN vers
+  // l'autre fil, jamais la base de données.
+  static String Function() _hachage(String pin) =>
+      () => CodePin.hacher(pin);
+
+  static bool Function() _verification(String pin, String empreinte) =>
+      () => CodePin.verifier(pin, empreinte);
 
   /// Le compte de ce téléphone (utilisateur avec un code PIN), même sans
   /// réseau ni session : l'app doit s'ouvrir hors ligne.
@@ -54,10 +76,10 @@ class CompteRepository {
     required String telephone,
     required BoutiqueSaisie saisie,
     required String pin,
-  }) {
+  }) async {
     if (!CodePin.estValide(pin)) throw ArgumentError.value(pin, 'pin');
     if (saisie.nom.trim().isEmpty) throw ArgumentError.value(saisie.nom);
-    final empreinte = CodePin.hacher(pin);
+    final empreinte = await _calcul(_hachage(pin));
     return _db.transaction(() async {
       final instant = _champs.maintenant();
       final provisoire = await _boutiqueProvisoire();
@@ -125,12 +147,13 @@ class CompteRepository {
   /// Remplace le code PIN (après « Code oublié »).
   Future<void> changerPin(String utilisateurId, String pin) async {
     if (!CodePin.estValide(pin)) throw ArgumentError.value(pin, 'pin');
+    final empreinte = await _calcul(_hachage(pin));
     final lignes =
         await (_db.update(
           _db.utilisateurs,
         )..where((u) => u.id.equals(utilisateurId))).write(
           UtilisateursCompanion(
-            codePin: Value(CodePin.hacher(pin)),
+            codePin: Value(empreinte),
             majLe: _champs.majLe,
             synchro: _champs.synchro,
             appareilId: _champs.appareil,
@@ -142,7 +165,9 @@ class CompteRepository {
   /// Vrai si [pin] est le code du compte de ce téléphone.
   Future<bool> verifierPin(String pin) async {
     final compte = await compteLocal();
-    return compte != null && CodePin.verifier(pin, compte.codePin);
+    if (compte == null) return false;
+    final empreinte = compte.codePin;
+    return _calcul(_verification(pin, empreinte));
   }
 
   Future<Boutique?> _boutiqueProvisoire() =>

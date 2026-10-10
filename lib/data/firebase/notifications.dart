@@ -53,6 +53,7 @@ class Notifications {
   final Stream<String> _renouvellements;
   final Future<void> Function() _demanderPermission;
   StreamSubscription<String>? _abonnement;
+  var _arrete = false;
 
   Future<void> demarrer({
     required String utilisateurId,
@@ -81,10 +82,13 @@ class Notifications {
     } on Object {
       // Services Google absents ou refus : l'app marche sans notifications.
     }
+    // Arrêté pendant l'attente (autorisation, jeton) : pas d'abonnement.
+    if (_arrete) return;
     _abonnement ??= _renouvellements.listen(envoyer);
   }
 
   Future<void> arreter() async {
+    _arrete = true;
     await _abonnement?.cancel();
     _abonnement = null;
   }

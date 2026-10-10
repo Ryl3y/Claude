@@ -52,6 +52,16 @@ class PreferencesLocales implements StockageCurseurs {
   Future<void> ecrire(String table, String curseur) =>
       _prefs.setString('$_prefixeCurseur$table', curseur);
 
+  static const _cleRestauration = 'synchro.restauration_en_cours';
+
+  @override
+  bool get restaurationEnCours => _prefs.getBool(_cleRestauration) ?? false;
+
+  @override
+  Future<void> marquerRestauration({required bool enCours}) => enCours
+      ? _prefs.setBool(_cleRestauration, true)
+      : _prefs.remove(_cleRestauration);
+
   @override
   Future<void> toutEffacer() async {
     for (final cle in _prefs.getKeys().toList()) {

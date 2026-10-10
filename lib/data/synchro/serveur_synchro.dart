@@ -52,4 +52,9 @@ abstract interface class StockageCurseurs {
   String? lire(String table);
   Future<void> ecrire(String table, String curseur);
   Future<void> toutEffacer();
+
+  /// Vrai entre le début et la fin d'une restauration (coupée sinon).
+  bool get restaurationEnCours;
+
+  Future<void> marquerRestauration({required bool enCours});
 }

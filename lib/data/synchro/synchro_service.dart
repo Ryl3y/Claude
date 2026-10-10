@@ -49,6 +49,13 @@ class SynchroService {
   /// Lignes par envoi ou par page téléchargée.
   final int taillePaquet;
 
+  /// Marge du téléchargement : on relit les lignes reçues par le serveur
+  /// pendant les dernières minutes avant le repère.
+  static const margeTelechargement = Duration(minutes: 2);
+
+  /// Téléphone des données provisoires (voir BoutiqueRepository).
+  static const telephoneProvisoire = '000000000';
+
   /// Ordre des tables : chaque table après celles dont elle dépend.
   static const ordreTables = [
     'boutiques',
@@ -97,10 +104,15 @@ class SynchroService {
   /// passage suivant, une fois rattachées à la boutique restaurée).
   /// Lève une exception si le téléchargement échoue.
   Future<int> restaurer() async {
+    // Repère « restauration en cours » : si elle est coupée (réseau), l'app
+    // le voit au prochain démarrage et la recommence depuis le début.
+    await _curseurs.marquerRestauration(enCours: true);
     await _curseurs.toutEffacer();
-    final recues = await _telecharger();
+    final compteur = _Compteur();
+    await _telecharger(compteur);
     await _db.recalculerTout();
-    return recues;
+    await _curseurs.marquerRestauration(enCours: false);
+    return compteur.recues;
   }
 
   /// Nombre de lignes pas encore envoyées, mis à jour en direct.
@@ -116,18 +128,27 @@ class SynchroService {
   Future<void> oublierRepere() => _curseurs.toutEffacer();
 
   Future<BilanSynchro> _passage() async {
-    var envoyees = 0;
-    var recues = 0;
+    final compteur = _Compteur();
+    Object? erreur;
     try {
-      envoyees = await _envoyer();
-      recues = await _telecharger();
-      if (recues > 0) await _db.recalculerTout();
-      return BilanSynchro(envoyees: envoyees, recues: recues);
+      await _envoyer(compteur);
     } on Object catch (e) {
-      // Ce qui est déjà téléchargé reste juste : on recalcule quand même.
-      if (recues > 0) await _db.recalculerTout();
-      return BilanSynchro(envoyees: envoyees, recues: recues, erreur: e);
+      // Un envoi refusé n'empêche pas de recevoir les changements des autres
+      // téléphones : le téléchargement ne dépend pas de l'envoi.
+      erreur = e;
     }
+    try {
+      await _telecharger(compteur);
+    } on Object catch (e) {
+      erreur ??= e;
+    }
+    // Ce qui est déjà téléchargé reste juste, même après une erreur.
+    if (compteur.recues > 0) await _db.recalculerTout();
+    return BilanSynchro(
+      envoyees: compteur.envoyees,
+      recues: compteur.recues,
+      erreur: erreur,
+    );
   }
 
   TableInfo<Table, dynamic> _table(String nom) =>
@@ -135,14 +156,21 @@ class SynchroService {
 
   // --- Envoi -----------------------------------------------------------------
 
-  Future<int> _envoyer() async {
-    var total = 0;
+  Future<void> _envoyer(_Compteur compteur) async {
     for (final nom in ordreTables) {
       final table = _table(nom);
       while (true) {
+        // Les données provisoires (avant l'inscription) ne partent jamais :
+        // le serveur les refuserait et bloquerait tout l'envoi.
+        final provisoire = switch (nom) {
+          'boutiques' ||
+          'utilisateurs' => "AND telephone <> '$telephoneProvisoire' ",
+          _ => '',
+        };
         final lignes = await _db
             .customSelect(
-              'SELECT * FROM $nom WHERE synchro = 0 ORDER BY maj_le LIMIT ?',
+              'SELECT * FROM $nom WHERE synchro = 0 $provisoire'
+              'ORDER BY maj_le LIMIT ?',
               variables: [Variable.withInt(taillePaquet)],
               readsFrom: {table},
             )
@@ -152,11 +180,10 @@ class SynchroService {
         // Une table en échec arrête l'envoi : les suivantes en dépendent.
         await _serveur.envoyer(nom, json);
         await _marquerEnvoyees(table, lignes);
-        total += lignes.length;
+        compteur.envoyees += lignes.length;
         if (lignes.length < taillePaquet) break;
       }
     }
-    return total;
   }
 
   Map<String, Object?> _versServeur(
@@ -206,11 +233,20 @@ class SynchroService {
 
   // --- Téléchargement --------------------------------------------------------
 
-  Future<int> _telecharger() async {
-    var total = 0;
+  Future<void> _telecharger(_Compteur compteur) async {
     for (final nom in ordreTables) {
       final table = _table(nom);
-      var curseur = CurseurSynchro.decoder(_curseurs.lire(nom));
+      final repere = CurseurSynchro.decoder(_curseurs.lire(nom));
+      // On repart un peu avant le repère : l'heure du serveur est celle du
+      // début de la transaction, et une écriture plus longue peut être
+      // validée après une plus récente. Les lignes déjà connues sont
+      // simplement ignorées.
+      var curseur = repere == null
+          ? null
+          : CurseurSynchro(
+              serveurMajLe: repere.serveurMajLe.subtract(margeTelechargement),
+              id: '',
+            );
       while (true) {
         final lignes = await _serveur.telecharger(
           nom,
@@ -220,27 +256,34 @@ class SynchroService {
         if (lignes.isEmpty) break;
         await _db.transaction(() async {
           for (final l in lignes) {
-            await _appliquer(table, l);
+            if (await _appliquer(table, l)) compteur.recues++;
           }
         });
-        total += lignes.length;
         final derniere = lignes.last;
         curseur = CurseurSynchro(
           serveurMajLe: DateTime.parse(derniere['serveur_maj_le']! as String)
               .toUtc(),
           id: derniere['id']! as String,
         );
-        await _curseurs.ecrire(nom, curseur.encoder());
+        // Le repère n'avance jamais en arrière (pages de la marge).
+        if (repere == null || _apres(curseur, repere)) {
+          await _curseurs.ecrire(nom, curseur.encoder());
+        }
         if (lignes.length < taillePaquet) break;
       }
     }
-    return total;
   }
+
+  static bool _apres(CurseurSynchro a, CurseurSynchro b) =>
+      a.serveurMajLe.isAfter(b.serveurMajLe) ||
+      (a.serveurMajLe.isAtSameMomentAs(b.serveurMajLe) &&
+          a.id.compareTo(b.id) > 0);
 
   /// Écrit une ligne du serveur si elle est plus récente que la version
   /// locale, ou si la version locale est déjà envoyée (le serveur a pu
-  /// corriger un maj_le venu d'une horloge en avance).
-  Future<void> _appliquer(
+  /// corriger un maj_le venu d'une horloge en avance). Renvoie vrai si la
+  /// ligne a changé quelque chose.
+  Future<bool> _appliquer(
     TableInfo<Table, dynamic> table,
     Map<String, Object?> distante,
   ) async {
@@ -253,11 +296,13 @@ class SynchroService {
           variables: [Variable.withString(id)],
         )
         .getSingleOrNull();
-    if (locale != null &&
-        !locale.read<bool>('synchro') &&
-        locale.read<DateTime>('maj_le').isAfter(majDistante)) {
+    if (locale != null) {
+      final majLocale = locale.read<DateTime>('maj_le');
+      final envoyee = locale.read<bool>('synchro');
       // Changement local plus récent, pas encore envoyé : il gagnera.
-      return;
+      if (!envoyee && majLocale.isAfter(majDistante)) return false;
+      // Déjà la même version (ligne revue grâce à la marge) : rien à faire.
+      if (envoyee && majLocale.isAtSameMomentAs(majDistante)) return false;
     }
 
     final colonnes = <String>[];
@@ -281,6 +326,7 @@ class SynchroService {
       variables: valeurs,
       updates: {table},
     );
+    return true;
   }
 
   Variable _variable(GeneratedColumn c, Object? valeur) {
@@ -295,4 +341,9 @@ class SynchroService {
       _ => Variable.withString(valeur.toString()),
     };
   }
+}
+
+class _Compteur {
+  int envoyees = 0;
+  int recues = 0;
 }

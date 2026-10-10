@@ -263,14 +263,19 @@ void main() {
     await app.fermer(tester);
   });
 
-  testWidgets('code oublié avec un autre numéro : refusé', (tester) async {
-    final app = await _demarrer(tester, compte: true);
+  testWidgets('code oublié avec un autre numéro : refusé avant le SMS', (
+    tester,
+  ) async {
+    final auth = FauxAuth();
+    final app = await _demarrer(tester, compte: true, auth: auth);
     await _toucher(tester, find.text('Code oublié'));
-    await _saisirNumeroEtCode(tester, '699999999');
+    await tester.enterText(find.byType(TextField), '699999999');
+    await _toucher(tester, find.text('Recevoir le code'));
     expect(
       find.text('Ce numéro n\'est pas celui du compte de ce téléphone.'),
       findsOneWidget,
     );
+    expect(auth.codesEnvoyes, isEmpty);
     await app.fermer(tester);
   });
 

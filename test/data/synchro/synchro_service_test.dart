@@ -372,6 +372,89 @@ void main() {
     });
   });
 
+  group('cas difficiles', () {
+    test(
+      'écriture validée en retard (heure serveur plus ancienne) : reçue',
+      () async {
+        final id = await riz(a);
+        await a.synchro.synchroniser();
+        final b = Telephone(serveur, appareil: 'tel-b');
+        addTearDown(b.db.close);
+        await b.synchro.synchroniser();
+
+        // Un autre téléphone écrit à 12 h 00 min 30 s (heure du serveur),
+        // mais sa transaction n'est validée qu'après une plus récente que b
+        // a déjà reçue.
+        serveur.avancer(const Duration(minutes: 1));
+        await a.clients.creerClient(nom: 'Récent');
+        await a.synchro.synchroniser();
+        await b.synchro.synchroniser();
+        serveur.tables['produits']![id]!
+          ..['nom'] = 'Riz en retard'
+          ..['maj_le'] = '2026-10-10T11:30:00.000Z'
+          ..['serveur_maj_le'] = serveur.heure
+              .subtract(const Duration(seconds: 30))
+              .toIso8601String();
+        await b.synchro.synchroniser();
+        expect((await b.produit(id)).nom, 'Riz en retard');
+      },
+    );
+
+    test('envoi refusé : le téléchargement se fait quand même', () async {
+      final id = await riz(a);
+      await a.synchro.synchroniser();
+      serveur.ecrireDepuisAutreTelephone('produits', id, {
+        'nom': 'Riz distant',
+        'maj_le': '2026-10-10T11:00:00.000Z',
+      });
+      await a.clients.creerClient(nom: 'Refusé');
+      serveur.tableEnEchec = 'clients';
+      final bilan = await a.synchro.synchroniser();
+      expect(bilan.reussi, isFalse);
+      expect((await a.produit(id)).nom, 'Riz distant');
+    });
+
+    test('téléchargement coupé en route : dette déjà recalculée', () async {
+      final id = await riz(a, stock: 10);
+      await a.vendreACredit(id, Donnees.clientId, 4);
+      await a.synchro.synchroniser();
+      final b = Telephone(
+        _CoupeApres(serveur, 'mouvements_stock'),
+        appareil: 'tel-b',
+      );
+      addTearDown(b.db.close);
+      final bilan = await b.synchro.synchroniser();
+      expect(bilan.reussi, isFalse);
+      // Ventes reçues avant la coupure : la dette du client est juste.
+      expect((await b.client(Donnees.clientId)).soldeDette, 14000);
+    });
+
+    test(
+      'données provisoires (avant l\'inscription) : jamais envoyées',
+      () async {
+        await a.db
+            .into(a.db.boutiques)
+            .insert(
+              BoutiquesCompanion.insert(
+                id: uuid(900),
+                nom: 'Kassa',
+                telephone: SynchroService.telephoneProvisoire,
+                ville: '',
+                quartier: '',
+                typeCommerce: '',
+                seuilAlerteDefaut: 5,
+                creeLe: a.heure,
+                majLe: a.heure,
+                appareilId: 'tel-a',
+              ),
+            );
+        final bilan = await a.synchro.synchroniser();
+        expect(bilan.reussi, isTrue);
+        expect(serveur.tables['boutiques']!.containsKey(uuid(900)), isFalse);
+      },
+    );
+  });
+
   test('deux passages en même temps : un seul envoi', () async {
     await riz(a);
     await Future.wait([a.synchro.synchroniser(), a.synchro.synchroniser()]);
@@ -405,4 +488,26 @@ class _ServeurQuiModifie extends FauxServeur {
     apres,
     required int limite,
   }) async => const [];
+}
+
+/// Serveur dont le téléchargement de [table] échoue toujours.
+class _CoupeApres extends FauxServeur {
+  _CoupeApres(this._vrai, this._table);
+
+  final FauxServeur _vrai;
+  final String _table;
+
+  @override
+  Future<void> envoyer(String table, List<Map<String, Object?>> lignes) =>
+      _vrai.envoyer(table, lignes);
+
+  @override
+  Future<List<Map<String, Object?>>> telecharger(
+    String table, {
+    apres,
+    required int limite,
+  }) {
+    if (table == _table) throw const FormatException('réseau coupé');
+    return _vrai.telecharger(table, apres: apres, limite: limite);
+  }
 }

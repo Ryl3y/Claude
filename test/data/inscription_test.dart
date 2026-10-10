@@ -7,6 +7,7 @@ import 'package:kassa/data/repositories/clients_repository.dart';
 import 'package:kassa/data/repositories/compte_repository.dart';
 import 'package:kassa/data/repositories/produits_repository.dart';
 import 'package:kassa/data/repositories/ventes_repository.dart';
+import 'package:kassa/data/synchro/serveur_synchro.dart';
 import 'package:kassa/data/synchro/synchro_service.dart';
 import 'package:kassa/domain/code_pin.dart';
 import 'package:kassa/domain/panier.dart';
@@ -39,6 +40,7 @@ class _Tel {
       serveur: serveur,
       comptes: comptes,
       synchroPour: synchroPour,
+      curseurs: curseurs,
     );
   }
 
@@ -220,4 +222,64 @@ void main() {
     expect(await a.comptes.verifierPin('1397'), isTrue);
     expect(await a.comptes.verifierPin('2580'), isFalse);
   });
+
+  test(
+    'restauration coupée en route : reprise complète au nouvel essai',
+    () async {
+      final uid = await auth.verifierCode(_numero, '123456');
+      await a.inscription.apresConnexion(uid);
+      final compte = await a.inscription.creerBoutique(_saisie, '2580');
+      await a.vendreRiz();
+      await a.synchroPour(compte.boutiqueId).synchroniser();
+
+      final b = _Tel(_ServeurCoupe(serveur), auth, appareil: 'tel-b');
+      addTearDown(b.db.close);
+      await b.vendreRiz(); // vente faite avant de se connecter
+      await expectLater(b.inscription.apresConnexion(uid), throwsA(anything));
+      // Boutique et compte déjà là, mais la restauration n'est pas finie.
+      expect(await b.comptes.compteLocal(), isNotNull);
+      expect(b.curseurs.restaurationEnCours, isTrue);
+
+      expect(await b.inscription.apresConnexion(uid), SuiteConnexion.codePin);
+      expect(b.curseurs.restaurationEnCours, isFalse);
+      final ventes = await b.db.select(b.db.ventes).get();
+      expect(ventes, hasLength(2));
+      expect(ventes.every((v) => v.utilisateurId == uid), isTrue);
+      expect(await b.db.select(b.db.boutiques).get(), hasLength(1));
+      final bilan = await b.synchroPour(compte.boutiqueId).synchroniser();
+      expect(bilan.reussi, isTrue, reason: '${bilan.erreur}');
+    },
+  );
+}
+
+/// Serveur dont le premier téléchargement des ventes échoue (réseau coupé).
+class _ServeurCoupe extends FauxServeur {
+  _ServeurCoupe(this._vrai);
+
+  final FauxServeur _vrai;
+  var _coupe = false;
+
+  @override
+  Map<String, Map<String, Map<String, Object?>>> get tables => _vrai.tables;
+
+  @override
+  Future<void> envoyer(String table, List<Map<String, Object?>> lignes) =>
+      _vrai.envoyer(table, lignes);
+
+  @override
+  Future<List<Map<String, Object?>>> telecharger(
+    String table, {
+    CurseurSynchro? apres,
+    required int limite,
+  }) {
+    if (table == 'ventes' && !_coupe) {
+      _coupe = true;
+      throw const FormatException('réseau coupé');
+    }
+    return _vrai.telecharger(table, apres: apres, limite: limite);
+  }
+
+  @override
+  Future<String?> boutiqueDe(String utilisateurId) =>
+      _vrai.boutiqueDe(utilisateurId);
 }

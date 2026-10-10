@@ -80,6 +80,19 @@ class _ConnexionScreenState extends ConsumerState<ConnexionScreen> {
     }
     final auth = ref.read(serviceAuthProvider);
     if (auth == null || _enCours) return;
+    // « Code oublié » : seulement le numéro du compte de ce téléphone. Un
+    // autre numéro remplacerait la connexion du propriétaire.
+    if (widget.codeOublie) {
+      final session = ref.read(sessionProvider);
+      final telephoneCompte = switch (session) {
+        SessionVerrouillee(:final compte) => compte.telephone,
+        _ => null,
+      };
+      if (telephoneCompte != cible) {
+        setState(() => _erreur = l.errPinOtherNumber);
+        return;
+      }
+    }
     setState(() {
       _enCours = true;
       _erreur = null;

@@ -25,26 +25,30 @@ class Inscription {
     required this._serveur,
     required this._comptes,
     required this._synchroPour,
+    required this._curseurs,
   });
 
   final ServiceAuth _auth;
   final ServeurSynchro _serveur;
   final CompteRepository _comptes;
   final SynchroService Function(String boutiqueId) _synchroPour;
+  final StockageCurseurs _curseurs;
 
   /// Après un code SMS correct : compte déjà sur ce téléphone, compte à
   /// restaurer depuis le serveur, ou boutique à créer.
   Future<SuiteConnexion> apresConnexion(String utilisateurId) async {
     final local = await _comptes.compteLocal();
-    if (local != null) {
-      if (local.id != utilisateurId) {
-        // Un seul compte par téléphone (déconnexion : étape 9, Réglages).
-        await _auth.deconnecter();
-        throw const AutreCompteSurCeTelephone();
-      }
+    if (local != null && local.id != utilisateurId) {
+      // Un seul compte par téléphone (déconnexion : étape 9, Réglages).
+      await _auth.deconnecter();
+      throw const AutreCompteSurCeTelephone();
+    }
+    if (local != null && !_curseurs.restaurationEnCours) {
       return SuiteConnexion.codePin;
     }
-    final boutiqueId = await _serveur.boutiqueDe(utilisateurId);
+    // Pas de compte, ou restauration coupée : on (re)demande au serveur.
+    final boutiqueId =
+        local?.boutiqueId ?? await _serveur.boutiqueDe(utilisateurId);
     if (boutiqueId == null) return SuiteConnexion.creerBoutique;
 
     // Nouveau téléphone : tout revient du serveur, code PIN compris.

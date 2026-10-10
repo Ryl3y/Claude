@@ -114,4 +114,11 @@ class FauxCurseurs implements StockageCurseurs {
 
   @override
   Future<void> toutEffacer() async => valeurs.clear();
+
+  @override
+  bool restaurationEnCours = false;
+
+  @override
+  Future<void> marquerRestauration({required bool enCours}) async =>
+      restaurationEnCours = enCours;
 }

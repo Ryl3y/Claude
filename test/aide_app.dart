@@ -65,6 +65,7 @@ class AppDeTest {
       await CompteRepository(
         db,
         ChampsSynchro(appareilId: 'tel-test'),
+        calcul: surPlace,
       ).creerBoutique(
         utilisateurId: utilisateurId,
         telephone: telephone,
@@ -90,6 +91,14 @@ class AppDeTest {
           appareilIdProvider.overrideWithValue('tel-test'),
           kassaDatabaseProvider.overrideWithValue(db),
           pinAuDemarrageProvider.overrideWithValue(pinAuDemarrage),
+          // Calcul du code PIN sur place : rapide et sans isolat en test.
+          compteRepositoryProvider.overrideWith(
+            (ref) => CompteRepository(
+              db,
+              ref.watch(champsSynchroProvider),
+              calcul: surPlace,
+            ),
+          ),
           serviceAuthProvider.overrideWithValue(auth),
           serveurSynchroProvider.overrideWithValue(serveur),
           reseauProvider.overrideWithValue(reseau ?? const Stream.empty()),
@@ -243,3 +252,6 @@ Future<void> ouvrirClients(
   await tester.tap(find.text(libelle).last);
   await stabiliser(tester);
 }
+
+/// Exécute un calcul « lourd » tout de suite, sans isolat.
+Future<T> surPlace<T>(T Function() calcul) async => calcul();

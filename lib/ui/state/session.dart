@@ -79,6 +79,12 @@ final sessionProvider = NotifierProvider<SessionController, EtatSession>(
 );
 
 class SessionController extends Notifier<EtatSession> {
+  /// Temps écoulé depuis la dernière erreur de code PIN, mesuré avec une
+  /// horloge qui ne dépend pas de l'heure du téléphone : la changer ne
+  /// raccourcit pas l'attente. Après un redémarrage, l'attente repart du
+  /// début (on ne peut pas savoir combien de temps a vraiment passé).
+  Stopwatch? _depuisErreur;
+
   @override
   EtatSession build() {
     Future.microtask(charger);
@@ -88,7 +94,9 @@ class SessionController extends Notifier<EtatSession> {
   /// Relit le compte du téléphone (au démarrage, après une restauration).
   Future<void> charger() async {
     final compte = await ref.read(compteRepositoryProvider).compteLocal();
-    if (compte == null) {
+    // Restauration coupée : on repasse par la connexion pour la finir.
+    if (compte == null ||
+        ref.read(preferencesLocalesProvider).restaurationEnCours) {
       state = const SessionSansCompte();
     } else if (ref.read(pinAuDemarrageProvider)) {
       state = SessionVerrouillee(compte);
@@ -110,10 +118,10 @@ class SessionController extends Notifier<EtatSession> {
   /// Attente imposée avant le prochain essai (zéro si on peut essayer).
   Duration attenteAvantEssai() {
     final prefs = ref.read(preferencesLocalesProvider);
-    final dernier = prefs.dernierEchecPin;
     final attente = EssaisPin.attenteApres(prefs.echecsPin);
-    if (dernier == null || attente == Duration.zero) return Duration.zero;
-    final reste = dernier.add(attente).difference(HeureDouala.maintenantUtc());
+    if (attente == Duration.zero) return Duration.zero;
+    final chrono = _depuisErreur ??= Stopwatch()..start();
+    final reste = attente - chrono.elapsed;
     return reste.isNegative ? Duration.zero : reste;
   }
 
@@ -126,10 +134,12 @@ class SessionController extends Notifier<EtatSession> {
     final prefs = ref.read(preferencesLocalesProvider);
     if (await ref.read(compteRepositoryProvider).verifierPin(pin)) {
       await prefs.effacerEchecsPin();
+      _depuisErreur = null;
       state = SessionOuverte(s.compte);
       return null;
     }
     await prefs.noterEchecPin(HeureDouala.maintenantUtc());
+    _depuisErreur = Stopwatch()..start();
     return EssaisPin.restants(prefs.echecsPin);
   }
 
@@ -143,21 +153,33 @@ class SessionController extends Notifier<EtatSession> {
     };
     await ref.read(compteRepositoryProvider).changerPin(compte.id, pin);
     await ref.read(preferencesLocalesProvider).effacerEchecsPin();
+    _depuisErreur = null;
     final relu = await ref.read(compteRepositoryProvider).compteLocal();
     state = SessionOuverte(relu ?? compte);
   }
 }
 
 /// Synchronisation de la boutique ; null sans serveur ou sans app ouverte.
+/// Le même service reste en place quand l'app se verrouille et se
+/// déverrouille (seule la boutique compte) : jamais deux passages en même
+/// temps.
 final synchroServiceProvider = Provider<SynchroService?>((ref) {
   final serveur = ref.watch(serveurSynchroProvider);
-  final session = ref.watch(sessionProvider);
-  if (serveur == null || session is! SessionOuverte) return null;
+  final boutiqueId = ref.watch(
+    sessionProvider.select(
+      (s) => switch (s) {
+        SessionOuverte(:final compte) ||
+        SessionVerrouillee(:final compte) => compte.boutiqueId,
+        _ => null,
+      },
+    ),
+  );
+  if (serveur == null || boutiqueId == null) return null;
   return SynchroService(
     ref.watch(kassaDatabaseProvider),
     serveur,
     ref.watch(preferencesLocalesProvider),
-    boutiqueId: session.compte.boutiqueId,
+    boutiqueId: boutiqueId,
   );
 });
 
@@ -195,6 +217,7 @@ final inscriptionProvider = Provider<Inscription?>((ref) {
     auth: auth,
     serveur: serveur,
     comptes: ref.watch(compteRepositoryProvider),
+    curseurs: ref.watch(preferencesLocalesProvider),
     synchroPour: (boutiqueId) => SynchroService(
       ref.read(kassaDatabaseProvider),
       serveur,
@@ -206,14 +229,35 @@ final inscriptionProvider = Provider<Inscription?>((ref) {
 
 /// Inscription de ce téléphone aux notifications, tant que l'app est
 /// ouverte ; null sans Firebase, sans serveur ou sans compte connecté.
+/// Vrai dès qu'un passage de synchronisation a réussi (le compte est alors
+/// sur le serveur) ; reste vrai ensuite.
+final synchroDejaReussieProvider = NotifierProvider<SynchroDejaReussie, bool>(
+  SynchroDejaReussie.new,
+);
+
+class SynchroDejaReussie extends Notifier<bool> {
+  @override
+  bool build() {
+    ref.listen(dernierBilanProvider, (_, bilan) {
+      if (bilan.value?.reussi ?? false) state = true;
+    });
+    return false;
+  }
+}
+
 final notificationsProvider = Provider<Notifications?>((ref) {
-  final session = ref.watch(sessionProvider);
+  final compte = ref.watch(
+    sessionProvider.select((s) => s is SessionOuverte ? s.compte : null),
+  );
   final auth = ref.watch(serviceAuthProvider);
   final utilisateurId = auth?.utilisateurId;
+  // Le jeton n'est accepté qu'une fois le compte sur le serveur : on
+  // attend un premier passage réussi de la synchronisation.
   if (!ServicesFirebase.actif ||
       !ConfigServeur.serveurConfigure ||
-      session is! SessionOuverte ||
-      utilisateurId == null) {
+      compte == null ||
+      utilisateurId == null ||
+      !ref.watch(synchroDejaReussieProvider)) {
     return null;
   }
   final messagerie = FirebaseMessaging.instance;
@@ -230,7 +274,7 @@ final notificationsProvider = Provider<Notifications?>((ref) {
     n.demarrer(
       utilisateurId: utilisateurId,
       appareilId: ref.read(appareilIdProvider),
-      boutiqueId: session.compte.boutiqueId,
+      boutiqueId: compte.boutiqueId,
       langue: code == 'en' ? 'en' : 'fr',
     ),
   );
