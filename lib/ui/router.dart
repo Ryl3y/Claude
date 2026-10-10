@@ -16,6 +16,7 @@ import 'screens/inscription/connexion_screen.dart';
 import 'screens/inscription/demarrage_screen.dart';
 import 'screens/inscription/nouveau_pin_screen.dart';
 import 'screens/inscription/pin_screen.dart';
+import 'screens/reglages/boutique_modif_screen.dart';
 import 'screens/reglages/reglages_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stock/produit_form_screen.dart';
@@ -46,6 +47,7 @@ abstract final class Chemins {
   ).toString();
   static const rapports = '/rapports';
   static const reglages = '/reglages';
+  static const modifierBoutique = '/reglages/boutique';
   static const abonnement = '/abonnement';
   static const demo = '/demo';
 
@@ -252,6 +254,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Chemins.reglages,
         builder: (context, state) => const ReglagesScreen(),
+        routes: [
+          GoRoute(
+            path: 'boutique',
+            builder: (context, state) => const BoutiqueModifScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: Chemins.abonnement,

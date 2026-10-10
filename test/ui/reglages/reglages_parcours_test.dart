@@ -63,6 +63,41 @@ void main() {
     await app.fermer(tester);
   });
 
+  testWidgets('modifier la boutique depuis Réglages', (tester) async {
+    final app = await AppDeTest.creer();
+    await tester.pumpWidget(app.widget);
+    await stabiliser(tester);
+
+    await _toucher(tester, find.text('Réglages'));
+    expect(find.text('Chez Awa'), findsOneWidget);
+    expect(find.text('Alimentation, épicerie · Akwa, Douala'), findsOneWidget);
+    await _toucher(tester, find.text('Modifier'));
+    expect(find.text('Modifier la boutique'), findsOneWidget);
+
+    await tester.enterText(find.widgetWithText(TextField, 'Chez Awa'), '');
+    await tester.enterText(find.widgetWithText(TextField, '5'), '8');
+    await _toucher(tester, find.text('Enregistrer'));
+    expect(find.text('Saisissez le nom de la boutique.'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, 'Chez Awa et fils');
+    await tester.enterText(find.widgetWithText(TextField, 'Akwa'), 'Bonapriso');
+    await _toucher(tester, find.text('Enregistrer'));
+    await stabiliser(tester);
+
+    expect(find.text('Modifier la boutique'), findsNothing);
+    expect(find.text('Chez Awa et fils'), findsOneWidget);
+    expect(
+      find.text('Alimentation, épicerie · Bonapriso, Douala'),
+      findsOneWidget,
+    );
+    final b = await tester.runAsync(
+      () => app.db.select(app.db.boutiques).getSingle(),
+    );
+    expect(b!.seuilAlerteDefaut, 8);
+    expect(b.synchro, isFalse);
+    await app.fermer(tester);
+  });
+
   testWidgets('déconnexion : confirmation, téléphone vidé, retour à '
       'la bienvenue', (tester) async {
     final auth = FauxAuth();

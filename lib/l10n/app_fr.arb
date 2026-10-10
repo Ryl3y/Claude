@@ -1020,5 +1020,11 @@
   "payPending": "Un paiement attend déjà votre validation. Regardez votre téléphone, ou réessayez dans 5 minutes.",
   "payRefused": "La demande de paiement a été refusée. Vérifiez le numéro et l'opérateur, puis réessayez.",
   "payUnavailable": "Le paiement en ligne n'est pas disponible sur cette version de Kassa.",
-  "payExtend": "Payer un mois de plus"
+  "payExtend": "Payer un mois de plus",
+  "settingsShop": "Boutique",
+  "shopEditTitle": "Modifier la boutique",
+  "shopThreshold": "Alerte de stock bas par défaut",
+  "shopThresholdHelp": "Proposée pour chaque nouveau produit. Les produits déjà créés gardent la leur.",
+  "errThreshold": "Saisissez un nombre entier de 0 à 100 000, par exemple 5.",
+  "shopSaved": "Boutique enregistrée."
 }

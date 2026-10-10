@@ -3,29 +3,17 @@ import 'dart:isolate';
 import 'package:drift/drift.dart';
 
 import '../../core/identifiant.dart';
+import '../../domain/boutique_saisie.dart';
 import '../../domain/code_pin.dart';
 import '../db/champs_synchro.dart';
 import '../db/kassa_database.dart';
 import '../db/tables.dart';
 import 'boutique_repository.dart';
 
+export '../../domain/boutique_saisie.dart' show BoutiqueSaisie;
+
 /// Lance un calcul long et renvoie son résultat.
 typedef CalculLourd = Future<T> Function<T>(T Function() calcul);
-
-/// Ce qu'on saisit pour créer sa boutique (écran 3).
-class BoutiqueSaisie {
-  const BoutiqueSaisie({
-    required this.nom,
-    required this.typeCommerce,
-    required this.ville,
-    required this.quartier,
-  });
-
-  final String nom;
-  final String typeCommerce;
-  final String ville;
-  final String quartier;
-}
 
 /// Le compte du propriétaire sur ce téléphone : création de la boutique,
 /// reprise des données saisies avant l'inscription, code PIN.

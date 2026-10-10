@@ -91,6 +91,11 @@ void main() {
         find.byType(KassaApp),
         matchesGoldenFile('goldens/reglages_15_$suffixe.png'),
       );
+      await _toucher(tester, find.text(fr ? 'Modifier' : 'Edit'));
+      await expectLater(
+        find.byType(KassaApp),
+        matchesGoldenFile('goldens/reglages_boutique_$suffixe.png'),
+      );
       await app.fermer(tester);
     });
 

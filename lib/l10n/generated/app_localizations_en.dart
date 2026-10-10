@@ -1411,4 +1411,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payExtend => 'Pay for another month';
+
+  @override
+  String get settingsShop => 'Shop';
+
+  @override
+  String get shopEditTitle => 'Edit shop';
+
+  @override
+  String get shopThreshold => 'Default low-stock alert';
+
+  @override
+  String get shopThresholdHelp =>
+      'Suggested for each new product. Existing products keep theirs.';
+
+  @override
+  String get errThreshold =>
+      'Enter a whole number from 0 to 100,000, for example 5.';
+
+  @override
+  String get shopSaved => 'Shop saved.';
 }

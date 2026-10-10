@@ -4,6 +4,7 @@ import '../../core/identifiant.dart';
 import '../db/champs_synchro.dart';
 import '../db/kassa_database.dart';
 import '../db/tables.dart';
+import '../../domain/boutique_saisie.dart';
 
 /// Boutique et utilisateur du téléphone.
 ///
@@ -83,6 +84,45 @@ class BoutiqueRepository {
     return (_db.select(
       _db.boutiques,
     )..where((b) => b.id.equals(utilisateur.boutiqueId))).getSingle();
+  }
+
+  /// La boutique [id], en direct (Réglages).
+  Stream<Boutique?> surveillerBoutique(String id) => (_db.select(
+    _db.boutiques,
+  )..where((b) => b.id.equals(id))).watchSingleOrNull();
+
+  /// Modifie le nom, le type, la ville, le quartier et le seuil d'alerte
+  /// proposé aux nouveaux produits (Réglages). Textes nettoyés des espaces.
+  Future<void> modifierBoutique(
+    String id, {
+    required BoutiqueSaisie saisie,
+    required int seuilAlerteDefaut,
+  }) async {
+    final nom = saisie.nom.trim();
+    final ville = saisie.ville.trim();
+    final quartier = saisie.quartier.trim();
+    if (nom.isEmpty || ville.isEmpty || quartier.isEmpty) {
+      throw ArgumentError('Nom, ville et quartier obligatoires');
+    }
+    if (seuilAlerteDefaut < 0 || seuilAlerteDefaut > seuilAlerteDefautMax) {
+      throw ArgumentError.value(seuilAlerteDefaut, 'seuilAlerteDefaut');
+    }
+    final lignes =
+        await (_db.update(
+          _db.boutiques,
+        )..where((b) => b.id.equals(id) & b.supprimeLe.isNull())).write(
+          BoutiquesCompanion(
+            nom: Value(nom),
+            typeCommerce: Value(saisie.typeCommerce),
+            ville: Value(ville),
+            quartier: Value(quartier),
+            seuilAlerteDefaut: Value(seuilAlerteDefaut),
+            majLe: _champs.majLe,
+            synchro: _champs.synchro,
+            appareilId: _champs.appareil,
+          ),
+        );
+    if (lignes == 0) throw StateError('Boutique introuvable : $id');
   }
 
   /// Vrai pour la boutique provisoire (avant l'inscription) : son nom

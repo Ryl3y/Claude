@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../core/telephone.dart';
+import '../../../data/db/kassa_database.dart';
+import '../inscription/boutique_screen.dart';
 import '../../../domain/abonnement.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../router.dart';
 import '../../state/abonnement.dart';
+import '../../state/boutique.dart';
 import '../../state/rapports.dart';
 import '../../state/session.dart';
 import '../../theme/kassa_composants.dart';
@@ -16,8 +19,8 @@ import '../../widgets/contexte.dart';
 import '../../widgets/widgets.dart';
 import '../abonnement/abonnement_screen.dart';
 
-/// Écran 15 : réglages. Langue, abonnement Kassa Pro, sauvegarde en
-/// ligne, et déconnexion de ce téléphone.
+/// Écran 15 : réglages. Boutique, langue, abonnement Kassa Pro, sauvegarde
+/// en ligne, et déconnexion de ce téléphone.
 class ReglagesScreen extends ConsumerStatefulWidget {
   const ReglagesScreen({super.key});
 
@@ -120,6 +123,12 @@ class _ReglagesScreenState extends ConsumerState<ReglagesScreen> {
           child: ListView(
             padding: const EdgeInsets.all(KassaSpace.s4),
             children: [
+              _Section(
+                titre: l.settingsShop,
+                child: _Boutique(
+                  boutique: ref.watch(boutiqueOuverteProvider).value,
+                ),
+              ),
               _Section(titre: l.language, child: const ChoixLangue()),
               _Section(
                 titre: l.settingsSubscription,
@@ -287,6 +296,49 @@ class _EtatSauvegarde extends StatelessWidget {
           Text(aide, style: t.body),
         ],
       ),
+    );
+  }
+}
+
+/// Nom, type et adresse de la boutique, avec « Modifier ».
+class _Boutique extends StatelessWidget {
+  const _Boutique({required this.boutique});
+
+  final Boutique? boutique;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final t = context.kassa;
+    final b = boutique;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (b != null)
+          MergeSemantics(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(b.nom, style: t.label.copyWith(fontSize: t.body.fontSize)),
+                Text(
+                  '${TypesCommerce.libelle(l, b.typeCommerce)} · '
+                  '${b.quartier}, ${b.ville}',
+                  style: t.body,
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: KassaSpace.s2),
+        KassaButton(
+          label: l.edit,
+          icon: Symbols.edit_rounded,
+          variant: KassaButtonVariant.secondary,
+          fullWidth: true,
+          onPressed: b == null
+              ? null
+              : () => context.push(Chemins.modifierBoutique),
+        ),
+      ],
     );
   }
 }

@@ -74,6 +74,10 @@ void main() {
 
         await _toucher(tester, find.text(fr ? 'Réglages' : 'Settings'));
         await _verifier(tester); // réglages, haut
+        await _toucher(tester, find.text(fr ? 'Modifier' : 'Edit'));
+        await _verifier(tester); // modifier la boutique
+        await tester.tap(find.byType(BackButton));
+        await stabiliser(tester);
         await tester.drag(_defilement(), const Offset(0, -2000));
         await stabiliser(tester);
         await _verifier(tester); // réglages, bas
@@ -122,6 +126,12 @@ void main() {
     expect(tester.takeException(), isNull);
     await _toucher(tester, find.text('Plus tard'));
     await _toucher(tester, find.text('Réglages'));
+    await _toucher(tester, find.text('Modifier'));
+    await tester.drag(_defilement(), const Offset(0, -3000));
+    await stabiliser(tester);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.byType(BackButton));
+    await stabiliser(tester);
     await tester.drag(_defilement(), const Offset(0, -3000));
     await stabiliser(tester);
     expect(tester.takeException(), isNull);

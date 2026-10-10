@@ -1419,4 +1419,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get payExtend => 'Payer un mois de plus';
+
+  @override
+  String get settingsShop => 'Boutique';
+
+  @override
+  String get shopEditTitle => 'Modifier la boutique';
+
+  @override
+  String get shopThreshold => 'Alerte de stock bas par défaut';
+
+  @override
+  String get shopThresholdHelp =>
+      'Proposée pour chaque nouveau produit. Les produits déjà créés gardent la leur.';
+
+  @override
+  String get errThreshold =>
+      'Saisissez un nombre entier de 0 à 100 000, par exemple 5.';
+
+  @override
+  String get shopSaved => 'Boutique enregistrée.';
 }

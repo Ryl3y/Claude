@@ -377,5 +377,11 @@
   "payPending": "A payment is already waiting for your approval. Check your phone, or try again in 5 minutes.",
   "payRefused": "The payment request was refused. Check the number and the operator, then try again.",
   "payUnavailable": "Online payment isn't available in this version of Kassa.",
-  "payExtend": "Pay for another month"
+  "payExtend": "Pay for another month",
+  "settingsShop": "Shop",
+  "shopEditTitle": "Edit shop",
+  "shopThreshold": "Default low-stock alert",
+  "shopThresholdHelp": "Suggested for each new product. Existing products keep theirs.",
+  "errThreshold": "Enter a whole number from 0 to 100,000, for example 5.",
+  "shopSaved": "Shop saved."
 }

@@ -2365,6 +2365,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Payer un mois de plus'**
   String get payExtend;
+
+  /// No description provided for @settingsShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutique'**
+  String get settingsShop;
+
+  /// No description provided for @shopEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la boutique'**
+  String get shopEditTitle;
+
+  /// No description provided for @shopThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte de stock bas par défaut'**
+  String get shopThreshold;
+
+  /// No description provided for @shopThresholdHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proposée pour chaque nouveau produit. Les produits déjà créés gardent la leur.'**
+  String get shopThresholdHelp;
+
+  /// No description provided for @errThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un nombre entier de 0 à 100 000, par exemple 5.'**
+  String get errThreshold;
+
+  /// No description provided for @shopSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutique enregistrée.'**
+  String get shopSaved;
 }
 
 class _AppLocalizationsDelegate
