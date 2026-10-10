@@ -37,6 +37,16 @@ abstract final class KassaComposants {
   /// Barre du bas : zone de toucher de 64 px, pilule 64 × 32.
   static const navHauteur = 72.0;
 
+  /// Vignette d'un produit dans une liste, et dans le formulaire.
+  static const vignetteLigne = 48.0;
+  static const vignetteFormulaire = 120.0;
+
+  /// Icône d'un écran vide.
+  static const iconeEtatVide = 48.0;
+
+  /// Largeur maximale du contenu (tablette, paysage) : lisible, centré.
+  static const largeurContenuMax = 640.0;
+
   /// Nombre de colonnes de la grille « Nouvelle vente ».
   static const grilleProduitsColonnes = 3;
 

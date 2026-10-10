@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../core/heure_douala.dart';
-import '../../domain/calculs.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../brand/kassa_logo.dart';
 import '../theme/kassa_composants.dart';
@@ -23,7 +22,6 @@ class DemoWidgetsScreen extends StatefulWidget {
 class _DemoWidgetsScreenState extends State<DemoWidgetsScreen> {
   final _panier = <String, double>{};
   var _montantRecu = '';
-  var _onglet = KassaOnglet.accueil;
 
   void _ajouter(ProduitDemo p) =>
       setState(() => _panier[p.id] = (_panier[p.id] ?? 0) + 1);
@@ -41,9 +39,6 @@ class _DemoWidgetsScreenState extends State<DemoWidgetsScreen> {
     final l = AppLocalizations.of(context);
     final t = context.kassa;
     final langue = langueDe(context);
-    final alertes = produitsDemo
-        .where((p) => Calculs.stockBas(quantite: p.stock, seuil: p.seuil))
-        .length;
     final totalDettes = clientsDemo.fold(0, (s, c) => s + c.dette);
     final clientsEnDette = clientsDemo.where((c) => c.dette > 0).length;
 
@@ -222,11 +217,6 @@ class _DemoWidgetsScreenState extends State<DemoWidgetsScreen> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: KassaBottomNav(
-        actif: _onglet,
-        alertesStock: alertes,
-        onChanged: (o) => setState(() => _onglet = o),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import 'kassa_colors.dart';
 import 'kassa_composants.dart';
@@ -87,6 +88,12 @@ abstract final class KassaTheme {
       visualDensity: VisualDensity.standard,
       extensions: [tokens],
       iconTheme: IconThemeData(color: p.ink, size: KassaSize.icon),
+      // Flèches de navigation dans le même jeu d'icônes que le reste de l'app.
+      actionIconTheme: ActionIconThemeData(
+        backButtonIconBuilder: (context) =>
+            const Icon(Symbols.arrow_back_rounded),
+        closeButtonIconBuilder: (context) => const Icon(Symbols.close_rounded),
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: p.surface,
         foregroundColor: p.ink,
@@ -150,6 +157,10 @@ abstract final class KassaTheme {
         ),
         labelStyle: textes.label.copyWith(color: p.inkMuted),
         hintStyle: textes.body.copyWith(color: p.inkMuted),
+        // Unités et devise à côté de la saisie : lisibles (4,5:1), pas grisées.
+        suffixStyle: textes.body.copyWith(color: p.inkMuted),
+        prefixStyle: textes.body.copyWith(color: p.inkMuted),
+        floatingLabelStyle: textes.label.copyWith(color: p.kassa),
         helperStyle: textes.caption.copyWith(color: p.inkMuted),
         errorStyle: textes.caption.copyWith(color: p.dette),
         border: OutlineInputBorder(

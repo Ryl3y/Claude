@@ -178,5 +178,161 @@
   "proBadge": "Pro",
   "@proBadge": {
     "description": "Étiquette de la formule payante (nom de la formule, identique en anglais)."
-  }
+  },
+  "searchProducts": "Rechercher un produit",
+  "filterAll": "Tous",
+  "filterLowStock": "Stock bas ({nombre})",
+  "@filterLowStock": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "noCategory": "Sans catégorie",
+  "addProduct": "Ajouter un produit",
+  "stockEmptyTitle": "Aucun produit pour l'instant",
+  "stockEmptyBody": "Ajoutez vos produits pour suivre le stock et commencer à vendre.",
+  "stockNoResult": "Aucun produit ne correspond à « {recherche} ». Vérifiez l'orthographe ou ajoutez ce produit.",
+  "@stockNoResult": {
+    "placeholders": {
+      "recherche": {
+        "type": "String"
+      }
+    }
+  },
+  "stockNoLowStock": "Aucun produit en stock bas. Tout est au-dessus du seuil d'alerte.",
+  "stockNoInCategory": "Aucun produit dans cette catégorie.",
+  "stockOf": "Stock : {quantite}",
+  "@stockOf": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "restockProduct": "Réappro {nom}",
+  "@restockProduct": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "productNewTitle": "Nouveau produit",
+  "productEditTitle": "Modifier le produit",
+  "fieldName": "Nom du produit",
+  "fieldNameHint": "Ex. Riz parfumé 5 kg",
+  "fieldCategory": "Catégorie",
+  "newCategory": "Nouvelle catégorie",
+  "fieldPurchasePrice": "Prix d'achat",
+  "fieldPurchasePriceHelp": "Ce que vous payez pour une unité.",
+  "fieldSalePrice": "Prix de vente",
+  "fieldSalePriceHelp": "Le prix demandé au client pour une unité.",
+  "fieldQuantity": "Quantité en stock",
+  "fieldQuantityHelpNew": "Ce que vous avez aujourd'hui. Mettez 0 si vous n'en avez pas.",
+  "fieldQuantityHelpEdit": "Changer ce nombre enregistre une correction du stock.",
+  "fieldUnit": "Unité",
+  "fieldThreshold": "Alerte de stock bas",
+  "fieldThresholdHelp": "Kassa vous prévient quand il en reste ce nombre ou moins.",
+  "photoAdd": "Ajouter une photo",
+  "photoChange": "Changer la photo",
+  "photoTake": "Prendre une photo",
+  "photoGallery": "Choisir dans la galerie",
+  "photoRemove": "Retirer la photo",
+  "photoError": "La photo n'a pas pu être ajoutée. Réessayez ou choisissez une autre photo.",
+  "unitPiece": "pièce",
+  "unitKg": "kg",
+  "unitLitre": "litre",
+  "unitCarton": "carton",
+  "unitBag": "sac",
+  "unitPack": "paquet",
+  "unitBottle": "bouteille",
+  "unitBox": "boîte",
+  "errNameRequired": "Saisissez le nom du produit.",
+  "errPriceRequired": "Saisissez un prix en francs, sans virgule.",
+  "errQuantityInvalid": "Saisissez un nombre, par exemple 12 ou 1,5.",
+  "errUnitRequired": "Choisissez ou saisissez une unité.",
+  "warnSellingAtLoss": "Le prix de vente est plus bas que le prix d'achat : vous perdez {montant} par unité.",
+  "@warnSellingAtLoss": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "Enregistrer",
+  "productAdded": "Produit ajouté.",
+  "productSaved": "Modifications enregistrées.",
+  "deleteProduct": "Supprimer le produit",
+  "deleteProductTitle": "Supprimer {nom} ?",
+  "@deleteProductTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteProductBody": "Il ne sera plus proposé à la vente. Les ventes passées restent dans l'historique.",
+  "deleteConfirm": "Supprimer",
+  "keep": "Garder",
+  "productDeleted": "{nom} a été supprimé.",
+  "@productDeleted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "productNotFound": "Ce produit n'existe plus. Il a peut-être été supprimé.",
+  "saveError": "L'enregistrement a échoué. Réessayez ; vos données sont toujours sur le téléphone.",
+  "categoryName": "Nom de la catégorie",
+  "categoryCreate": "Créer",
+  "cancel": "Annuler",
+  "errCategoryName": "Saisissez un nom de catégorie.",
+  "categoryQuickPick": "Choisissez un modèle ou saisissez un nom.",
+  "catGrocery": "Épicerie",
+  "catDrinks": "Boissons",
+  "catHygiene": "Hygiène",
+  "catHousehold": "Ménage",
+  "catFresh": "Frais",
+  "catOther": "Autre",
+  "restockChooseProduct": "Choisissez le produit reçu.",
+  "currentStock": "Stock actuel : {quantite}",
+  "@currentStock": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "currentPurchasePrice": "Prix d'achat actuel : {montant}",
+  "@currentPurchasePrice": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldReceivedQuantity": "Quantité reçue",
+  "fieldNewPurchasePriceHelp": "Changez-le si votre fournisseur a changé son prix.",
+  "newStockPreview": "Nouveau stock : {quantite}",
+  "@newStockPreview": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "addToStock": "Ajouter au stock",
+  "errReceivedQuantity": "Saisissez la quantité reçue, plus grande que 0.",
+  "stockUpdated": "Stock mis à jour : {quantite}.",
+  "@stockUpdated": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "comingSoon": "Cet écran arrive dans une prochaine version."
 }

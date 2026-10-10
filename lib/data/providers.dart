@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'db/champs_synchro.dart';
 import 'db/kassa_database.dart';
+import 'repositories/produits_repository.dart';
 
 /// Base locale de l'app, ouverte une seule fois et fermée avec l'app.
 /// Dans les tests : `kassaDatabaseProvider.overrideWithValue(baseEnMemoire())`.
@@ -9,3 +11,19 @@ final kassaDatabaseProvider = Provider<KassaDatabase>((ref) {
   ref.onDispose(db.close);
   return db;
 });
+
+/// Identifiant de ce téléphone, lu au démarrage (voir main.dart).
+final appareilIdProvider = Provider<String>(
+  (ref) => throw UnimplementedError('appareilIdProvider non fourni'),
+);
+
+final champsSynchroProvider = Provider<ChampsSynchro>(
+  (ref) => ChampsSynchro(appareilId: ref.watch(appareilIdProvider)),
+);
+
+final produitsRepositoryProvider = Provider<ProduitsRepository>(
+  (ref) => ProduitsRepository(
+    ref.watch(kassaDatabaseProvider),
+    ref.watch(champsSynchroProvider),
+  ),
+);

@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
 import 'data/preferences/preferences_locales.dart';
+import 'data/providers.dart';
 import 'ui/state/langue.dart';
 
 Future<void> main() async {
@@ -16,10 +17,14 @@ Future<void> main() async {
   await initializeDateFormatting('fr');
   await initializeDateFormatting('en');
   final preferences = await PreferencesLocales.ouvrir();
+  final appareilId = await preferences.appareilId();
 
   runApp(
     ProviderScope(
-      overrides: [preferencesLocalesProvider.overrideWithValue(preferences)],
+      overrides: [
+        preferencesLocalesProvider.overrideWithValue(preferences),
+        appareilIdProvider.overrideWithValue(appareilId),
+      ],
       child: const KassaApp(),
     ),
   );

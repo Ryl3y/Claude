@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -10,7 +8,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../theme/kassa_composants.dart';
 import '../theme/kassa_tokens.dart';
 import 'contexte.dart';
-import 'initiales.dart';
+import 'vignette_produit.dart';
 
 /// Une case de la grille « Nouvelle vente ».
 ///
@@ -96,13 +94,7 @@ class ProductCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(KassaRadius.sm),
-                        child: _Visuel(nom: nom, photo: photo),
-                      ),
-                    ),
+                    VignetteProduit(nom: nom, photo: photo),
                     const SizedBox(height: KassaSpace.s2),
                     Text(
                       nom,
@@ -160,39 +152,6 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Visuel extends StatelessWidget {
-  const _Visuel({required this.nom, required this.photo});
-
-  final String nom;
-  final String? photo;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.kassa;
-    final sansPhoto = ColoredBox(
-      color: t.kassaSoft,
-      child: Center(
-        child: Text(
-          initiales(nom),
-          style: t.initialesProduit.copyWith(color: t.kassa),
-        ),
-      ),
-    );
-    if (photo == null) return sansPhoto;
-    // Décode la photo à la taille affichée (une vignette), pas à 12 Mpx.
-    return LayoutBuilder(
-      builder: (context, contraintes) => Image.file(
-        File(photo!),
-        fit: BoxFit.cover,
-        cacheWidth:
-            (contraintes.maxWidth * MediaQuery.devicePixelRatioOf(context))
-                .round(),
-        errorBuilder: (context, erreur, pile) => sansPhoto,
       ),
     );
   }

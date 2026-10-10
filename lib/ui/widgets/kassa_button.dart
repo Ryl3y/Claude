@@ -37,6 +37,7 @@ class KassaButton extends StatelessWidget {
     this.size = KassaButtonSize.normal,
     this.icon,
     this.fullWidth = false,
+    this.semanticLabel,
   });
 
   final String label;
@@ -45,6 +46,10 @@ class KassaButton extends StatelessWidget {
   final KassaButtonSize size;
   final IconData? icon;
   final bool fullWidth;
+
+  /// Libellé plus précis pour le lecteur d'écran (« Réappro Riz 5 kg »)
+  /// quand plusieurs boutons portent le même mot.
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +119,19 @@ class KassaButton extends StatelessWidget {
       ),
     );
 
+    final nomme = semanticLabel == null
+        ? bouton
+        : Semantics(
+            label: semanticLabel,
+            button: true,
+            enabled: onPressed != null,
+            onTap: onPressed,
+            excludeSemantics: true,
+            child: bouton,
+          );
     final dimensionne = fullWidth
-        ? SizedBox(width: double.infinity, child: bouton)
-        : bouton;
+        ? SizedBox(width: double.infinity, child: nomme)
+        : nomme;
     return onPressed == null
         ? Opacity(opacity: KassaComposants.opaciteDesactive, child: dimensionne)
         : dimensionne;

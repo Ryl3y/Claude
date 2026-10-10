@@ -409,6 +409,480 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pro'**
   String get proBadge;
+
+  /// No description provided for @searchProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un produit'**
+  String get searchProducts;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get filterAll;
+
+  /// No description provided for @filterLowStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock bas ({nombre})'**
+  String filterLowStock(int nombre);
+
+  /// No description provided for @noCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans catégorie'**
+  String get noCategory;
+
+  /// No description provided for @addProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un produit'**
+  String get addProduct;
+
+  /// No description provided for @stockEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit pour l\'instant'**
+  String get stockEmptyTitle;
+
+  /// No description provided for @stockEmptyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos produits pour suivre le stock et commencer à vendre.'**
+  String get stockEmptyBody;
+
+  /// No description provided for @stockNoResult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit ne correspond à « {recherche} ». Vérifiez l\'orthographe ou ajoutez ce produit.'**
+  String stockNoResult(String recherche);
+
+  /// No description provided for @stockNoLowStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit en stock bas. Tout est au-dessus du seuil d\'alerte.'**
+  String get stockNoLowStock;
+
+  /// No description provided for @stockNoInCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit dans cette catégorie.'**
+  String get stockNoInCategory;
+
+  /// No description provided for @stockOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock : {quantite}'**
+  String stockOf(String quantite);
+
+  /// No description provided for @restockProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réappro {nom}'**
+  String restockProduct(String nom);
+
+  /// No description provided for @productNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau produit'**
+  String get productNewTitle;
+
+  /// No description provided for @productEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le produit'**
+  String get productEditTitle;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du produit'**
+  String get fieldName;
+
+  /// No description provided for @fieldNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Riz parfumé 5 kg'**
+  String get fieldNameHint;
+
+  /// No description provided for @fieldCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get fieldCategory;
+
+  /// No description provided for @newCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle catégorie'**
+  String get newCategory;
+
+  /// No description provided for @fieldPurchasePrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix d\'achat'**
+  String get fieldPurchasePrice;
+
+  /// No description provided for @fieldPurchasePriceHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous payez pour une unité.'**
+  String get fieldPurchasePriceHelp;
+
+  /// No description provided for @fieldSalePrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix de vente'**
+  String get fieldSalePrice;
+
+  /// No description provided for @fieldSalePriceHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix demandé au client pour une unité.'**
+  String get fieldSalePriceHelp;
+
+  /// No description provided for @fieldQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité en stock'**
+  String get fieldQuantity;
+
+  /// No description provided for @fieldQuantityHelpNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous avez aujourd\'hui. Mettez 0 si vous n\'en avez pas.'**
+  String get fieldQuantityHelpNew;
+
+  /// No description provided for @fieldQuantityHelpEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer ce nombre enregistre une correction du stock.'**
+  String get fieldQuantityHelpEdit;
+
+  /// No description provided for @fieldUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get fieldUnit;
+
+  /// No description provided for @fieldThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte de stock bas'**
+  String get fieldThreshold;
+
+  /// No description provided for @fieldThresholdHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Kassa vous prévient quand il en reste ce nombre ou moins.'**
+  String get fieldThresholdHelp;
+
+  /// No description provided for @photoAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get photoAdd;
+
+  /// No description provided for @photoChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la photo'**
+  String get photoChange;
+
+  /// No description provided for @photoTake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get photoTake;
+
+  /// No description provided for @photoGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get photoGallery;
+
+  /// No description provided for @photoRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer la photo'**
+  String get photoRemove;
+
+  /// No description provided for @photoError.
+  ///
+  /// In fr, this message translates to:
+  /// **'La photo n\'a pas pu être ajoutée. Réessayez ou choisissez une autre photo.'**
+  String get photoError;
+
+  /// No description provided for @unitPiece.
+  ///
+  /// In fr, this message translates to:
+  /// **'pièce'**
+  String get unitPiece;
+
+  /// No description provided for @unitKg.
+  ///
+  /// In fr, this message translates to:
+  /// **'kg'**
+  String get unitKg;
+
+  /// No description provided for @unitLitre.
+  ///
+  /// In fr, this message translates to:
+  /// **'litre'**
+  String get unitLitre;
+
+  /// No description provided for @unitCarton.
+  ///
+  /// In fr, this message translates to:
+  /// **'carton'**
+  String get unitCarton;
+
+  /// No description provided for @unitBag.
+  ///
+  /// In fr, this message translates to:
+  /// **'sac'**
+  String get unitBag;
+
+  /// No description provided for @unitPack.
+  ///
+  /// In fr, this message translates to:
+  /// **'paquet'**
+  String get unitPack;
+
+  /// No description provided for @unitBottle.
+  ///
+  /// In fr, this message translates to:
+  /// **'bouteille'**
+  String get unitBottle;
+
+  /// No description provided for @unitBox.
+  ///
+  /// In fr, this message translates to:
+  /// **'boîte'**
+  String get unitBox;
+
+  /// No description provided for @errNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le nom du produit.'**
+  String get errNameRequired;
+
+  /// No description provided for @errPriceRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un prix en francs, sans virgule.'**
+  String get errPriceRequired;
+
+  /// No description provided for @errQuantityInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un nombre, par exemple 12 ou 1,5.'**
+  String get errQuantityInvalid;
+
+  /// No description provided for @errUnitRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez ou saisissez une unité.'**
+  String get errUnitRequired;
+
+  /// No description provided for @warnSellingAtLoss.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix de vente est plus bas que le prix d\'achat : vous perdez {montant} par unité.'**
+  String warnSellingAtLoss(String montant);
+
+  /// No description provided for @save.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get save;
+
+  /// No description provided for @productAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit ajouté.'**
+  String get productAdded;
+
+  /// No description provided for @productSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifications enregistrées.'**
+  String get productSaved;
+
+  /// No description provided for @deleteProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le produit'**
+  String get deleteProduct;
+
+  /// No description provided for @deleteProductTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer {nom} ?'**
+  String deleteProductTitle(String nom);
+
+  /// No description provided for @deleteProductBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il ne sera plus proposé à la vente. Les ventes passées restent dans l\'historique.'**
+  String get deleteProductBody;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get deleteConfirm;
+
+  /// No description provided for @keep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder'**
+  String get keep;
+
+  /// No description provided for @productDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nom} a été supprimé.'**
+  String productDeleted(String nom);
+
+  /// No description provided for @productNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce produit n\'existe plus. Il a peut-être été supprimé.'**
+  String get productNotFound;
+
+  /// No description provided for @saveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'enregistrement a échoué. Réessayez ; vos données sont toujours sur le téléphone.'**
+  String get saveError;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la catégorie'**
+  String get categoryName;
+
+  /// No description provided for @categoryCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get categoryCreate;
+
+  /// No description provided for @cancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get cancel;
+
+  /// No description provided for @errCategoryName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un nom de catégorie.'**
+  String get errCategoryName;
+
+  /// No description provided for @categoryQuickPick.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez un modèle ou saisissez un nom.'**
+  String get categoryQuickPick;
+
+  /// No description provided for @catGrocery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Épicerie'**
+  String get catGrocery;
+
+  /// No description provided for @catDrinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boissons'**
+  String get catDrinks;
+
+  /// No description provided for @catHygiene.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hygiène'**
+  String get catHygiene;
+
+  /// No description provided for @catHousehold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ménage'**
+  String get catHousehold;
+
+  /// No description provided for @catFresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais'**
+  String get catFresh;
+
+  /// No description provided for @catOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get catOther;
+
+  /// No description provided for @restockChooseProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le produit reçu.'**
+  String get restockChooseProduct;
+
+  /// No description provided for @currentStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock actuel : {quantite}'**
+  String currentStock(String quantite);
+
+  /// No description provided for @currentPurchasePrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix d\'achat actuel : {montant}'**
+  String currentPurchasePrice(String montant);
+
+  /// No description provided for @fieldReceivedQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité reçue'**
+  String get fieldReceivedQuantity;
+
+  /// No description provided for @fieldNewPurchasePriceHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changez-le si votre fournisseur a changé son prix.'**
+  String get fieldNewPurchasePriceHelp;
+
+  /// No description provided for @newStockPreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau stock : {quantite}'**
+  String newStockPreview(String quantite);
+
+  /// No description provided for @addToStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter au stock'**
+  String get addToStock;
+
+  /// No description provided for @errReceivedQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez la quantité reçue, plus grande que 0.'**
+  String get errReceivedQuantity;
+
+  /// No description provided for @stockUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock mis à jour : {quantite}.'**
+  String stockUpdated(String quantite);
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet écran arrive dans une prochaine version.'**
+  String get comingSoon;
 }
 
 class _AppLocalizationsDelegate
