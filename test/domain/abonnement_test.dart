@@ -63,10 +63,10 @@ void main() {
     );
   });
 
-  test('fin d\'essai sans serveur : 30 jours après la création (Douala)', () {
+  test('fin d\'essai sans serveur : 7 jours après la création (Douala)', () {
     expect(
       EtatAbonnement.finEssaiDepuis(DateTime.utc(2026, 10, 9, 23, 30)),
-      DateTime.utc(2026, 11, 9),
+      DateTime.utc(2026, 10, 17),
     );
   });
 

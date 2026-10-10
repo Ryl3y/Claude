@@ -398,13 +398,13 @@ class _Lien extends StatelessWidget {
   }
 }
 
-/// Fin d'essai proche (7 derniers jours) ou abonnement terminé : un
+/// Fin d'essai proche (3 derniers jours) ou abonnement terminé : un
 /// rappel avec « Passer à Pro ». Rien le reste du temps.
 class _BandeauAbonnement extends ConsumerWidget {
   const _BandeauAbonnement();
 
   /// L'accueil prévient à partir de ce nombre de jours restants.
-  static const joursAvantFin = 7;
+  static const joursAvantFin = 3;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -23,7 +23,7 @@ final serveurAbonnementProvider = Provider<ServeurAbonnement?>(
 ///
 /// Calculé sur le téléphone (l'app marche sans réseau) à partir du dernier
 /// abonnement lu sur le serveur, ou, avant la première lecture, de la date
-/// de création de la boutique (30 jours d'essai, comme le serveur). Relu
+/// de création de la boutique (7 jours d'essai, comme le serveur). Relu
 /// sur le serveur à l'ouverture et après chaque sauvegarde réussie.
 ///
 /// Le serveur a le dernier mot : sans réponse de sa part (première

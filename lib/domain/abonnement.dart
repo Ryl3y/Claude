@@ -4,7 +4,7 @@ import '../core/heure_douala.dart';
 const prixProFcfa = 5000;
 
 /// Durée de l'essai gratuit offert à la création de la boutique.
-const dureeEssaiJours = 30;
+const dureeEssaiJours = 7;
 
 /// Où en est l'abonnement de la boutique. Les jours sont des dates de
 /// Douala (sans heure) : l'essai ou Pro valent jusqu'à la fin de [fin].
@@ -36,7 +36,7 @@ sealed class EtatAbonnement {
     return DateTime.utc(d.year, d.month, d.day);
   }
 
-  /// Fin de l'essai quand le serveur n'a pas encore répondu : 30 jours
+  /// Fin de l'essai quand le serveur n'a pas encore répondu : 7 jours
   /// après la création de la boutique (comme le serveur).
   static DateTime finEssaiDepuis(DateTime creeLe) =>
       jourDouala(creeLe).add(const Duration(days: dureeEssaiJours));

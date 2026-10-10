@@ -56,10 +56,10 @@ void main() {
     await stabiliser(tester);
 
     await _toucher(tester, find.text('Réglages'));
-    expect(find.text('Essai gratuit : 30 jours restants'), findsOneWidget);
+    expect(find.text('Essai gratuit : 7 jours restants'), findsOneWidget);
     await _toucher(tester, find.text('English'));
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Free trial: 30 days left'), findsOneWidget);
+    expect(find.text('Free trial: 7 days left'), findsOneWidget);
     await app.fermer(tester);
   });
 
@@ -106,11 +106,19 @@ void main() {
   });
 
   testWidgets('essai bientôt fini : l\'accueil prévient', (tester) async {
+    final app = await AppDeTest.creer(abonnementGarde: ('gratuit', _dans(2)));
+    await tester.pumpWidget(app.widget);
+    await stabiliser(tester);
+    expect(find.text('Essai gratuit : 2 jours restants'), findsOneWidget);
+    expect(find.text('Passer à Pro'), findsOneWidget);
+    await app.fermer(tester);
+  });
+
+  testWidgets('début d\'essai : pas de rappel sur l\'accueil', (tester) async {
     final app = await AppDeTest.creer(abonnementGarde: ('gratuit', _dans(3)));
     await tester.pumpWidget(app.widget);
     await stabiliser(tester);
-    expect(find.text('Essai gratuit : 3 jours restants'), findsOneWidget);
-    expect(find.text('Passer à Pro'), findsOneWidget);
+    expect(find.text('Passer à Pro'), findsNothing);
     await app.fermer(tester);
   });
 

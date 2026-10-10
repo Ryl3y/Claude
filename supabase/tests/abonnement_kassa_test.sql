@@ -20,7 +20,7 @@ grant execute on all functions in schema test_abonnement to authenticated, servi
 insert into auth.users (id, phone, phone_confirmed_at) values
   ('ffffffff-0000-4000-8000-000000000006', '237690000006', now());
 
--- La boutique F se sauvegarde : l'essai de 30 jours commence.
+-- La boutique F se sauvegarde : l'essai de 7 jours commence.
 begin;
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"ffffffff-0000-4000-8000-000000000006","phone":"237690000006","role":"authenticated"}';
@@ -31,7 +31,7 @@ values ('ffffffff-0000-4000-8000-000000000006', 'f0000000-0000-4000-8000-0000000
 select test_abonnement.egal(
   (select (date_fin - (now() at time zone 'Africa/Douala')::date)::text
    from public.abonnements where boutique_id = 'f0000000-0000-4000-8000-000000000001'),
-  '30', 'essai de 30 jours créé à la première sauvegarde');
+  '7', 'essai de 7 jours créé à la première sauvegarde');
 select test_abonnement.egal(
   (select formule from public.abonnements where boutique_id = 'f0000000-0000-4000-8000-000000000001'),
   'gratuit', 'formule gratuite pendant l''essai');
@@ -70,7 +70,7 @@ values ('kassa-00000000-0000-4000-8000-000000000002', 'f0000000-0000-4000-8000-0
         'ffffffff-0000-4000-8000-000000000006', 5000, 'cm.orange');
 select test_abonnement.egal(
   (public.confirmer_paiement_abonnement('kassa-00000000-0000-4000-8000-000000000002', 'trx.test', 5000)
-   - (now() at time zone 'Africa/Douala')::date >= 58)::text,
+   - (now() at time zone 'Africa/Douala')::date >= 35)::text,
   'true', 'paiement pendant l''essai : un mois ajouté après l''essai');
 select test_abonnement.egal(
   (select formule from public.abonnements where boutique_id = 'f0000000-0000-4000-8000-000000000001'),
