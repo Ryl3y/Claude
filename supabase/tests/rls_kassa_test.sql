@@ -84,7 +84,7 @@ values ('a7000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-0000000
         'a2000000-0000-4000-8000-000000000001', 'vente', -2, 'a4000000-0000-4000-8000-000000000001', now(), now(), 'tel-a');
 
 select test_kassa.egal((select count(*) from public.produits), 1, 'A voit son produit');
-select test_kassa.egal((select count(*) from public.abonnements), 0, 'A ne voit aucun abonnement');
+select test_kassa.egal((select count(*) from public.abonnements), 1, 'A voit seulement son abonnement (essai)');
 
 select test_kassa.doit_echouer($q$ delete from public.produits $q$, 'suppression définitive interdite');
 select test_kassa.doit_echouer($q$
