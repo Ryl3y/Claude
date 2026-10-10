@@ -19,9 +19,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        preferencesLocalesProvider.overrideWithValue(preferences),
-      ],
+      overrides: [preferencesLocalesProvider.overrideWithValue(preferences)],
       child: const KassaApp(),
     ),
   );

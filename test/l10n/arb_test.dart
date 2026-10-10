@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> _lire(String nom) =>
-    jsonDecode(File('lib/l10n/$nom').readAsStringSync()) as Map<String, dynamic>;
+    jsonDecode(File('lib/l10n/$nom').readAsStringSync())
+        as Map<String, dynamic>;
 
 Set<String> _cles(Map<String, dynamic> arb) =>
     arb.keys.where((k) => !k.startsWith('@')).toSet();

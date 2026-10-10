@@ -7,8 +7,9 @@ void main() {
     final b = Identifiant.nouveau();
     expect(a, isNot(b));
     expect(
-      RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')
-          .hasMatch(a),
+      RegExp(
+        r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+      ).hasMatch(a),
       isTrue,
     );
   });

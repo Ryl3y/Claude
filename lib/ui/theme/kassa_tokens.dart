@@ -81,31 +81,31 @@ class KassaTokens extends ThemeExtension<KassaTokens> {
   });
 
   factory KassaTokens.from(KassaPalette p, KassaTextStyles t) => KassaTokens(
-        surface: p.surface,
-        surfaceRaised: p.surfaceRaised,
-        line: p.line,
-        ink: p.ink,
-        inkMuted: p.inkMuted,
-        kassa: p.kassa,
-        kassaSoft: p.kassaSoft,
-        onKassa: p.onKassa,
-        kassaDeep: p.kassaDeep,
-        onKassaDeep: p.onKassaDeep,
-        or: p.or,
-        onOr: p.onOr,
-        orSoft: p.orSoft,
-        orInk: p.orInk,
-        dette: p.dette,
-        detteSoft: p.detteSoft,
-        focus: p.focus,
-        display: t.display,
-        title: t.title,
-        amountLg: t.amountLg,
-        amount: t.amount,
-        body: t.body,
-        label: t.label,
-        caption: t.caption,
-      );
+    surface: p.surface,
+    surfaceRaised: p.surfaceRaised,
+    line: p.line,
+    ink: p.ink,
+    inkMuted: p.inkMuted,
+    kassa: p.kassa,
+    kassaSoft: p.kassaSoft,
+    onKassa: p.onKassa,
+    kassaDeep: p.kassaDeep,
+    onKassaDeep: p.onKassaDeep,
+    or: p.or,
+    onOr: p.onOr,
+    orSoft: p.orSoft,
+    orInk: p.orInk,
+    dette: p.dette,
+    detteSoft: p.detteSoft,
+    focus: p.focus,
+    display: t.display,
+    title: t.title,
+    amountLg: t.amountLg,
+    amount: t.amount,
+    body: t.body,
+    label: t.label,
+    caption: t.caption,
+  );
 
   final Color surface;
   final Color surfaceRaised;
@@ -253,17 +253,22 @@ class KassaTextStyles {
   /// La graisse doit être donnée à google_fonts dès le départ : sinon il ne
   /// charge que le fichier Regular et simule le gras.
   factory KassaTextStyles.build(
-      TextStyle Function(FontWeight graisse) police, Color ink) {
+    TextStyle Function(FontWeight graisse) police,
+    Color ink,
+  ) {
     const tabular = [FontFeature.tabularFigures()];
-    TextStyle style(double size, double height, FontWeight weight,
-            {bool chiffres = false}) =>
-        police(weight).copyWith(
-          fontSize: size,
-          height: height / size,
-          color: ink,
-          fontFeatures: chiffres ? tabular : null,
-          leadingDistribution: TextLeadingDistribution.even,
-        );
+    TextStyle style(
+      double size,
+      double height,
+      FontWeight weight, {
+      bool chiffres = false,
+    }) => police(weight).copyWith(
+      fontSize: size,
+      height: height / size,
+      color: ink,
+      fontFeatures: chiffres ? tabular : null,
+      leadingDistribution: TextLeadingDistribution.even,
+    );
 
     return KassaTextStyles(
       display: style(32, 40, FontWeight.w800),

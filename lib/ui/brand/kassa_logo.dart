@@ -21,12 +21,7 @@ enum KassaSymboleVariante {
 /// du fond pour la « détacher » du reçu : [fond], par défaut
 /// `surface-raised` (cartes), ou `kassa-deep` pour la variante surFonce.
 class KassaSymbole extends StatelessWidget {
-  const KassaSymbole({
-    super.key,
-    this.taille = 48,
-    this.variante,
-    this.fond,
-  });
+  const KassaSymbole({super.key, this.taille = 48, this.variante, this.fond});
 
   final double taille;
 
@@ -37,11 +32,13 @@ class KassaSymbole extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final v = variante ??
+    final v =
+        variante ??
         (taille <= 24
             ? KassaSymboleVariante.petit
             : KassaSymboleVariante.principal);
-    final contour = fond ??
+    final contour =
+        fond ??
         (v == KassaSymboleVariante.surFonce
             ? context.kassa.kassaDeep
             : context.kassa.surfaceRaised);
@@ -98,10 +95,7 @@ class KassaLogo extends StatelessWidget {
           fond: surFonce ? t.kassaDeep : null,
         ),
         SizedBox(width: taille * 0.25),
-        KassaNom(
-          taille: taille,
-          couleur: surFonce ? t.onKassaDeep : t.ink,
-        ),
+        KassaNom(taille: taille, couleur: surFonce ? t.onKassaDeep : t.ink),
       ],
     );
   }
@@ -122,7 +116,8 @@ abstract final class KassaSvg {
       '<circle cx="82" cy="18" r="13" fill="#f2b233" stroke="$contourPiece" stroke-width="4"/>'
       '</svg>';
 
-  static const petit = '<svg viewBox="0 0 100 100">'
+  static const petit =
+      '<svg viewBox="0 0 100 100">'
       '<rect x="12" y="6" width="76" height="88" rx="14" fill="#1d7349"/>'
       '<path d="M38 28 V72 M64 28 L43 50 L64 72" fill="none" stroke="#ffffff" '
       'stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>'
@@ -138,7 +133,8 @@ abstract final class KassaSvg {
       '</svg>';
 
   static String pour(KassaSymboleVariante v, {required Color contourPiece}) {
-    final hex = '#${(contourPiece.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+    final hex =
+        '#${(contourPiece.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
     return switch (v) {
       KassaSymboleVariante.principal => principal(contourPiece: hex),
       KassaSymboleVariante.petit => petit,

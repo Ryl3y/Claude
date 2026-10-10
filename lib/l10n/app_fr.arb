@@ -1,15 +1,14 @@
 {
   "@@locale": "fr",
-
   "appName": "Kassa",
-  "@appName": { "description": "Nom de l'application (ne se traduit pas)." },
+  "@appName": {
+    "description": "Nom de l'application (ne se traduit pas)."
+  },
   "appTagline": "Ventes, stock et dettes, même sans internet.",
-
   "navHome": "Accueil",
   "navSell": "Vendre",
   "navStock": "Stock",
   "navCustomers": "Clients",
-
   "newSale": "Nouvelle vente",
   "collectPayment": "Encaisser",
   "add": "Ajouter",
@@ -17,7 +16,12 @@
   "owes": "Doit {montant}",
   "@owes": {
     "description": "Montant dû par un client. Toujours devant un montant de dette.",
-    "placeholders": { "montant": { "type": "String", "example": "7 500 F" } }
+    "placeholders": {
+      "montant": {
+        "type": "String",
+        "example": "7 500 F"
+      }
+    }
   },
   "paidUp": "À jour",
   "remind": "Rappeler",
@@ -25,25 +29,154 @@
   "todaySales": "Ventes du jour",
   "moneyOwed": "Dettes à recevoir",
   "saved": "Sauvegardé",
-  "@saved": { "description": "État de la sauvegarde en ligne. Ne jamais dire « synchronisation »." },
+  "@saved": {
+    "description": "État de la sauvegarde en ligne. Ne jamais dire « synchronisation »."
+  },
   "goPro": "Passer à Pro",
   "cancelSale": "Annuler la vente",
-
   "youSoldToday": "Vous avez vendu {montant} aujourd'hui.",
   "@youSoldToday": {
-    "placeholders": { "montant": { "type": "String", "example": "45 000 FCFA" } }
+    "placeholders": {
+      "montant": {
+        "type": "String",
+        "example": "45 000 FCFA"
+      }
+    }
   },
   "todayProfit": "Bénéfice du jour",
-
   "language": "Langue",
   "languagePhone": "Langue du téléphone",
   "languageFrench": "Français",
   "languageEnglish": "English",
-
-  "previewLogo": "Logo",
-  "previewColors": "Couleurs",
-  "previewText": "Textes",
-  "previewAmounts": "Montants",
-  "previewWords": "Mots de l'app",
-  "previewStepNote": "Écran provisoire de l'étape 1. Il sera remplacé par l'accueil."
+  "previewStepNote": "Écran de démonstration des composants (étape 3). Il sera remplacé par l'accueil.",
+  "owesLabel": "Doit",
+  "@owesLabel": {
+    "description": "Mot placé devant un montant dû (le montant suit, plus grand)."
+  },
+  "addToCart": "Ajouter {nom} au panier",
+  "@addToCart": {
+    "description": "Libellé pour lecteur d'écran d'une carte produit.",
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Riz 5 kg"
+      }
+    }
+  },
+  "inCart": "{quantite} dans le panier",
+  "@inCart": {
+    "placeholders": {
+      "quantite": {
+        "type": "String",
+        "example": "3"
+      }
+    }
+  },
+  "stockLeft": "{quantite} {unite}",
+  "@stockLeft": {
+    "description": "Stock restant sous un produit.",
+    "placeholders": {
+      "quantite": {
+        "type": "String",
+        "example": "12"
+      },
+      "unite": {
+        "type": "String",
+        "example": "sacs"
+      }
+    }
+  },
+  "remindOnWhatsapp": "Rappeler {nom} sur WhatsApp",
+  "@remindOnWhatsapp": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Maman Brigitte"
+      }
+    }
+  },
+  "reminderMessage": "Bonjour {nom}, il reste {montant} à payer chez {boutique}. Merci.",
+  "@reminderMessage": {
+    "description": "Message WhatsApp pré-rempli pour rappeler une dette.",
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Maman Brigitte"
+      },
+      "montant": {
+        "type": "String",
+        "example": "7 500 FCFA"
+      },
+      "boutique": {
+        "type": "String",
+        "example": "Chez Rich"
+      }
+    }
+  },
+  "erase": "Effacer",
+  "@erase": {
+    "description": "Touche du pavé numérique qui efface le dernier chiffre."
+  },
+  "stockAlerts": "{nombre, plural, =1{1 produit en stock bas} other{{nombre} produits en stock bas}}",
+  "@stockAlerts": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "salesCount": "{nombre, plural, =0{Aucune vente} =1{1 vente} other{{nombre} ventes}}",
+  "@salesCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "customersCount": "{nombre, plural, =0{Aucun client} =1{1 client} other{{nombre} clients}}",
+  "@customersCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPurchase": "Dernier achat le {date}",
+  "@lastPurchase": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "10 oct."
+      }
+    }
+  },
+  "later": "Plus tard",
+  "paid": "Payé",
+  "cancelled": "Annulée",
+  "demoTitle": "Composants Kassa",
+  "demoButtons": "Boutons",
+  "demoBadges": "Étiquettes",
+  "demoAmounts": "Montants",
+  "demoStats": "Chiffres clés",
+  "demoProducts": "Produits",
+  "demoProductsHint": "Touchez une carte pour l'ajouter au panier.",
+  "demoCustomers": "Clients",
+  "demoNumPad": "Pavé numérique",
+  "demoReminderSent": "Rappel prêt pour {nom}.",
+  "@demoReminderSent": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Maman Brigitte"
+      }
+    }
+  },
+  "enterQuantity": "Saisir une quantité",
+  "@enterQuantity": {
+    "description": "Action de l'appui long sur une carte produit (lecteur d'écran)."
+  },
+  "proBadge": "Pro",
+  "@proBadge": {
+    "description": "Étiquette de la formule payante (nom de la formule, identique en anglais)."
+  }
 }

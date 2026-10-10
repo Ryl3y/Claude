@@ -248,41 +248,167 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEnglish;
 
-  /// No description provided for @previewLogo.
-  ///
-  /// In fr, this message translates to:
-  /// **'Logo'**
-  String get previewLogo;
-
-  /// No description provided for @previewColors.
-  ///
-  /// In fr, this message translates to:
-  /// **'Couleurs'**
-  String get previewColors;
-
-  /// No description provided for @previewText.
-  ///
-  /// In fr, this message translates to:
-  /// **'Textes'**
-  String get previewText;
-
-  /// No description provided for @previewAmounts.
-  ///
-  /// In fr, this message translates to:
-  /// **'Montants'**
-  String get previewAmounts;
-
-  /// No description provided for @previewWords.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mots de l\'app'**
-  String get previewWords;
-
   /// No description provided for @previewStepNote.
   ///
   /// In fr, this message translates to:
-  /// **'Écran provisoire de l\'étape 1. Il sera remplacé par l\'accueil.'**
+  /// **'Écran de démonstration des composants (étape 3). Il sera remplacé par l\'accueil.'**
   String get previewStepNote;
+
+  /// Mot placé devant un montant dû (le montant suit, plus grand).
+  ///
+  /// In fr, this message translates to:
+  /// **'Doit'**
+  String get owesLabel;
+
+  /// Libellé pour lecteur d'écran d'une carte produit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter {nom} au panier'**
+  String addToCart(String nom);
+
+  /// No description provided for @inCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'{quantite} dans le panier'**
+  String inCart(String quantite);
+
+  /// Stock restant sous un produit.
+  ///
+  /// In fr, this message translates to:
+  /// **'{quantite} {unite}'**
+  String stockLeft(String quantite, String unite);
+
+  /// No description provided for @remindOnWhatsapp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappeler {nom} sur WhatsApp'**
+  String remindOnWhatsapp(String nom);
+
+  /// Message WhatsApp pré-rempli pour rappeler une dette.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour {nom}, il reste {montant} à payer chez {boutique}. Merci.'**
+  String reminderMessage(String nom, String montant, String boutique);
+
+  /// Touche du pavé numérique qui efface le dernier chiffre.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer'**
+  String get erase;
+
+  /// No description provided for @stockAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =1{1 produit en stock bas} other{{nombre} produits en stock bas}}'**
+  String stockAlerts(int nombre);
+
+  /// No description provided for @salesCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =0{Aucune vente} =1{1 vente} other{{nombre} ventes}}'**
+  String salesCount(int nombre);
+
+  /// No description provided for @customersCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{nombre, plural, =0{Aucun client} =1{1 client} other{{nombre} clients}}'**
+  String customersCount(int nombre);
+
+  /// No description provided for @lastPurchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier achat le {date}'**
+  String lastPurchase(String date);
+
+  /// No description provided for @later.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get later;
+
+  /// No description provided for @paid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payé'**
+  String get paid;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get cancelled;
+
+  /// No description provided for @demoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Composants Kassa'**
+  String get demoTitle;
+
+  /// No description provided for @demoButtons.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boutons'**
+  String get demoButtons;
+
+  /// No description provided for @demoBadges.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiquettes'**
+  String get demoBadges;
+
+  /// No description provided for @demoAmounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montants'**
+  String get demoAmounts;
+
+  /// No description provided for @demoStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chiffres clés'**
+  String get demoStats;
+
+  /// No description provided for @demoProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits'**
+  String get demoProducts;
+
+  /// No description provided for @demoProductsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez une carte pour l\'ajouter au panier.'**
+  String get demoProductsHint;
+
+  /// No description provided for @demoCustomers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clients'**
+  String get demoCustomers;
+
+  /// No description provided for @demoNumPad.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pavé numérique'**
+  String get demoNumPad;
+
+  /// No description provided for @demoReminderSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel prêt pour {nom}.'**
+  String demoReminderSent(String nom);
+
+  /// Action de l'appui long sur une carte produit (lecteur d'écran).
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisir une quantité'**
+  String get enterQuantity;
+
+  /// Étiquette de la formule payante (nom de la formule, identique en anglais).
+  ///
+  /// In fr, this message translates to:
+  /// **'Pro'**
+  String get proBadge;
 }
 
 class _AppLocalizationsDelegate

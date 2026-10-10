@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'kassa_colors.dart';
+import 'kassa_composants.dart';
 import 'kassa_tokens.dart';
 
 /// Thème Kassa (clair et sombre).
@@ -179,29 +180,33 @@ abstract final class KassaTheme {
         showDragHandle: true,
         dragHandleColor: p.line,
         shape: const RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(KassaRadius.lg)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(KassaRadius.lg),
+          ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: p.surfaceRaised,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        height: 72,
+        height: KassaComposants.navHauteur,
         indicatorColor: p.kassaSoft,
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => textes.label.copyWith(
-            color:
-                states.contains(WidgetState.selected) ? p.ink : p.inkMuted,
-          ),
+          (states) => states.contains(WidgetState.selected)
+              ? tokens.ongletActif.copyWith(color: p.kassa)
+              : tokens.onglet.copyWith(color: p.inkMuted),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             size: KassaSize.iconNav,
-            color:
-                states.contains(WidgetState.selected) ? p.kassa : p.inkMuted,
+            color: states.contains(WidgetState.selected) ? p.kassa : p.inkMuted,
           ),
         ),
+      ),
+      badgeTheme: BadgeThemeData(
+        backgroundColor: p.or,
+        textColor: p.onOr,
+        textStyle: tokens.etiquette,
       ),
       chipTheme: ChipThemeData(
         backgroundColor: p.surfaceRaised,

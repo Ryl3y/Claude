@@ -13,7 +13,10 @@ double contraste(Color a, Color b) {
 
 void main() {
   // Paires texte / fond prévues par la charte : 4,5:1 minimum, dans les deux thèmes.
-  for (final (nom, p) in [('clair', KassaPalette.clair), ('sombre', KassaPalette.sombre)]) {
+  for (final (nom, p) in [
+    ('clair', KassaPalette.clair),
+    ('sombre', KassaPalette.sombre),
+  ]) {
     final paires = <String, (Color, Color)>{
       'ink / surface': (p.ink, p.surface),
       'ink / surface-raised': (p.ink, p.surfaceRaised),
@@ -32,8 +35,11 @@ void main() {
     };
     paires.forEach((paire, c) {
       test('$nom : $paire ≥ 4,5:1', () {
-        expect(contraste(c.$1, c.$2), greaterThanOrEqualTo(4.5),
-            reason: contraste(c.$1, c.$2).toStringAsFixed(2));
+        expect(
+          contraste(c.$1, c.$2),
+          greaterThanOrEqualTo(4.5),
+          reason: contraste(c.$1, c.$2).toStringAsFixed(2),
+        );
       });
     });
   }

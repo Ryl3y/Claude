@@ -19,7 +19,10 @@ void main() {
     });
 
     test('version courte : « 12 500 F »', () {
-      expect(Montant.format(12500, 'fr', court: true), '12${milliers}500${insecable}F');
+      expect(
+        Montant.format(12500, 'fr', court: true),
+        '12${milliers}500${insecable}F',
+      );
       expect(Montant.format(7500, 'en', court: true), '7,500${insecable}F');
     });
 

@@ -12,8 +12,9 @@ final preferencesLocalesProvider = Provider<PreferencesLocales>(
 );
 
 /// Langue choisie dans Réglages ; `null` = langue du téléphone.
-final langueProvider =
-    NotifierProvider<LangueController, Locale?>(LangueController.new);
+final langueProvider = NotifierProvider<LangueController, Locale?>(
+  LangueController.new,
+);
 
 class LangueController extends Notifier<Locale?> {
   @override

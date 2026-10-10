@@ -65,9 +65,9 @@ class Boutiques extends Table with ColonneId, ColonnesSynchro {
   /// même règle que sur le serveur.
   /// (REGEXP est interdit dans un CHECK SQLite : on utilise GLOB.)
   TextColumn get telephone => text().check(
-        telephone.length.isBetweenValues(8, 15) &
-            const CustomExpression<bool>("telephone NOT GLOB '*[^0-9]*'"),
-      )();
+    telephone.length.isBetweenValues(8, 15) &
+        const CustomExpression<bool>("telephone NOT GLOB '*[^0-9]*'"),
+  )();
   TextColumn get ville => text()();
   TextColumn get quartier => text()();
   TextColumn get typeCommerce => text()();
@@ -98,8 +98,7 @@ class Categories extends Table with ColonneId, ColonnesSynchro {
 @DataClassName('Produit')
 @TableIndex(name: 'produits_categorie_id', columns: {#categorieId})
 class Produits extends Table with ColonneId, ColonnesSynchro {
-  TextColumn get categorieId =>
-      text().nullable().references(Categories, #id)();
+  TextColumn get categorieId => text().nullable().references(Categories, #id)();
   TextColumn get nom => text().withLength(min: 1)();
   IntColumn get prixAchat =>
       integer().check(prixAchat.isBiggerOrEqualValue(0))();
@@ -195,9 +194,8 @@ class MouvementsStock extends Table with ColonneId, ColonnesSynchro {
   RealColumn get quantite => real()();
 
   /// Pour les entrées : nouveau coût d'achat.
-  IntColumn get prixAchatUnitaire => integer()
-      .nullable()
-      .check(prixAchatUnitaire.isBiggerOrEqualValue(0))();
+  IntColumn get prixAchatUnitaire =>
+      integer().nullable().check(prixAchatUnitaire.isBiggerOrEqualValue(0))();
 
   /// Vente liée (mouvements « vente » et « annulation »).
   TextColumn get referenceId => text().nullable()();

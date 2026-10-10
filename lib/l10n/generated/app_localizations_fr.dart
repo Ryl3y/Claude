@@ -89,21 +89,124 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get previewLogo => 'Logo';
-
-  @override
-  String get previewColors => 'Couleurs';
-
-  @override
-  String get previewText => 'Textes';
-
-  @override
-  String get previewAmounts => 'Montants';
-
-  @override
-  String get previewWords => 'Mots de l\'app';
-
-  @override
   String get previewStepNote =>
-      'Écran provisoire de l\'étape 1. Il sera remplacé par l\'accueil.';
+      'Écran de démonstration des composants (étape 3). Il sera remplacé par l\'accueil.';
+
+  @override
+  String get owesLabel => 'Doit';
+
+  @override
+  String addToCart(String nom) {
+    return 'Ajouter $nom au panier';
+  }
+
+  @override
+  String inCart(String quantite) {
+    return '$quantite dans le panier';
+  }
+
+  @override
+  String stockLeft(String quantite, String unite) {
+    return '$quantite $unite';
+  }
+
+  @override
+  String remindOnWhatsapp(String nom) {
+    return 'Rappeler $nom sur WhatsApp';
+  }
+
+  @override
+  String reminderMessage(String nom, String montant, String boutique) {
+    return 'Bonjour $nom, il reste $montant à payer chez $boutique. Merci.';
+  }
+
+  @override
+  String get erase => 'Effacer';
+
+  @override
+  String stockAlerts(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre produits en stock bas',
+      one: '1 produit en stock bas',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String salesCount(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre ventes',
+      one: '1 vente',
+      zero: 'Aucune vente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String customersCount(int nombre) {
+    String _temp0 = intl.Intl.pluralLogic(
+      nombre,
+      locale: localeName,
+      other: '$nombre clients',
+      one: '1 client',
+      zero: 'Aucun client',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastPurchase(String date) {
+    return 'Dernier achat le $date';
+  }
+
+  @override
+  String get later => 'Plus tard';
+
+  @override
+  String get paid => 'Payé';
+
+  @override
+  String get cancelled => 'Annulée';
+
+  @override
+  String get demoTitle => 'Composants Kassa';
+
+  @override
+  String get demoButtons => 'Boutons';
+
+  @override
+  String get demoBadges => 'Étiquettes';
+
+  @override
+  String get demoAmounts => 'Montants';
+
+  @override
+  String get demoStats => 'Chiffres clés';
+
+  @override
+  String get demoProducts => 'Produits';
+
+  @override
+  String get demoProductsHint => 'Touchez une carte pour l\'ajouter au panier.';
+
+  @override
+  String get demoCustomers => 'Clients';
+
+  @override
+  String get demoNumPad => 'Pavé numérique';
+
+  @override
+  String demoReminderSent(String nom) {
+    return 'Rappel prêt pour $nom.';
+  }
+
+  @override
+  String get enterQuantity => 'Saisir une quantité';
+
+  @override
+  String get proBadge => 'Pro';
 }

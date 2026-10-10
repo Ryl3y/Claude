@@ -9,7 +9,7 @@ import '../../core/heure_douala.dart';
 /// modification, y compris la suppression logique.
 class ChampsSynchro {
   ChampsSynchro({required this.appareilId, DateTime Function()? horloge})
-      : _horloge = horloge ?? HeureDouala.maintenantUtc;
+    : _horloge = horloge ?? HeureDouala.maintenantUtc;
 
   final String appareilId;
   final DateTime Function() _horloge;

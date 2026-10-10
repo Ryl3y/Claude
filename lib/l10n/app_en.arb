@@ -1,14 +1,11 @@
 {
   "@@locale": "en",
-
   "appName": "Kassa",
   "appTagline": "Sales, stock and debts, even offline.",
-
   "navHome": "Home",
   "navSell": "Sell",
   "navStock": "Stock",
   "navCustomers": "Customers",
-
   "newSale": "New sale",
   "collectPayment": "Collect payment",
   "add": "Add",
@@ -22,19 +19,37 @@
   "saved": "Saved",
   "goPro": "Go Pro",
   "cancelSale": "Cancel sale",
-
   "youSoldToday": "You sold {montant} today.",
   "todayProfit": "Today's profit",
-
   "language": "Language",
   "languagePhone": "Phone language",
   "languageFrench": "Français",
   "languageEnglish": "English",
-
-  "previewLogo": "Logo",
-  "previewColors": "Colors",
-  "previewText": "Text",
-  "previewAmounts": "Amounts",
-  "previewWords": "App words",
-  "previewStepNote": "Temporary screen for step 1. The home screen will replace it."
+  "previewStepNote": "Component demo screen (step 3). The home screen will replace it.",
+  "owesLabel": "Owes",
+  "addToCart": "Add {nom} to cart",
+  "inCart": "{quantite} in cart",
+  "stockLeft": "{quantite} {unite}",
+  "remindOnWhatsapp": "Remind {nom} on WhatsApp",
+  "reminderMessage": "Hello {nom}, you still owe {montant} at {boutique}. Thank you.",
+  "erase": "Delete",
+  "stockAlerts": "{nombre, plural, =1{1 product low on stock} other{{nombre} products low on stock}}",
+  "salesCount": "{nombre, plural, =0{No sales} =1{1 sale} other{{nombre} sales}}",
+  "customersCount": "{nombre, plural, =0{No customers} =1{1 customer} other{{nombre} customers}}",
+  "lastPurchase": "Last purchase on {date}",
+  "later": "Later",
+  "paid": "Paid",
+  "cancelled": "Cancelled",
+  "demoTitle": "Kassa components",
+  "demoButtons": "Buttons",
+  "demoBadges": "Labels",
+  "demoAmounts": "Amounts",
+  "demoStats": "Key figures",
+  "demoProducts": "Products",
+  "demoProductsHint": "Tap a card to add it to the cart.",
+  "demoCustomers": "Customers",
+  "demoNumPad": "Number pad",
+  "demoReminderSent": "Reminder ready for {nom}.",
+  "enterQuantity": "Enter a quantity",
+  "proBadge": "Pro"
 }

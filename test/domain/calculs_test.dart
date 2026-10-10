@@ -2,9 +2,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kassa/domain/calculs.dart';
 
 void main() {
-  const riz = LigneCalcul(quantite: 2, prixUnitaire: 3500, prixAchatUnitaire: 3000);
-  const savon = LigneCalcul(quantite: 3, prixUnitaire: 250, prixAchatUnitaire: 200);
-  const sucreVrac = LigneCalcul(quantite: 1.5, prixUnitaire: 900, prixAchatUnitaire: 750);
+  const riz = LigneCalcul(
+    quantite: 2,
+    prixUnitaire: 3500,
+    prixAchatUnitaire: 3000,
+  );
+  const savon = LigneCalcul(
+    quantite: 3,
+    prixUnitaire: 250,
+    prixAchatUnitaire: 200,
+  );
+  const sucreVrac = LigneCalcul(
+    quantite: 1.5,
+    prixUnitaire: 900,
+    prixAchatUnitaire: 750,
+  );
 
   group('total', () {
     test('somme des lignes', () {
@@ -12,7 +24,11 @@ void main() {
     });
     test('quantité décimale arrondie au franc', () {
       expect(Calculs.totalVente([sucreVrac]), 1350);
-      const tiers = LigneCalcul(quantite: 0.333, prixUnitaire: 1000, prixAchatUnitaire: 0);
+      const tiers = LigneCalcul(
+        quantite: 0.333,
+        prixUnitaire: 1000,
+        prixAchatUnitaire: 0,
+      );
       expect(Calculs.totalVente([tiers]), 333);
     });
     test('vente vide = 0', () {
@@ -28,7 +44,11 @@ void main() {
       expect(Calculs.beneficeVente([sucreVrac]), 225);
     });
     test('vente à perte : bénéfice négatif', () {
-      const perte = LigneCalcul(quantite: 1, prixUnitaire: 800, prixAchatUnitaire: 1000);
+      const perte = LigneCalcul(
+        quantite: 1,
+        prixUnitaire: 800,
+        prixAchatUnitaire: 1000,
+      );
       expect(Calculs.beneficeVente([perte]), -200);
     });
   });
@@ -61,7 +81,10 @@ void main() {
 
   group('solde_dette', () {
     test('ventes à crédit − versements', () {
-      expect(Calculs.soldeDette(restesAPayer: [5000, 2500], versements: [3000]), 4500);
+      expect(
+        Calculs.soldeDette(restesAPayer: [5000, 2500], versements: [3000]),
+        4500,
+      );
     });
     test('à jour', () {
       expect(Calculs.soldeDette(restesAPayer: [5000], versements: [5000]), 0);

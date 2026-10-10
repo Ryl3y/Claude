@@ -57,7 +57,10 @@ void main() {
 
     // Chiffres tabulaires pour les montants.
     expect(t.amount.fontFeatures, contains(const FontFeature.tabularFigures()));
-    expect(t.amountLg.fontFeatures, contains(const FontFeature.tabularFigures()));
+    expect(
+      t.amountLg.fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
     // Chaque graisse utilise son propre fichier de police (pas de faux gras).
     expect(t.body.fontFamily, 'PlusJakartaSans_regular');
     expect(t.caption.fontFamily, 'PlusJakartaSans_500');
