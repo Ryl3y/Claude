@@ -114,6 +114,14 @@ final paiementsAdminProvider = FutureProvider.autoDispose
           ),
     );
 
+/// Une page des villages et quartiers ajoutés par les commerçants.
+final lieuxAdminProvider = FutureProvider.autoDispose
+    .family<PageAdmin<LieuAjouteAdmin>, int>(
+      (ref, decalage) => ref
+          .watch(serveurAdminProvider)
+          .lieuxAjoutes(limite: tailleDePage, decalage: decalage),
+    );
+
 /// Plusieurs pages chargées à la suite, vues comme une seule liste.
 class Pages<T> {
   Pages(List<AsyncValue<PageAdmin<T>>> pages)

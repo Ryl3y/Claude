@@ -311,4 +311,62 @@ void main() {
     await _toucher(tester, find.text('Offrir'));
     expect(find.textContaining('Kassa Pro jusqu\'au 11 nov.'), findsOneWidget);
   });
+
+  testWidgets('lieux : corriger une faute, doublon refusé, retirer', (
+    tester,
+  ) async {
+    ecranBureau(tester);
+    addTearDown(tester.view.reset);
+    final serveur = FauxServeurAdmin();
+    await tester.pumpWidget(
+      await adminDeTest(
+        auth: FauxAuthAdmin(dejaConnecte: true),
+        serveur: serveur,
+      ),
+    );
+    await stabiliser(tester);
+    await _toucher(tester, find.text('Lieux').first);
+    expect(find.text('4 sur 4'), findsOneWidget);
+    expect(find.text('Baleveng'), findsOneWidget);
+    expect(find.text('Dschang, Menoua'), findsWidgets);
+    expect(find.text('Quartier de Koutaba'), findsNWidgets(2));
+    expect(
+      find.text('Liste des villages : © contributeurs OpenStreetMap'),
+      findsOneWidget,
+    );
+
+    // « Haousa » est une faute pour « Haoussa », qui existe déjà : refusé.
+    await _toucher(tester, find.text('Corriger').first);
+    expect(find.text('Corriger « Haousa »'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Nom correct'),
+      'Haoussa',
+    );
+    await _toucher(tester, find.text('Enregistrer'));
+    expect(
+      find.text(
+        'Ce nom existe déjà au même endroit : retirez plutôt ce doublon.',
+      ),
+      findsOneWidget,
+    );
+    await _toucher(tester, find.text('Annuler'));
+
+    // On retire donc le doublon.
+    await _toucher(tester, find.text('Retirer').first);
+    expect(find.text('Retirer « Haousa » ?'), findsOneWidget);
+    await _toucher(tester, find.text('Retirer').last);
+    expect(serveur.suppressions, ['q1']);
+    expect(find.text('« Haousa » retiré.'), findsOneWidget);
+    expect(find.text('3 sur 3'), findsOneWidget);
+
+    // Et on corrige un nom de village.
+    await _toucher(tester, find.text('Corriger').first);
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Nom correct'),
+      '  Baleveng   Centre ',
+    );
+    await _toucher(tester, find.text('Enregistrer'));
+    expect(serveur.renommages, [('l1', 'Baleveng Centre')]);
+    expect(find.text('Baleveng Centre'), findsOneWidget);
+  });
 }

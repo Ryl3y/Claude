@@ -15,7 +15,9 @@ import 'package:kassa/ui/widgets/widgets.dart';
 import '../aide_app.dart';
 import '../aide_widgets.dart';
 import '../data/faux_auth.dart';
+import '../data/faux_lieux.dart';
 import '../data/synchro/faux_serveur.dart';
+import '../ui/aide_lieu.dart';
 
 Future<void> _chargerIcones() async {
   final loader =
@@ -67,6 +69,7 @@ void main() {
         pinAuDemarrage: true,
         auth: FauxAuth(),
         serveur: FauxServeur(),
+        lieux: FauxLieux(),
       );
       await tester.pumpWidget(app.widget);
       await tester.runAsync(() async => GoogleFonts.pendingFonts());
@@ -107,6 +110,35 @@ void main() {
       await expectLater(
         find.byType(KassaApp),
         matchesGoldenFile('goldens/inscription_3_$suffixe.png'),
+      );
+
+      // Lieu : listes officielles, village choisi, quartier proposé.
+      await choisirArrondissement(
+        tester,
+        fr ? 'Ouest' : 'West',
+        'Menoua',
+        'Dschang',
+        anglais: !fr,
+      );
+      await saisirLieu(
+        tester,
+        fr ? 'Ville ou village' : 'Town or village',
+        'dsch',
+        choix: 'Dschang',
+      );
+      final quartier = find.widgetWithText(
+        TextField,
+        fr ? 'Quartier' : 'Neighbourhood',
+      );
+      await tester.ensureVisible(quartier);
+      await tester.tap(quartier);
+      await tester.enterText(quartier, 'ha');
+      await stabiliser(tester);
+      await tester.ensureVisible(find.text('Haoussa'));
+      await tester.pump(const Duration(seconds: 1));
+      await expectLater(
+        find.byType(KassaApp),
+        matchesGoldenFile('goldens/inscription_3_lieu_$suffixe.png'),
       );
       await app.fermer(tester);
 

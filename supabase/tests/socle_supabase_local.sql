@@ -6,6 +6,9 @@ create role service_role nologin bypassrls;
 grant anon, authenticated, service_role to postgres;
 
 create schema auth;
+-- Schéma des extensions, comme sur Supabase.
+create schema if not exists extensions;
+grant usage on schema extensions to anon, authenticated, service_role;
 create table auth.users (id uuid primary key, phone text, phone_confirmed_at timestamptz);
 
 create function auth.jwt() returns jsonb language sql stable as $$

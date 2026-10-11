@@ -6,6 +6,7 @@ import 'package:kassa/data/abonnement/service_abonnement.dart';
 import 'package:kassa/data/auth/service_auth.dart';
 import 'package:kassa/data/db/champs_synchro.dart';
 import 'package:kassa/data/db/kassa_database.dart';
+import 'package:kassa/data/lieux/service_lieux.dart';
 import 'package:kassa/data/preferences/preferences_locales.dart';
 import 'package:kassa/data/providers.dart';
 import 'package:kassa/data/repositories/boutique_repository.dart';
@@ -19,6 +20,7 @@ import 'package:kassa/domain/produit_saisie.dart';
 import 'package:kassa/ui/state/abonnement.dart';
 import 'package:kassa/ui/state/clients.dart';
 import 'package:kassa/ui/state/langue.dart';
+import 'package:kassa/ui/state/lieux.dart';
 import 'package:kassa/ui/state/session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,6 +65,7 @@ class AppDeTest {
     Stream<bool>? reseau,
     ServeurAbonnement? abonnement,
     (String, String)? abonnementGarde,
+    ServiceLieux? lieux,
   }) async {
     SharedPreferences.setMockInitialValues({'langue': langue});
     final prefs = await PreferencesLocales.ouvrir();
@@ -117,6 +120,7 @@ class AppDeTest {
           serveurSynchroProvider.overrideWithValue(serveur),
           reseauProvider.overrideWithValue(reseau ?? const Stream.empty()),
           serveurAbonnementProvider.overrideWithValue(abonnement),
+          serviceLieuxProvider.overrideWithValue(lieux),
         ],
         child: const KassaApp(),
       ),

@@ -5,19 +5,24 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../data/repositories/compte_repository.dart';
+import '../../../data/lieux/service_lieux.dart';
 import '../../../domain/code_pin.dart';
+import '../../../domain/lieux.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../router.dart';
+import '../../state/lieux.dart';
 import '../../state/session.dart';
 import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
+import '../../widgets/choix_lieu.dart';
 import '../../widgets/types_commerce.dart';
 import '../../widgets/widgets.dart';
 
 export '../../widgets/types_commerce.dart';
 
-/// Écran 3 : création de la boutique (nom, type, ville, quartier) et du
-/// code PIN à 4 chiffres.
+/// Écran 3 : création de la boutique (nom, type, lieu guidé : région,
+/// département, arrondissement, ville ou village, quartier) et du code PIN
+/// à 4 chiffres.
 class BoutiqueScreen extends ConsumerStatefulWidget {
   const BoutiqueScreen({super.key});
 
@@ -25,21 +30,21 @@ class BoutiqueScreen extends ConsumerStatefulWidget {
   ConsumerState<BoutiqueScreen> createState() => _BoutiqueScreenState();
 }
 
-enum _Champ { nom, ville, quartier, pin, confirmation }
+enum _Champ { nom, pin, confirmation }
 
 class _BoutiqueScreenState extends ConsumerState<BoutiqueScreen> {
   final _nom = TextEditingController();
-  final _ville = TextEditingController();
-  final _quartier = TextEditingController();
   final _pin = TextEditingController();
   final _confirmation = TextEditingController();
   var _type = TypesCommerce.alimentation;
+  var _lieu = const LieuChoisi();
   Map<_Champ, String> _erreurs = const {};
+  Map<ChampLieu, String> _erreursLieu = const {};
   var _enCours = false;
 
   @override
   void dispose() {
-    for (final c in [_nom, _ville, _quartier, _pin, _confirmation]) {
+    for (final c in [_nom, _pin, _confirmation]) {
       c.dispose();
     }
     super.dispose();
@@ -47,8 +52,6 @@ class _BoutiqueScreenState extends ConsumerState<BoutiqueScreen> {
 
   Map<_Champ, String> _verifier(AppLocalizations l) => {
     if (_nom.text.trim().isEmpty) _Champ.nom: l.errShopName,
-    if (_ville.text.trim().isEmpty) _Champ.ville: l.errCity,
-    if (_quartier.text.trim().isEmpty) _Champ.quartier: l.errDistrict,
     if (!CodePin.estValide(_pin.text)) _Champ.pin: l.errPinFormat,
     if (CodePin.estValide(_pin.text) && _confirmation.text != _pin.text)
       _Champ.confirmation: l.errPinMismatch,
@@ -58,8 +61,12 @@ class _BoutiqueScreenState extends ConsumerState<BoutiqueScreen> {
     final l = AppLocalizations.of(context);
     if (_enCours) return;
     final erreurs = _verifier(l);
-    setState(() => _erreurs = erreurs);
-    if (erreurs.isNotEmpty) {
+    final erreursLieu = verifierLieu(l, _lieu);
+    setState(() {
+      _erreurs = erreurs;
+      _erreursLieu = erreursLieu;
+    });
+    if (erreurs.isNotEmpty || erreursLieu.isNotEmpty) {
       if (erreurs.containsKey(_Champ.confirmation)) {
         _pin.clear();
         _confirmation.clear();
@@ -69,13 +76,33 @@ class _BoutiqueScreenState extends ConsumerState<BoutiqueScreen> {
     final inscription = ref.read(inscriptionProvider);
     if (inscription == null) return;
     setState(() => _enCours = true);
+    // Un village ou un quartier nouveau rejoint d'abord la liste partagée.
+    final LieuChoisi lieu;
+    try {
+      lieu = await enregistrerLieu(ref.read(serviceLieuxProvider), _lieu);
+    } on LieuRefuse catch (e) {
+      if (!mounted) return;
+      final message = e.raison == RefusLieu.tropDAjouts
+          ? l.errLieuTrop
+          : l.errLieuNom;
+      setState(() {
+        _enCours = false;
+        _erreursLieu = {
+          e.surQuartier ? ChampLieu.quartier : ChampLieu.localite: message,
+        };
+      });
+      return;
+    }
     try {
       final compte = await inscription.creerBoutique(
         BoutiqueSaisie(
           nom: _nom.text,
           typeCommerce: _type,
-          ville: _ville.text,
-          quartier: _quartier.text,
+          ville: nomLieu(lieu.localite!.nom),
+          quartier: nomLieu(lieu.quartier!.nom),
+          arrondissement: lieu.arrondissement,
+          localiteId: lieu.localite!.id,
+          quartierId: lieu.quartier!.id,
         ),
         _pin.text,
       );
@@ -172,18 +199,13 @@ class _BoutiqueScreenState extends ConsumerState<BoutiqueScreen> {
                 },
               ),
               const SizedBox(height: KassaSpace.s4),
-              _champ(
-                champ: _Champ.ville,
-                controleur: _ville,
-                libelle: l.city,
-                exemple: l.cityHint,
-              ),
-              const SizedBox(height: KassaSpace.s4),
-              _champ(
-                champ: _Champ.quartier,
-                controleur: _quartier,
-                libelle: l.district,
-                exemple: l.districtHint,
+              ChoixLieu(
+                lieu: _lieu,
+                erreurs: _erreursLieu,
+                onChanged: (lieu) => setState(() {
+                  _lieu = lieu;
+                  _erreursLieu = const {};
+                }),
               ),
               const SizedBox(height: KassaSpace.s6),
               _champ(

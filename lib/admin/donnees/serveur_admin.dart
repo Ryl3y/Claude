@@ -192,6 +192,58 @@ class AjustementRefuse implements Exception {
   String toString() => 'AjustementRefuse($raison)';
 }
 
+/// Un village ou un quartier ajouté par un commerçant (à vérifier).
+class LieuAjouteAdmin {
+  const LieuAjouteAdmin({
+    required this.type,
+    required this.id,
+    required this.nom,
+    required this.localite,
+    required this.arrondissement,
+    required this.departement,
+    required this.creeLe,
+    required this.boutiques,
+  });
+
+  /// « localite » (ville ou village) ou « quartier ».
+  final String type;
+  final String id;
+  final String nom;
+
+  /// Ville ou village du quartier ; null pour une localité.
+  final String? localite;
+  final String arrondissement;
+  final String departement;
+  final DateTime creeLe;
+
+  /// Boutiques qui utilisent ce nom.
+  final int boutiques;
+
+  bool get estQuartier => type == 'quartier';
+
+  factory LieuAjouteAdmin.depuisJson(Map<String, dynamic> j) => LieuAjouteAdmin(
+    type: j['type'] as String,
+    id: j['id'] as String,
+    nom: j['nom'] as String,
+    localite: j['localite'] as String?,
+    arrondissement: j['arrondissement'] as String,
+    departement: j['departement'] as String,
+    creeLe: DateTime.parse(j['cree_le'] as String).toUtc(),
+    boutiques: (j['boutiques'] as num? ?? 0).toInt(),
+  );
+}
+
+/// Le serveur a refusé une correction de lieu.
+enum RefusLieuAdmin { nomInvalide, existeDeja, autre }
+
+class LieuAdminRefuse implements Exception {
+  const LieuAdminRefuse(this.raison);
+  final RefusLieuAdmin raison;
+
+  @override
+  String toString() => 'LieuAdminRefuse($raison)';
+}
+
 /// Regroupe les zones d'une même ville écrite de plusieurs façons
 /// (« Yaoundé », « Yaounde ») ; garde l'écriture la plus fréquente.
 List<ZoneAdmin> fusionnerZones(
@@ -261,6 +313,20 @@ abstract interface class ServeurAdmin {
   });
 
   Future<List<AjustementAdmin>> ajustements(String boutiqueId);
+
+  /// Villages et quartiers ajoutés par les commerçants, les plus récents
+  /// d'abord.
+  Future<PageAdmin<LieuAjouteAdmin>> lieuxAjoutes({
+    int limite = 50,
+    int decalage = 0,
+  });
+
+  /// Corrige un nom (les boutiques qui l'utilisent suivent). Lève
+  /// [LieuAdminRefuse] si le nom est invalide ou existe déjà.
+  Future<void> renommerLieu(LieuAjouteAdmin lieu, String nom);
+
+  /// Retire un ajout ; les boutiques gardent le nom écrit.
+  Future<void> supprimerLieu(LieuAjouteAdmin lieu);
 }
 
 class SupabaseServeurAdmin implements ServeurAdmin {
@@ -366,4 +432,42 @@ class SupabaseServeurAdmin implements ServeurAdmin {
     ))
       AjustementAdmin.depuisJson(x),
   ];
+
+  @override
+  Future<PageAdmin<LieuAjouteAdmin>> lieuxAjoutes({
+    int limite = 50,
+    int decalage = 0,
+  }) async {
+    final l = _lignes(
+      await _client.rpc(
+        'admin_lieux_ajoutes',
+        params: {'p_limite': limite, 'p_decalage': decalage},
+      ),
+    );
+    return PageAdmin([
+      for (final x in l) LieuAjouteAdmin.depuisJson(x),
+    ], _total(l));
+  }
+
+  @override
+  Future<void> renommerLieu(LieuAjouteAdmin lieu, String nom) async {
+    try {
+      await _client.rpc(
+        'admin_renommer_lieu',
+        params: {'p_type': lieu.type, 'p_id': lieu.id, 'p_nom': nom},
+      );
+    } on PostgrestException catch (e) {
+      throw LieuAdminRefuse(switch (e.message) {
+        'nom_invalide' => RefusLieuAdmin.nomInvalide,
+        'nom_existe_deja' => RefusLieuAdmin.existeDeja,
+        _ => RefusLieuAdmin.autre,
+      });
+    }
+  }
+
+  @override
+  Future<void> supprimerLieu(LieuAjouteAdmin lieu) => _client.rpc(
+    'admin_supprimer_lieu',
+    params: {'p_type': lieu.type, 'p_id': lieu.id},
+  );
 }

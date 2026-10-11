@@ -4,17 +4,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../data/db/kassa_database.dart';
+import '../../../data/lieux/service_lieux.dart';
+import '../../../domain/lieux.dart';
 import '../../../domain/boutique_saisie.dart';
 import '../../../data/providers.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../state/lieux.dart';
 import '../../state/session.dart';
 import '../../theme/kassa_composants.dart';
 import '../../theme/kassa_tokens.dart';
+import '../../widgets/choix_lieu.dart';
 import '../../widgets/widgets.dart';
 import '../inscription/boutique_screen.dart';
 
-/// Modifier la boutique depuis Réglages : nom, type, ville, quartier et
-/// alerte de stock bas proposée aux nouveaux produits.
+/// Modifier la boutique depuis Réglages : nom, type, lieu guidé (comme à
+/// la création) et alerte de stock bas proposée aux nouveaux produits.
 class BoutiqueModifScreen extends ConsumerStatefulWidget {
   const BoutiqueModifScreen({super.key});
 
@@ -23,7 +27,7 @@ class BoutiqueModifScreen extends ConsumerStatefulWidget {
       _BoutiqueModifScreenState();
 }
 
-enum _Champ { nom, ville, quartier, seuil }
+enum _Champ { nom, seuil }
 
 bool _seuilValide(String texte) {
   final n = int.tryParse(texte.trim());
@@ -32,12 +36,16 @@ bool _seuilValide(String texte) {
 
 class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
   final _nom = TextEditingController();
-  final _ville = TextEditingController();
-  final _quartier = TextEditingController();
   final _seuil = TextEditingController();
   var _type = TypesCommerce.alimentation;
   String? _boutiqueId;
   Map<_Champ, String> _erreurs = const {};
+  Map<ChampLieu, String> _erreursLieu = const {};
+
+  /// Lieu affiché ; [_ancien] : ville et quartier d'une boutique créée
+  /// avant le lieu guidé, gardés tant qu'on ne choisit pas de région.
+  var _lieu = const LieuChoisi();
+  (String, String)? _ancien;
   var _enCours = false;
 
   @override
@@ -53,15 +61,34 @@ class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
         .read(boutiqueRepositoryProvider)
         .surveillerBoutique(s.compte.boutiqueId)
         .first;
+    // Sans découpage (lecture impossible), la fiche s'ouvre quand même avec
+    // l'adresse écrite.
+    Decoupage? decoupage;
+    try {
+      decoupage = await ref.read(decoupageProvider.future);
+    } on Object {
+      decoupage = null;
+    }
     if (b == null || !mounted) return;
-    setState(() => _remplir(b));
+    setState(() => _remplir(b, decoupage));
   }
 
-  void _remplir(Boutique b) {
+  void _remplir(Boutique b, Decoupage? decoupage) {
     _boutiqueId = b.id;
     _nom.text = b.nom;
-    _ville.text = b.ville;
-    _quartier.text = b.quartier;
+    final arr = decoupage?.arrondissement(b.arrondissement);
+    final dep = decoupage?.departement(arr?.departement);
+    if (arr != null && dep != null) {
+      _lieu = LieuChoisi(
+        region: dep.region,
+        departement: dep.code,
+        arrondissement: arr.code,
+        localite: Lieu(b.localiteId, b.ville),
+        quartier: Lieu(b.quartierId, b.quartier),
+      );
+    } else {
+      _ancien = (b.ville, b.quartier);
+    }
     _seuil.text = '${b.seuilAlerteDefaut}';
     // Un type inconnu de cette version est gardé tel quel (pas écrasé).
     _type = b.typeCommerce;
@@ -69,7 +96,7 @@ class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
 
   @override
   void dispose() {
-    for (final c in [_nom, _ville, _quartier, _seuil]) {
+    for (final c in [_nom, _seuil]) {
       c.dispose();
     }
     super.dispose();
@@ -77,8 +104,6 @@ class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
 
   Map<_Champ, String> _verifier(AppLocalizations l) => {
     if (_nom.text.trim().isEmpty) _Champ.nom: l.errShopName,
-    if (_ville.text.trim().isEmpty) _Champ.ville: l.errCity,
-    if (_quartier.text.trim().isEmpty) _Champ.quartier: l.errDistrict,
     if (!_seuilValide(_seuil.text)) _Champ.seuil: l.errThreshold,
   };
 
@@ -87,22 +112,60 @@ class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
     final id = _boutiqueId;
     if (_enCours || id == null) return;
     final erreurs = _verifier(l);
-    setState(() => _erreurs = erreurs);
-    if (erreurs.isNotEmpty) return;
+    // Ancienne boutique sans lieu guidé : son adresse reste valable tant
+    // qu'on ne choisit pas une région.
+    final garderAncien = _ancien != null && _lieu.region == null;
+    final erreursLieu = garderAncien
+        ? const <ChampLieu, String>{}
+        : verifierLieu(l, _lieu);
+    setState(() {
+      _erreurs = erreurs;
+      _erreursLieu = erreursLieu;
+    });
+    if (erreurs.isNotEmpty || erreursLieu.isNotEmpty) return;
     setState(() => _enCours = true);
     final messager = ScaffoldMessenger.of(context);
     final navigateur = Navigator.of(context);
+    LieuChoisi? lieu;
+    if (!garderAncien) {
+      try {
+        lieu = await enregistrerLieu(ref.read(serviceLieuxProvider), _lieu);
+      } on LieuRefuse catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _erreursLieu = {
+            e.surQuartier
+                ? ChampLieu.quartier
+                : ChampLieu.localite: e.raison == RefusLieu.tropDAjouts
+                ? l.errLieuTrop
+                : l.errLieuNom,
+          };
+        });
+        return;
+      }
+    }
     try {
       await ref
           .read(boutiqueRepositoryProvider)
           .modifierBoutique(
             id,
-            saisie: BoutiqueSaisie(
-              nom: _nom.text,
-              typeCommerce: _type,
-              ville: _ville.text,
-              quartier: _quartier.text,
-            ),
+            saisie: lieu == null
+                ? BoutiqueSaisie(
+                    nom: _nom.text,
+                    typeCommerce: _type,
+                    ville: _ancien!.$1,
+                    quartier: _ancien!.$2,
+                  )
+                : BoutiqueSaisie(
+                    nom: _nom.text,
+                    typeCommerce: _type,
+                    ville: nomLieu(lieu.localite!.nom),
+                    quartier: nomLieu(lieu.quartier!.nom),
+                    arrondissement: lieu.arrondissement,
+                    localiteId: lieu.localite!.id,
+                    quartierId: lieu.quartier!.id,
+                  ),
             seuilAlerteDefaut: int.parse(_seuil.text.trim()),
           );
       messager.showSnackBar(SnackBar(content: Text(l.shopSaved)));
@@ -190,18 +253,29 @@ class _BoutiqueModifScreenState extends ConsumerState<BoutiqueModifScreen> {
                 },
               ),
               const SizedBox(height: KassaSpace.s4),
-              _champ(
-                champ: _Champ.ville,
-                controleur: _ville,
-                libelle: l.city,
-                exemple: l.cityHint,
-              ),
-              const SizedBox(height: KassaSpace.s4),
-              _champ(
-                champ: _Champ.quartier,
-                controleur: _quartier,
-                libelle: l.district,
-                exemple: l.districtHint,
+              if (_ancien != null && _lieu.region == null) ...[
+                // Adresse d'avant le lieu guidé, tant qu'on n'en choisit pas.
+                Text.rich(
+                  TextSpan(
+                    text: l.lieuActuel('${_ancien!.$2}, ${_ancien!.$1}'),
+                    style: context.kassa.label,
+                    children: [
+                      TextSpan(
+                        text: '\n${l.lieuPreciser}',
+                        style: context.kassa.body,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: KassaSpace.s4),
+              ],
+              ChoixLieu(
+                lieu: _lieu,
+                erreurs: _erreursLieu,
+                onChanged: (lieu) => setState(() {
+                  _lieu = lieu;
+                  _erreursLieu = const {};
+                }),
               ),
               const SizedBox(height: KassaSpace.s4),
               _champ(

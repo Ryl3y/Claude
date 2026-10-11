@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -23,11 +24,15 @@ Future<Widget> appDeTest(
   String langue = 'fr',
   bool sombre = false,
   double echelleTexte = 1,
+  List<Override> overrides = const [],
 }) async {
   SharedPreferences.setMockInitialValues({'langue': langue});
   final prefs = await PreferencesLocales.ouvrir();
   return ProviderScope(
-    overrides: [preferencesLocalesProvider.overrideWithValue(prefs)],
+    overrides: [
+      preferencesLocalesProvider.overrideWithValue(prefs),
+      ...overrides,
+    ],
     child: MaterialApp(
       theme: sombre ? KassaTheme.sombre() : KassaTheme.clair(),
       locale: Locale(langue),

@@ -112,6 +112,39 @@ class $BoutiquesTable extends Boutiques
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _arrondissementMeta = const VerificationMeta(
+    'arrondissement',
+  );
+  @override
+  late final GeneratedColumn<String> arrondissement = GeneratedColumn<String>(
+    'arrondissement',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _localiteIdMeta = const VerificationMeta(
+    'localiteId',
+  );
+  @override
+  late final GeneratedColumn<String> localiteId = GeneratedColumn<String>(
+    'localite_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _quartierIdMeta = const VerificationMeta(
+    'quartierId',
+  );
+  @override
+  late final GeneratedColumn<String> quartierId = GeneratedColumn<String>(
+    'quartier_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _typeCommerceMeta = const VerificationMeta(
     'typeCommerce',
   );
@@ -155,6 +188,9 @@ class $BoutiquesTable extends Boutiques
     telephone,
     ville,
     quartier,
+    arrondissement,
+    localiteId,
+    quartierId,
     typeCommerce,
     seuilAlerteDefaut,
     creeLe,
@@ -236,6 +272,27 @@ class $BoutiquesTable extends Boutiques
     } else if (isInserting) {
       context.missing(_quartierMeta);
     }
+    if (data.containsKey('arrondissement')) {
+      context.handle(
+        _arrondissementMeta,
+        arrondissement.isAcceptableOrUnknown(
+          data['arrondissement']!,
+          _arrondissementMeta,
+        ),
+      );
+    }
+    if (data.containsKey('localite_id')) {
+      context.handle(
+        _localiteIdMeta,
+        localiteId.isAcceptableOrUnknown(data['localite_id']!, _localiteIdMeta),
+      );
+    }
+    if (data.containsKey('quartier_id')) {
+      context.handle(
+        _quartierIdMeta,
+        quartierId.isAcceptableOrUnknown(data['quartier_id']!, _quartierIdMeta),
+      );
+    }
     if (data.containsKey('type_commerce')) {
       context.handle(
         _typeCommerceMeta,
@@ -311,6 +368,18 @@ class $BoutiquesTable extends Boutiques
         DriftSqlType.string,
         data['${effectivePrefix}quartier'],
       )!,
+      arrondissement: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}arrondissement'],
+      ),
+      localiteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}localite_id'],
+      ),
+      quartierId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}quartier_id'],
+      ),
       typeCommerce: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}type_commerce'],
@@ -346,6 +415,14 @@ class Boutique extends DataClass implements Insertable<Boutique> {
   final String telephone;
   final String ville;
   final String quartier;
+
+  /// Code officiel de l'arrondissement (« CM008005001 ») ; null pour les
+  /// boutiques créées avant le choix guidé du lieu.
+  final String? arrondissement;
+
+  /// Ville ou village et quartier dans les listes partagées du serveur.
+  final String? localiteId;
+  final String? quartierId;
   final String typeCommerce;
   final int seuilAlerteDefaut;
   final DateTime creeLe;
@@ -359,6 +436,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
     required this.telephone,
     required this.ville,
     required this.quartier,
+    this.arrondissement,
+    this.localiteId,
+    this.quartierId,
     required this.typeCommerce,
     required this.seuilAlerteDefaut,
     required this.creeLe,
@@ -377,6 +457,15 @@ class Boutique extends DataClass implements Insertable<Boutique> {
     map['telephone'] = Variable<String>(telephone);
     map['ville'] = Variable<String>(ville);
     map['quartier'] = Variable<String>(quartier);
+    if (!nullToAbsent || arrondissement != null) {
+      map['arrondissement'] = Variable<String>(arrondissement);
+    }
+    if (!nullToAbsent || localiteId != null) {
+      map['localite_id'] = Variable<String>(localiteId);
+    }
+    if (!nullToAbsent || quartierId != null) {
+      map['quartier_id'] = Variable<String>(quartierId);
+    }
     map['type_commerce'] = Variable<String>(typeCommerce);
     map['seuil_alerte_defaut'] = Variable<int>(seuilAlerteDefaut);
     map['cree_le'] = Variable<DateTime>(creeLe);
@@ -396,6 +485,15 @@ class Boutique extends DataClass implements Insertable<Boutique> {
       telephone: Value(telephone),
       ville: Value(ville),
       quartier: Value(quartier),
+      arrondissement: arrondissement == null && nullToAbsent
+          ? const Value.absent()
+          : Value(arrondissement),
+      localiteId: localiteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localiteId),
+      quartierId: quartierId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quartierId),
       typeCommerce: Value(typeCommerce),
       seuilAlerteDefaut: Value(seuilAlerteDefaut),
       creeLe: Value(creeLe),
@@ -417,6 +515,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
       telephone: serializer.fromJson<String>(json['telephone']),
       ville: serializer.fromJson<String>(json['ville']),
       quartier: serializer.fromJson<String>(json['quartier']),
+      arrondissement: serializer.fromJson<String?>(json['arrondissement']),
+      localiteId: serializer.fromJson<String?>(json['localiteId']),
+      quartierId: serializer.fromJson<String?>(json['quartierId']),
       typeCommerce: serializer.fromJson<String>(json['typeCommerce']),
       seuilAlerteDefaut: serializer.fromJson<int>(json['seuilAlerteDefaut']),
       creeLe: serializer.fromJson<DateTime>(json['creeLe']),
@@ -435,6 +536,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
       'telephone': serializer.toJson<String>(telephone),
       'ville': serializer.toJson<String>(ville),
       'quartier': serializer.toJson<String>(quartier),
+      'arrondissement': serializer.toJson<String?>(arrondissement),
+      'localiteId': serializer.toJson<String?>(localiteId),
+      'quartierId': serializer.toJson<String?>(quartierId),
       'typeCommerce': serializer.toJson<String>(typeCommerce),
       'seuilAlerteDefaut': serializer.toJson<int>(seuilAlerteDefaut),
       'creeLe': serializer.toJson<DateTime>(creeLe),
@@ -451,6 +555,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
     String? telephone,
     String? ville,
     String? quartier,
+    Value<String?> arrondissement = const Value.absent(),
+    Value<String?> localiteId = const Value.absent(),
+    Value<String?> quartierId = const Value.absent(),
     String? typeCommerce,
     int? seuilAlerteDefaut,
     DateTime? creeLe,
@@ -464,6 +571,11 @@ class Boutique extends DataClass implements Insertable<Boutique> {
     telephone: telephone ?? this.telephone,
     ville: ville ?? this.ville,
     quartier: quartier ?? this.quartier,
+    arrondissement: arrondissement.present
+        ? arrondissement.value
+        : this.arrondissement,
+    localiteId: localiteId.present ? localiteId.value : this.localiteId,
+    quartierId: quartierId.present ? quartierId.value : this.quartierId,
     typeCommerce: typeCommerce ?? this.typeCommerce,
     seuilAlerteDefaut: seuilAlerteDefaut ?? this.seuilAlerteDefaut,
     creeLe: creeLe ?? this.creeLe,
@@ -483,6 +595,15 @@ class Boutique extends DataClass implements Insertable<Boutique> {
       telephone: data.telephone.present ? data.telephone.value : this.telephone,
       ville: data.ville.present ? data.ville.value : this.ville,
       quartier: data.quartier.present ? data.quartier.value : this.quartier,
+      arrondissement: data.arrondissement.present
+          ? data.arrondissement.value
+          : this.arrondissement,
+      localiteId: data.localiteId.present
+          ? data.localiteId.value
+          : this.localiteId,
+      quartierId: data.quartierId.present
+          ? data.quartierId.value
+          : this.quartierId,
       typeCommerce: data.typeCommerce.present
           ? data.typeCommerce.value
           : this.typeCommerce,
@@ -505,6 +626,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
           ..write('telephone: $telephone, ')
           ..write('ville: $ville, ')
           ..write('quartier: $quartier, ')
+          ..write('arrondissement: $arrondissement, ')
+          ..write('localiteId: $localiteId, ')
+          ..write('quartierId: $quartierId, ')
           ..write('typeCommerce: $typeCommerce, ')
           ..write('seuilAlerteDefaut: $seuilAlerteDefaut, ')
           ..write('creeLe: $creeLe')
@@ -523,6 +647,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
     telephone,
     ville,
     quartier,
+    arrondissement,
+    localiteId,
+    quartierId,
     typeCommerce,
     seuilAlerteDefaut,
     creeLe,
@@ -540,6 +667,9 @@ class Boutique extends DataClass implements Insertable<Boutique> {
           other.telephone == this.telephone &&
           other.ville == this.ville &&
           other.quartier == this.quartier &&
+          other.arrondissement == this.arrondissement &&
+          other.localiteId == this.localiteId &&
+          other.quartierId == this.quartierId &&
           other.typeCommerce == this.typeCommerce &&
           other.seuilAlerteDefaut == this.seuilAlerteDefaut &&
           other.creeLe == this.creeLe);
@@ -555,6 +685,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
   final Value<String> telephone;
   final Value<String> ville;
   final Value<String> quartier;
+  final Value<String?> arrondissement;
+  final Value<String?> localiteId;
+  final Value<String?> quartierId;
   final Value<String> typeCommerce;
   final Value<int> seuilAlerteDefaut;
   final Value<DateTime> creeLe;
@@ -569,6 +702,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
     this.telephone = const Value.absent(),
     this.ville = const Value.absent(),
     this.quartier = const Value.absent(),
+    this.arrondissement = const Value.absent(),
+    this.localiteId = const Value.absent(),
+    this.quartierId = const Value.absent(),
     this.typeCommerce = const Value.absent(),
     this.seuilAlerteDefaut = const Value.absent(),
     this.creeLe = const Value.absent(),
@@ -584,6 +720,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
     required String telephone,
     required String ville,
     required String quartier,
+    this.arrondissement = const Value.absent(),
+    this.localiteId = const Value.absent(),
+    this.quartierId = const Value.absent(),
     required String typeCommerce,
     required int seuilAlerteDefaut,
     required DateTime creeLe,
@@ -608,6 +747,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
     Expression<String>? telephone,
     Expression<String>? ville,
     Expression<String>? quartier,
+    Expression<String>? arrondissement,
+    Expression<String>? localiteId,
+    Expression<String>? quartierId,
     Expression<String>? typeCommerce,
     Expression<int>? seuilAlerteDefaut,
     Expression<DateTime>? creeLe,
@@ -623,6 +765,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
       if (telephone != null) 'telephone': telephone,
       if (ville != null) 'ville': ville,
       if (quartier != null) 'quartier': quartier,
+      if (arrondissement != null) 'arrondissement': arrondissement,
+      if (localiteId != null) 'localite_id': localiteId,
+      if (quartierId != null) 'quartier_id': quartierId,
       if (typeCommerce != null) 'type_commerce': typeCommerce,
       if (seuilAlerteDefaut != null) 'seuil_alerte_defaut': seuilAlerteDefaut,
       if (creeLe != null) 'cree_le': creeLe,
@@ -640,6 +785,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
     Value<String>? telephone,
     Value<String>? ville,
     Value<String>? quartier,
+    Value<String?>? arrondissement,
+    Value<String?>? localiteId,
+    Value<String?>? quartierId,
     Value<String>? typeCommerce,
     Value<int>? seuilAlerteDefaut,
     Value<DateTime>? creeLe,
@@ -655,6 +803,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
       telephone: telephone ?? this.telephone,
       ville: ville ?? this.ville,
       quartier: quartier ?? this.quartier,
+      arrondissement: arrondissement ?? this.arrondissement,
+      localiteId: localiteId ?? this.localiteId,
+      quartierId: quartierId ?? this.quartierId,
       typeCommerce: typeCommerce ?? this.typeCommerce,
       seuilAlerteDefaut: seuilAlerteDefaut ?? this.seuilAlerteDefaut,
       creeLe: creeLe ?? this.creeLe,
@@ -692,6 +843,15 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
     if (quartier.present) {
       map['quartier'] = Variable<String>(quartier.value);
     }
+    if (arrondissement.present) {
+      map['arrondissement'] = Variable<String>(arrondissement.value);
+    }
+    if (localiteId.present) {
+      map['localite_id'] = Variable<String>(localiteId.value);
+    }
+    if (quartierId.present) {
+      map['quartier_id'] = Variable<String>(quartierId.value);
+    }
     if (typeCommerce.present) {
       map['type_commerce'] = Variable<String>(typeCommerce.value);
     }
@@ -719,6 +879,9 @@ class BoutiquesCompanion extends UpdateCompanion<Boutique> {
           ..write('telephone: $telephone, ')
           ..write('ville: $ville, ')
           ..write('quartier: $quartier, ')
+          ..write('arrondissement: $arrondissement, ')
+          ..write('localiteId: $localiteId, ')
+          ..write('quartierId: $quartierId, ')
           ..write('typeCommerce: $typeCommerce, ')
           ..write('seuilAlerteDefaut: $seuilAlerteDefaut, ')
           ..write('creeLe: $creeLe, ')
@@ -6138,6 +6301,9 @@ typedef $$BoutiquesTableCreateCompanionBuilder = BoutiquesCompanion Function({
   required String telephone,
   required String ville,
   required String quartier,
+  Value<String?> arrondissement,
+  Value<String?> localiteId,
+  Value<String?> quartierId,
   required String typeCommerce,
   required int seuilAlerteDefaut,
   required DateTime creeLe,
@@ -6153,6 +6319,9 @@ typedef $$BoutiquesTableUpdateCompanionBuilder = BoutiquesCompanion Function({
   Value<String> telephone,
   Value<String> ville,
   Value<String> quartier,
+  Value<String?> arrondissement,
+  Value<String?> localiteId,
+  Value<String?> quartierId,
   Value<String> typeCommerce,
   Value<int> seuilAlerteDefaut,
   Value<DateTime> creeLe,
@@ -6233,6 +6402,21 @@ class $$BoutiquesTableFilterComposer
 
   ColumnFilters<String> get quartier => $composableBuilder(
     column: $table.quartier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get arrondissement => $composableBuilder(
+    column: $table.arrondissement,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localiteId => $composableBuilder(
+    column: $table.localiteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get quartierId => $composableBuilder(
+    column: $table.quartierId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6331,6 +6515,21 @@ class $$BoutiquesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get arrondissement => $composableBuilder(
+    column: $table.arrondissement,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localiteId => $composableBuilder(
+    column: $table.localiteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get quartierId => $composableBuilder(
+    column: $table.quartierId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get typeCommerce => $composableBuilder(
     column: $table.typeCommerce,
     builder: (column) => ColumnOrderings(column),
@@ -6386,6 +6585,21 @@ class $$BoutiquesTableAnnotationComposer
 
   GeneratedColumn<String> get quartier =>
       $composableBuilder(column: $table.quartier, builder: (column) => column);
+
+  GeneratedColumn<String> get arrondissement => $composableBuilder(
+    column: $table.arrondissement,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localiteId => $composableBuilder(
+    column: $table.localiteId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get quartierId => $composableBuilder(
+    column: $table.quartierId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get typeCommerce => $composableBuilder(
     column: $table.typeCommerce,
@@ -6463,6 +6677,9 @@ class $$BoutiquesTableTableManager
                 Value<String> telephone = const Value.absent(),
                 Value<String> ville = const Value.absent(),
                 Value<String> quartier = const Value.absent(),
+                Value<String?> arrondissement = const Value.absent(),
+                Value<String?> localiteId = const Value.absent(),
+                Value<String?> quartierId = const Value.absent(),
                 Value<String> typeCommerce = const Value.absent(),
                 Value<int> seuilAlerteDefaut = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
@@ -6477,6 +6694,9 @@ class $$BoutiquesTableTableManager
                 telephone: telephone,
                 ville: ville,
                 quartier: quartier,
+                arrondissement: arrondissement,
+                localiteId: localiteId,
+                quartierId: quartierId,
                 typeCommerce: typeCommerce,
                 seuilAlerteDefaut: seuilAlerteDefaut,
                 creeLe: creeLe,
@@ -6493,6 +6713,9 @@ class $$BoutiquesTableTableManager
                 required String telephone,
                 required String ville,
                 required String quartier,
+                Value<String?> arrondissement = const Value.absent(),
+                Value<String?> localiteId = const Value.absent(),
+                Value<String?> quartierId = const Value.absent(),
                 required String typeCommerce,
                 required int seuilAlerteDefaut,
                 required DateTime creeLe,
@@ -6507,6 +6730,9 @@ class $$BoutiquesTableTableManager
                 telephone: telephone,
                 ville: ville,
                 quartier: quartier,
+                arrondissement: arrondissement,
+                localiteId: localiteId,
+                quartierId: quartierId,
                 typeCommerce: typeCommerce,
                 seuilAlerteDefaut: seuilAlerteDefaut,
                 creeLe: creeLe,

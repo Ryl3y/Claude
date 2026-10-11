@@ -1245,5 +1245,68 @@
   "adminLoadError": "Impossible de charger les données. Vérifiez la connexion, puis réessayez.",
   "adminRetry": "Réessayer",
   "adminClose": "Fermer",
-  "adminRefresh": "Actualiser"
+  "adminRefresh": "Actualiser",
+  "lieuRegion": "Région",
+  "lieuDepartement": "Département",
+  "lieuArrondissement": "Arrondissement",
+  "lieuLocalite": "Ville ou village",
+  "lieuLocaliteHint": "Tapez les premières lettres",
+  "lieuQuartierHint": "Tapez le nom de votre quartier",
+  "lieuAjouter": "Ajouter « {nom} »",
+  "@lieuAjouter": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Haoussa"
+      }
+    }
+  },
+  "lieuNouveau": "Nouveau : « {nom} » sera ajouté à la liste.",
+  "@lieuNouveau": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Haoussa"
+      }
+    }
+  },
+  "lieuHorsLigne": "Liste indisponible sans internet : tapez le nom, il sera gardé tel quel.",
+  "lieuOsm": "Liste des villages : © contributeurs OpenStreetMap",
+  "errRegion": "Choisissez la région.",
+  "errDepartement": "Choisissez le département.",
+  "errArrondissement": "Choisissez l'arrondissement.",
+  "errLocalite": "Choisissez ou ajoutez la ville ou le village.",
+  "errLieuTrop": "Trop d'ajouts aujourd'hui : choisissez un nom dans la liste, ou réessayez demain.",
+  "errLieuNom": "Ce nom n'est pas valide : utilisez des lettres.",
+  "lieuActuel": "Lieu actuel : {lieu}",
+  "@lieuActuel": {
+    "description": "Adresse d'une boutique créée avant le choix guidé du lieu.",
+    "placeholders": {"lieu": {"type": "String"}}
+  },
+  "lieuPreciser": "Choisissez la région pour préciser le lieu.",
+  "adminNavPlaces": "Lieux",
+  "adminPlacesIntro": "Villages et quartiers ajoutés par les commerçants. Ils sont proposés tout de suite aux autres : corrigez une faute ou retirez un doublon.",
+  "adminPlacesEmpty": "Aucun ajout pour le moment.",
+  "adminPlaceDistrictOf": "Quartier de {localite}",
+  "@adminPlaceDistrictOf": {"placeholders": {"localite": {"type": "String"}}},
+  "adminPlaceWhere": "{arrondissement}, {departement}",
+  "@adminPlaceWhere": {"placeholders": {"arrondissement": {"type": "String"}, "departement": {"type": "String"}}},
+  "adminPlaceAdded": "Ajouté le {date}",
+  "@adminPlaceAdded": {"placeholders": {"date": {"type": "String"}}},
+  "adminPlaceShops": "{n, plural, =0{Aucune boutique} =1{1 boutique} other{{n} boutiques}}",
+  "@adminPlaceShops": {"placeholders": {"n": {"type": "int"}}},
+  "adminPlaceFix": "Corriger",
+  "adminPlaceDelete": "Retirer",
+  "adminPlaceFixTitle": "Corriger « {nom} »",
+  "@adminPlaceFixTitle": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceFixHelp": "Les boutiques qui utilisent ce nom seront mises à jour.",
+  "adminPlaceNewName": "Nom correct",
+  "adminPlaceErrExists": "Ce nom existe déjà au même endroit : retirez plutôt ce doublon.",
+  "adminPlaceFixed": "Nom corrigé : « {nom} ».",
+  "@adminPlaceFixed": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceDeleteTitle": "Retirer « {nom} » ?",
+  "@adminPlaceDeleteTitle": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceDeleteHelp": "Il ne sera plus proposé. Les boutiques qui l'utilisent gardent le nom écrit.",
+  "adminPlaceDeleted": "« {nom} » retiré.",
+  "@adminPlaceDeleted": {"placeholders": {"nom": {"type": "String"}}}
 }

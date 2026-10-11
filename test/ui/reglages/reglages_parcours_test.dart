@@ -11,6 +11,8 @@ import '../../aide_app.dart';
 import '../../aide_widgets.dart';
 import '../../data/faux_abonnement.dart';
 import '../../data/faux_auth.dart';
+import '../../data/faux_lieux.dart';
+import '../aide_lieu.dart';
 
 /// Fait défiler l'écran jusqu'à [f] (les listes ne construisent que ce
 /// qui est visible), puis le touche.
@@ -64,7 +66,7 @@ void main() {
   });
 
   testWidgets('modifier la boutique depuis Réglages', (tester) async {
-    final app = await AppDeTest.creer();
+    final app = await AppDeTest.creer(lieux: FauxLieux());
     await tester.pumpWidget(app.widget);
     await stabiliser(tester);
 
@@ -80,7 +82,12 @@ void main() {
     expect(find.text('Saisissez le nom de la boutique.'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).first, 'Chez Awa et fils');
-    await tester.enterText(find.widgetWithText(TextField, 'Akwa'), 'Bonapriso');
+    // Boutique d'avant le découpage : l'ancien lieu reste affiché tant
+    // qu'on n'en choisit pas un nouveau.
+    expect(find.textContaining('Lieu actuel : Akwa, Douala'), findsOneWidget);
+    await choisirArrondissement(tester, 'Littoral', 'Wouri', 'Douala 1er');
+    await saisirLieu(tester, 'Ville ou village', 'doua', choix: 'Douala');
+    await saisirLieu(tester, 'Quartier', 'bona', choix: 'Bonapriso');
     await _toucher(tester, find.text('Enregistrer'));
     await stabiliser(tester);
 
@@ -94,6 +101,8 @@ void main() {
       () => app.db.select(app.db.boutiques).getSingle(),
     );
     expect(b!.seuilAlerteDefaut, 8);
+    expect(b.arrondissement, 'CM005004001');
+    expect(b.quartierId, isNotNull);
     expect(b.synchro, isFalse);
     await app.fermer(tester);
   });

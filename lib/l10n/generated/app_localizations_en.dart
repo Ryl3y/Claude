@@ -1735,4 +1735,144 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminRefresh => 'Refresh';
+
+  @override
+  String get lieuRegion => 'Region';
+
+  @override
+  String get lieuDepartement => 'Division';
+
+  @override
+  String get lieuArrondissement => 'Subdivision';
+
+  @override
+  String get lieuLocalite => 'Town or village';
+
+  @override
+  String get lieuLocaliteHint => 'Type the first letters';
+
+  @override
+  String get lieuQuartierHint => 'Type your neighbourhood\'s name';
+
+  @override
+  String lieuAjouter(String nom) {
+    return 'Add “$nom”';
+  }
+
+  @override
+  String lieuNouveau(String nom) {
+    return 'New: “$nom” will be added to the list.';
+  }
+
+  @override
+  String get lieuHorsLigne =>
+      'List unavailable offline: type the name, it will be kept as is.';
+
+  @override
+  String get lieuOsm => 'Village list: © OpenStreetMap contributors';
+
+  @override
+  String get errRegion => 'Choose the region.';
+
+  @override
+  String get errDepartement => 'Choose the division.';
+
+  @override
+  String get errArrondissement => 'Choose the subdivision.';
+
+  @override
+  String get errLocalite => 'Choose or add the town or village.';
+
+  @override
+  String get errLieuTrop =>
+      'Too many additions today: pick a name from the list, or try again tomorrow.';
+
+  @override
+  String get errLieuNom => 'This name isn\'t valid: use letters.';
+
+  @override
+  String lieuActuel(String lieu) {
+    return 'Current location: $lieu';
+  }
+
+  @override
+  String get lieuPreciser =>
+      'Choose the region to make the location more precise.';
+
+  @override
+  String get adminNavPlaces => 'Places';
+
+  @override
+  String get adminPlacesIntro =>
+      'Villages and neighbourhoods added by shopkeepers. Others see them right away: fix a typo or remove a duplicate.';
+
+  @override
+  String get adminPlacesEmpty => 'Nothing added yet.';
+
+  @override
+  String adminPlaceDistrictOf(String localite) {
+    return 'Neighbourhood of $localite';
+  }
+
+  @override
+  String adminPlaceWhere(String arrondissement, String departement) {
+    return '$arrondissement, $departement';
+  }
+
+  @override
+  String adminPlaceAdded(String date) {
+    return 'Added on $date';
+  }
+
+  @override
+  String adminPlaceShops(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n shops',
+      one: '1 shop',
+      zero: 'No shops',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminPlaceFix => 'Fix';
+
+  @override
+  String get adminPlaceDelete => 'Remove';
+
+  @override
+  String adminPlaceFixTitle(String nom) {
+    return 'Fix “$nom”';
+  }
+
+  @override
+  String get adminPlaceFixHelp => 'Shops using this name will be updated.';
+
+  @override
+  String get adminPlaceNewName => 'Correct name';
+
+  @override
+  String get adminPlaceErrExists =>
+      'This name already exists in the same place: remove this duplicate instead.';
+
+  @override
+  String adminPlaceFixed(String nom) {
+    return 'Name fixed: “$nom”.';
+  }
+
+  @override
+  String adminPlaceDeleteTitle(String nom) {
+    return 'Remove “$nom”?';
+  }
+
+  @override
+  String get adminPlaceDeleteHelp =>
+      'It will no longer be suggested. Shops using it keep the written name.';
+
+  @override
+  String adminPlaceDeleted(String nom) {
+    return '“$nom” removed.';
+  }
 }

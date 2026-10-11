@@ -17,6 +17,7 @@ abstract final class CheminsAdmin {
   static const boutiques = '/boutiques';
   static const paiements = '/paiements';
   static const carte = '/carte';
+  static const lieux = '/lieux';
 }
 
 typedef _Entree = (
@@ -34,6 +35,11 @@ final List<_Entree> _entrees = [
   (CheminsAdmin.boutiques, Symbols.storefront_rounded, (l) => l.adminNavShops),
   (CheminsAdmin.paiements, Symbols.payments_rounded, (l) => l.adminNavPayments),
   (CheminsAdmin.carte, Symbols.map_rounded, (l) => l.adminNavMap),
+  (
+    CheminsAdmin.lieux,
+    Symbols.edit_location_alt_rounded,
+    (l) => l.adminNavPlaces,
+  ),
 ];
 
 /// Cadre de l'admin : menu à gauche (ordinateur) ou en bas (petit écran),

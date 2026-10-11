@@ -9,6 +9,7 @@ import '../ui/theme/kassa_theme.dart';
 import 'ecrans/boutiques_admin_screen.dart';
 import 'ecrans/carte_admin_screen.dart';
 import 'ecrans/connexion_admin_screen.dart';
+import 'ecrans/lieux_admin_screen.dart';
 import 'ecrans/coquille_admin.dart';
 import 'ecrans/paiements_admin_screen.dart';
 import 'ecrans/tableau_bord_screen.dart';
@@ -21,6 +22,7 @@ const _retoursPossibles = {
   CheminsAdmin.boutiques,
   CheminsAdmin.paiements,
   CheminsAdmin.carte,
+  CheminsAdmin.lieux,
 };
 
 /// Où aller selon la session admin. Sans session, on passe par la
@@ -79,6 +81,10 @@ final routeurAdminProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: CheminsAdmin.carte,
             builder: (context, state) => const CarteAdminScreen(),
+          ),
+          GoRoute(
+            path: CheminsAdmin.lieux,
+            builder: (context, state) => const LieuxAdminScreen(),
           ),
         ],
       ),

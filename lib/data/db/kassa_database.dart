@@ -29,11 +29,19 @@ class KassaDatabase extends _$KassaDatabase {
   KassaDatabase.ouvrir() : super(driftDatabase(name: 'kassa'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
+    onUpgrade: (m, de, vers) async {
+      // v2 : lieu guidé de la boutique (arrondissement, localité, quartier).
+      if (de < 2) {
+        await m.addColumn(boutiques, boutiques.arrondissement);
+        await m.addColumn(boutiques, boutiques.localiteId);
+        await m.addColumn(boutiques, boutiques.quartierId);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },

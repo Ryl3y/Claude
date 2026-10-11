@@ -87,6 +87,8 @@ void main() {
       await capturer(tester, 'paiements');
       await _toucher(tester, find.text(fr ? 'Carte' : 'Map').first);
       await capturer(tester, 'carte');
+      await _toucher(tester, find.text(fr ? 'Lieux' : 'Places').first);
+      await capturer(tester, 'lieux');
     });
 
     testWidgets('admin petit écran $suffixe', (tester) async {

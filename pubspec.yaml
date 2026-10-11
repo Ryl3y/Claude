@@ -77,6 +77,9 @@ flutter:
 
   assets:
     - assets/logo/
+    # Découpage administratif (OCHA COD-AB) : régions, départements,
+    # arrondissements, sans internet.
+    - assets/geo/
     # Polices embarquées : google_fonts les lit ici, sans internet.
     - assets/fonts/
 

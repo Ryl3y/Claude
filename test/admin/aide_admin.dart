@@ -333,6 +333,87 @@ class FauxServeurAdmin implements ServeurAdmin {
     return fin;
   }
 
+  /// Villages et quartiers ajoutés par les commerçants.
+  late final List<LieuAjouteAdmin> lieuxListe = [
+    _l('quartier', 'q1', 'Haousa', 'Koutaba', 'Koutaba', 'Noun', 0, 1),
+    _l('localite', 'l1', 'Baleveng', null, 'Dschang', 'Menoua', 1, 2),
+    _l('quartier', 'q2', 'Haoussa', 'Koutaba', 'Koutaba', 'Noun', 2, 3),
+    _l('quartier', 'q3', 'Foto Marché', 'Dschang', 'Dschang', 'Menoua', 3, 0),
+  ];
+
+  LieuAjouteAdmin _l(
+    String type,
+    String id,
+    String nom,
+    String? localite,
+    String arrondissement,
+    String departement,
+    int ilYA,
+    int boutiques,
+  ) => LieuAjouteAdmin(
+    type: type,
+    id: id,
+    nom: nom,
+    localite: localite,
+    arrondissement: arrondissement,
+    departement: departement,
+    creeLe: aujourdhui.subtract(Duration(days: ilYA)),
+    boutiques: boutiques,
+  );
+
+  /// Corrections reçues : (id, nouveau nom) ; suppressions : id.
+  final List<(String, String)> renommages = [];
+  final List<String> suppressions = [];
+
+  @override
+  Future<PageAdmin<LieuAjouteAdmin>> lieuxAjoutes({
+    int limite = 50,
+    int decalage = 0,
+  }) async {
+    _panne();
+    return PageAdmin(
+      lieuxListe.skip(decalage).take(limite).toList(),
+      lieuxListe.length,
+    );
+  }
+
+  @override
+  Future<void> renommerLieu(LieuAjouteAdmin lieu, String nom) async {
+    _panne();
+    // Comme le serveur : même nom (sans accents ni majuscules) au même
+    // endroit refusé.
+    String cle(String n) => n.toLowerCase().replaceAll(RegExp('[^a-z]'), '');
+    if (lieuxListe.any(
+      (x) =>
+          x.id != lieu.id &&
+          x.type == lieu.type &&
+          x.localite == lieu.localite &&
+          x.arrondissement == lieu.arrondissement &&
+          cle(x.nom) == cle(nom),
+    )) {
+      throw const LieuAdminRefuse(RefusLieuAdmin.existeDeja);
+    }
+    renommages.add((lieu.id, nom));
+    final i = lieuxListe.indexWhere((x) => x.id == lieu.id);
+    lieuxListe[i] = _l(
+      lieu.type,
+      lieu.id,
+      nom,
+      lieu.localite,
+      lieu.arrondissement,
+      lieu.departement,
+      aujourdhui.difference(lieu.creeLe).inDays,
+      lieu.boutiques,
+    );
+  }
+
+  @override
+  Future<void> supprimerLieu(LieuAjouteAdmin lieu) async {
+    _panne();
+    suppressions.add(lieu.id);
+    lieuxListe.removeWhere((x) => x.id == lieu.id);
+  }
+
   @override
   Future<List<AjustementAdmin>> ajustements(String boutiqueId) async {
     _panne();

@@ -40,3 +40,24 @@ Un compte qui n'est pas dans `admins` ne peut rien lire : le serveur vérifie la
 ## Mise en ligne
 
 Le dossier `build/web` est un site statique. Tu peux l'héberger sur n'importe quel hébergeur de sites statiques (à choisir). L'adresse doit rester discrète : la page demande `noindex` aux moteurs de recherche. Le vrai contrôle d'accès reste toutefois sur le serveur.
+
+## Lieux (villages et quartiers)
+
+À la création de la boutique, le commerçant choisit Région → Département →
+Arrondissement (découpage officiel OCHA, embarqué dans l'app, marche sans
+internet), puis sa ville ou son village (liste OpenStreetMap, ~11 300 noms)
+et son quartier. S'il ne trouve pas son nom, il l'ajoute : il est proposé
+tout de suite aux suivants (même nom sans accents ni majuscules = même lieu ;
+un même nom de quartier peut exister dans plusieurs villages).
+
+L'écran **Lieux** de l'admin liste ces ajouts : **Corriger** une faute (les
+boutiques qui l'utilisent suivent) ou **Retirer** un doublon. Un village de
+la liste OSM ne peut pas être retiré.
+
+Licence : la liste des villages vient d'OpenStreetMap (ODbL). L'app affiche
+« © contributeurs OpenStreetMap » sous le champ, et la liste enrichie reste
+sous la même licence (on peut la partager, pas la fermer).
+
+Ordre de mise en ligne : appliquer d'abord les migrations `*_lieux*` sur
+Supabase, **puis** publier cette version de l'app (sinon l'envoi des
+boutiques échoue : colonnes inconnues).

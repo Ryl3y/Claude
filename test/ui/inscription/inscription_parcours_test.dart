@@ -16,7 +16,9 @@ import '../../aide_app.dart';
 import '../../aide_widgets.dart';
 import '../../data/aide_base.dart';
 import '../../data/faux_auth.dart';
+import '../../data/faux_lieux.dart';
 import '../../data/synchro/faux_serveur.dart';
+import '../aide_lieu.dart';
 
 Future<AppDeTest> _demarrer(
   WidgetTester tester, {
@@ -25,6 +27,7 @@ Future<AppDeTest> _demarrer(
   FauxAuth? auth,
   FauxServeur? serveur,
   bool sansServeur = false,
+  FauxLieux? lieux,
 }) async {
   tester.view.physicalSize = const Size(412 * 3, 915 * 3);
   tester.view.devicePixelRatio = 3;
@@ -34,6 +37,7 @@ Future<AppDeTest> _demarrer(
     pinAuDemarrage: pinAuDemarrage,
     auth: sansServeur ? null : auth ?? FauxAuth(),
     serveur: sansServeur ? null : serveur ?? FauxServeur(),
+    lieux: lieux,
   );
   await tester.pumpWidget(app.widget);
   await stabiliser(tester);
@@ -76,7 +80,8 @@ void main() {
 
   testWidgets('premier lancement : inscription complète', (tester) async {
     final auth = FauxAuth();
-    final app = await _demarrer(tester, auth: auth);
+    final lieux = FauxLieux();
+    final app = await _demarrer(tester, auth: auth, lieux: lieux);
     expect(find.text('Votre caisse, même sans internet'), findsOneWidget);
 
     await _toucher(tester, find.text('Commencer'));
@@ -120,8 +125,17 @@ void main() {
       find.widgetWithText(TextField, 'Nom de la boutique'),
       'Chez Maman Brigitte',
     );
-    await tester.enterText(find.widgetWithText(TextField, 'Ville'), 'Douala');
-    await tester.enterText(find.widgetWithText(TextField, 'Quartier'), 'Akwa');
+    // Lieu : listes officielles, puis village proposé, quartier nouveau.
+    await choisirArrondissement(tester, 'Ouest', 'Menoua', 'Dschang');
+    await saisirLieu(tester, 'Ville ou village', 'dsch', choix: 'Dschang');
+    expect(find.text('Haoussa'), findsNothing);
+    await saisirLieu(tester, 'Quartier', 'haou', choix: 'Haoussa');
+    await saisirLieu(
+      tester,
+      'Quartier',
+      'Foto  Marché',
+      choix: 'Ajouter « Foto Marché »',
+    );
     await tester.enterText(
       find.widgetWithText(TextField, 'Code PIN à 4 chiffres'),
       '2580',
@@ -153,6 +167,13 @@ void main() {
     );
     expect(boutique!.nom, 'Chez Maman Brigitte');
     expect(boutique.telephone, '237677123456');
+    expect(boutique.arrondissement, 'CM008005001');
+    expect(boutique.ville, 'Dschang');
+    expect(boutique.quartier, 'Foto Marché');
+    expect(boutique.localiteId, lieux.lieuNomme('Dschang')!.id);
+    expect(boutique.quartierId, lieux.lieuNomme('Foto Marché')!.id);
+    // Le quartier nouveau est dans la liste partagée, pour les suivants.
+    expect(lieux.ajouts, [(boutique.localiteId!, 'Foto Marché')]);
     final compte = await tester.runAsync(
       () => app.db.select(app.db.utilisateurs).getSingle(),
     );

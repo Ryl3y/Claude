@@ -2844,6 +2844,216 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Actualiser'**
   String get adminRefresh;
+
+  /// No description provided for @lieuRegion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Région'**
+  String get lieuRegion;
+
+  /// No description provided for @lieuDepartement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Département'**
+  String get lieuDepartement;
+
+  /// No description provided for @lieuArrondissement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrondissement'**
+  String get lieuArrondissement;
+
+  /// No description provided for @lieuLocalite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville ou village'**
+  String get lieuLocalite;
+
+  /// No description provided for @lieuLocaliteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tapez les premières lettres'**
+  String get lieuLocaliteHint;
+
+  /// No description provided for @lieuQuartierHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tapez le nom de votre quartier'**
+  String get lieuQuartierHint;
+
+  /// No description provided for @lieuAjouter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter « {nom} »'**
+  String lieuAjouter(String nom);
+
+  /// No description provided for @lieuNouveau.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau : « {nom} » sera ajouté à la liste.'**
+  String lieuNouveau(String nom);
+
+  /// No description provided for @lieuHorsLigne.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste indisponible sans internet : tapez le nom, il sera gardé tel quel.'**
+  String get lieuHorsLigne;
+
+  /// No description provided for @lieuOsm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des villages : © contributeurs OpenStreetMap'**
+  String get lieuOsm;
+
+  /// No description provided for @errRegion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la région.'**
+  String get errRegion;
+
+  /// No description provided for @errDepartement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le département.'**
+  String get errDepartement;
+
+  /// No description provided for @errArrondissement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez l\'arrondissement.'**
+  String get errArrondissement;
+
+  /// No description provided for @errLocalite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez ou ajoutez la ville ou le village.'**
+  String get errLocalite;
+
+  /// No description provided for @errLieuTrop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop d\'ajouts aujourd\'hui : choisissez un nom dans la liste, ou réessayez demain.'**
+  String get errLieuTrop;
+
+  /// No description provided for @errLieuNom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce nom n\'est pas valide : utilisez des lettres.'**
+  String get errLieuNom;
+
+  /// Adresse d'une boutique créée avant le choix guidé du lieu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieu actuel : {lieu}'**
+  String lieuActuel(String lieu);
+
+  /// No description provided for @lieuPreciser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la région pour préciser le lieu.'**
+  String get lieuPreciser;
+
+  /// No description provided for @adminNavPlaces.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieux'**
+  String get adminNavPlaces;
+
+  /// No description provided for @adminPlacesIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Villages et quartiers ajoutés par les commerçants. Ils sont proposés tout de suite aux autres : corrigez une faute ou retirez un doublon.'**
+  String get adminPlacesIntro;
+
+  /// No description provided for @adminPlacesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun ajout pour le moment.'**
+  String get adminPlacesEmpty;
+
+  /// No description provided for @adminPlaceDistrictOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quartier de {localite}'**
+  String adminPlaceDistrictOf(String localite);
+
+  /// No description provided for @adminPlaceWhere.
+  ///
+  /// In fr, this message translates to:
+  /// **'{arrondissement}, {departement}'**
+  String adminPlaceWhere(String arrondissement, String departement);
+
+  /// No description provided for @adminPlaceAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouté le {date}'**
+  String adminPlaceAdded(String date);
+
+  /// No description provided for @adminPlaceShops.
+  ///
+  /// In fr, this message translates to:
+  /// **'{n, plural, =0{Aucune boutique} =1{1 boutique} other{{n} boutiques}}'**
+  String adminPlaceShops(int n);
+
+  /// No description provided for @adminPlaceFix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger'**
+  String get adminPlaceFix;
+
+  /// No description provided for @adminPlaceDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get adminPlaceDelete;
+
+  /// No description provided for @adminPlaceFixTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger « {nom} »'**
+  String adminPlaceFixTitle(String nom);
+
+  /// No description provided for @adminPlaceFixHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les boutiques qui utilisent ce nom seront mises à jour.'**
+  String get adminPlaceFixHelp;
+
+  /// No description provided for @adminPlaceNewName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom correct'**
+  String get adminPlaceNewName;
+
+  /// No description provided for @adminPlaceErrExists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce nom existe déjà au même endroit : retirez plutôt ce doublon.'**
+  String get adminPlaceErrExists;
+
+  /// No description provided for @adminPlaceFixed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom corrigé : « {nom} ».'**
+  String adminPlaceFixed(String nom);
+
+  /// No description provided for @adminPlaceDeleteTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer « {nom} » ?'**
+  String adminPlaceDeleteTitle(String nom);
+
+  /// No description provided for @adminPlaceDeleteHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il ne sera plus proposé. Les boutiques qui l\'utilisent gardent le nom écrit.'**
+  String get adminPlaceDeleteHelp;
+
+  /// No description provided for @adminPlaceDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'« {nom} » retiré.'**
+  String adminPlaceDeleted(String nom);
 }
 
 class _AppLocalizationsDelegate

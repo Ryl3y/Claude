@@ -70,6 +70,14 @@ class Boutiques extends Table with ColonneId, ColonnesSynchro {
   )();
   TextColumn get ville => text()();
   TextColumn get quartier => text()();
+
+  /// Code officiel de l'arrondissement (« CM008005001 ») ; null pour les
+  /// boutiques créées avant le choix guidé du lieu.
+  TextColumn get arrondissement => text().nullable()();
+
+  /// Ville ou village et quartier dans les listes partagées du serveur.
+  TextColumn get localiteId => text().nullable()();
+  TextColumn get quartierId => text().nullable()();
   TextColumn get typeCommerce => text()();
   IntColumn get seuilAlerteDefaut =>
       integer().check(seuilAlerteDefaut.isBiggerOrEqualValue(0))();
