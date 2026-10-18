@@ -1,0 +1,1312 @@
+{
+  "@@locale": "fr",
+  "appName": "Kassa",
+  "@appName": {
+    "description": "Nom de l'application (ne se traduit pas)."
+  },
+  "appTagline": "Ventes, stock et dettes, même sans internet.",
+  "navHome": "Accueil",
+  "navSell": "Vendre",
+  "navStock": "Stock",
+  "navCustomers": "Clients",
+  "newSale": "Nouvelle vente",
+  "collectPayment": "Encaisser",
+  "add": "Ajouter",
+  "restock": "Réappro",
+  "owes": "Doit {montant}",
+  "@owes": {
+    "description": "Montant dû par un client. Toujours devant un montant de dette.",
+    "placeholders": {
+      "montant": {
+        "type": "String",
+        "example": "7 500 F"
+      }
+    }
+  },
+  "paidUp": "À jour",
+  "remind": "Rappeler",
+  "lowStock": "Stock bas",
+  "todaySales": "Ventes du jour",
+  "moneyOwed": "Dettes à recevoir",
+  "saved": "Sauvegardé",
+  "@saved": {
+    "description": "État de la sauvegarde en ligne. Ne jamais dire « synchronisation »."
+  },
+  "goPro": "Passer à Pro",
+  "cancelSale": "Annuler la vente",
+  "youSoldToday": "Vous avez vendu {montant} aujourd'hui.",
+  "@youSoldToday": {
+    "placeholders": {
+      "montant": {
+        "type": "String",
+        "example": "45 000 FCFA"
+      }
+    }
+  },
+  "todayProfit": "Bénéfice du jour",
+  "language": "Langue",
+  "languagePhone": "Langue du téléphone",
+  "languageFrench": "Français",
+  "languageEnglish": "English",
+  "previewStepNote": "Écran de démonstration des composants (étape 3). Il sera remplacé par l'accueil.",
+  "owesLabel": "Doit",
+  "@owesLabel": {
+    "description": "Mot placé devant un montant dû (le montant suit, plus grand)."
+  },
+  "addToCart": "Ajouter {nom} au panier",
+  "@addToCart": {
+    "description": "Libellé pour lecteur d'écran d'une carte produit.",
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Riz 5 kg"
+      }
+    }
+  },
+  "inCart": "{quantite} dans le panier",
+  "@inCart": {
+    "placeholders": {
+      "quantite": {
+        "type": "String",
+        "example": "3"
+      }
+    }
+  },
+  "stockLeft": "{quantite} {unite}",
+  "@stockLeft": {
+    "description": "Stock restant sous un produit.",
+    "placeholders": {
+      "quantite": {
+        "type": "String",
+        "example": "12"
+      },
+      "unite": {
+        "type": "String",
+        "example": "sacs"
+      }
+    }
+  },
+  "remindOnWhatsapp": "Rappeler {nom} sur WhatsApp",
+  "@remindOnWhatsapp": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Maman Brigitte"
+      }
+    }
+  },
+  "erase": "Effacer",
+  "@erase": {
+    "description": "Touche du pavé numérique qui efface le dernier chiffre."
+  },
+  "stockAlerts": "{nombre, plural, =1{1 produit en stock bas} other{{nombre} produits en stock bas}}",
+  "@stockAlerts": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "salesCount": "{nombre, plural, =0{Aucune vente} =1{1 vente} other{{nombre} ventes}}",
+  "@salesCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "customersCount": "{nombre, plural, =0{Aucun client} =1{1 client} other{{nombre} clients}}",
+  "@customersCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPurchase": "Dernier achat le {date}",
+  "@lastPurchase": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "10 oct."
+      }
+    }
+  },
+  "later": "Plus tard",
+  "paid": "Payé",
+  "cancelled": "Annulée",
+  "demoTitle": "Composants Kassa",
+  "demoButtons": "Boutons",
+  "demoBadges": "Étiquettes",
+  "demoAmounts": "Montants",
+  "demoStats": "Chiffres clés",
+  "demoProducts": "Produits",
+  "demoProductsHint": "Touchez une carte pour l'ajouter au panier.",
+  "demoCustomers": "Clients",
+  "demoNumPad": "Pavé numérique",
+  "demoReminderSent": "Rappel prêt pour {nom}.",
+  "@demoReminderSent": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Maman Brigitte"
+      }
+    }
+  },
+  "enterQuantity": "Saisir une quantité",
+  "@enterQuantity": {
+    "description": "Action de l'appui long sur une carte produit (lecteur d'écran)."
+  },
+  "proBadge": "Pro",
+  "@proBadge": {
+    "description": "Étiquette de la formule payante (nom de la formule, identique en anglais)."
+  },
+  "searchProducts": "Rechercher un produit",
+  "filterAll": "Tous",
+  "filterLowStock": "Stock bas ({nombre})",
+  "@filterLowStock": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "noCategory": "Sans catégorie",
+  "addProduct": "Ajouter un produit",
+  "stockEmptyTitle": "Aucun produit pour l'instant",
+  "stockEmptyBody": "Ajoutez vos produits pour suivre le stock et commencer à vendre.",
+  "stockNoResult": "Aucun produit ne correspond à « {recherche} ». Vérifiez l'orthographe ou ajoutez ce produit.",
+  "@stockNoResult": {
+    "placeholders": {
+      "recherche": {
+        "type": "String"
+      }
+    }
+  },
+  "stockNoLowStock": "Aucun produit en stock bas. Tout est au-dessus du seuil d'alerte.",
+  "stockNoInCategory": "Aucun produit dans cette catégorie.",
+  "stockOf": "Stock : {quantite}",
+  "@stockOf": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "restockProduct": "Réappro {nom}",
+  "@restockProduct": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "productNewTitle": "Nouveau produit",
+  "productEditTitle": "Modifier le produit",
+  "fieldName": "Nom du produit",
+  "fieldNameHint": "Ex. Riz parfumé 5 kg",
+  "fieldCategory": "Catégorie",
+  "newCategory": "Nouvelle catégorie",
+  "fieldPurchasePrice": "Prix d'achat",
+  "fieldPurchasePriceHelp": "Ce que vous payez pour une unité.",
+  "fieldSalePrice": "Prix de vente",
+  "fieldSalePriceHelp": "Le prix demandé au client pour une unité.",
+  "fieldQuantity": "Quantité en stock",
+  "fieldQuantityHelpNew": "Ce que vous avez aujourd'hui. Mettez 0 si vous n'en avez pas.",
+  "fieldQuantityHelpEdit": "Changer ce nombre enregistre une correction du stock.",
+  "fieldUnit": "Unité",
+  "fieldThreshold": "Alerte de stock bas",
+  "fieldThresholdHelp": "Kassa vous prévient quand il en reste ce nombre ou moins.",
+  "photoAdd": "Ajouter une photo",
+  "photoChange": "Changer la photo",
+  "photoTake": "Prendre une photo",
+  "photoGallery": "Choisir dans la galerie",
+  "photoRemove": "Retirer la photo",
+  "photoError": "La photo n'a pas pu être ajoutée. Réessayez ou choisissez une autre photo.",
+  "unitPiece": "pièce",
+  "unitKg": "kg",
+  "unitLitre": "litre",
+  "unitCarton": "carton",
+  "unitBag": "sac",
+  "unitPack": "paquet",
+  "unitBottle": "bouteille",
+  "unitBox": "boîte",
+  "errNameRequired": "Saisissez le nom du produit.",
+  "errPriceRequired": "Saisissez un prix en francs, sans virgule.",
+  "errQuantityInvalid": "Saisissez un nombre, par exemple 12 ou 1,5.",
+  "errUnitRequired": "Choisissez ou saisissez une unité.",
+  "warnSellingAtLoss": "Le prix de vente est plus bas que le prix d'achat : vous perdez {montant} par unité.",
+  "@warnSellingAtLoss": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "Enregistrer",
+  "productAdded": "Produit ajouté.",
+  "productSaved": "Modifications enregistrées.",
+  "deleteProduct": "Supprimer le produit",
+  "deleteProductTitle": "Supprimer {nom} ?",
+  "@deleteProductTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteProductBody": "Il ne sera plus proposé à la vente. Les ventes passées restent dans l'historique.",
+  "deleteConfirm": "Supprimer",
+  "keep": "Garder",
+  "productDeleted": "{nom} a été supprimé.",
+  "@productDeleted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "productNotFound": "Ce produit n'existe plus. Il a peut-être été supprimé.",
+  "saveError": "L'enregistrement a échoué. Réessayez ; vos données sont toujours sur le téléphone.",
+  "categoryName": "Nom de la catégorie",
+  "categoryCreate": "Créer",
+  "cancel": "Annuler",
+  "errCategoryName": "Saisissez un nom de catégorie.",
+  "categoryQuickPick": "Choisissez un modèle ou saisissez un nom.",
+  "catGrocery": "Épicerie",
+  "catDrinks": "Boissons",
+  "catHygiene": "Hygiène",
+  "catHousehold": "Ménage",
+  "catFresh": "Frais",
+  "catOther": "Autre",
+  "restockChooseProduct": "Choisissez le produit reçu.",
+  "currentStock": "Stock actuel : {quantite}",
+  "@currentStock": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "currentPurchasePrice": "Prix d'achat actuel : {montant}",
+  "@currentPurchasePrice": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldReceivedQuantity": "Quantité reçue",
+  "fieldNewPurchasePriceHelp": "Changez-le si votre fournisseur a changé son prix.",
+  "newStockPreview": "Nouveau stock : {quantite}",
+  "@newStockPreview": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "addToStock": "Ajouter au stock",
+  "errReceivedQuantity": "Saisissez la quantité reçue, plus grande que 0.",
+  "stockUpdated": "Stock mis à jour : {quantite}.",
+  "@stockUpdated": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "comingSoon": "Cet écran arrive dans une prochaine version.",
+  "loadError": "Impossible de lire vos produits. Fermez puis rouvrez l'app ; vos données restent sur le téléphone.",
+  "history": "Historique",
+  "productsCount": "{nombre, plural, =1{1 produit} other{{nombre} produits}}",
+  "@productsCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "cartTitle": "Panier",
+  "cartEmptyHint": "Touchez un produit pour l'ajouter. Appui long pour choisir la quantité.",
+  "sellNoProductsTitle": "Aucun produit à vendre",
+  "sellNoProductsBody": "Ajoutez vos produits dans l'onglet Stock pour commencer à vendre.",
+  "clearCart": "Vider le panier",
+  "cartCleared": "Panier vidé.",
+  "undo": "Rétablir",
+  "removeFromCart": "Retirer",
+  "increaseQuantity": "Ajouter 1 {nom}",
+  "@increaseQuantity": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "decreaseQuantity": "Enlever 1 {nom}",
+  "@decreaseQuantity": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityOf": "Quantité de {nom}",
+  "@quantityOf": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "putInCart": "Mettre au panier",
+  "stockInsufficient": "Stock insuffisant : il reste {quantite}. La vente reste possible.",
+  "@stockInsufficient": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      }
+    }
+  },
+  "decimalSeparator": "Virgule",
+  "paymentTitle": "Paiement",
+  "saleTotal": "Total de la vente",
+  "totalToPay": "Total à payer",
+  "payCash": "Espèces",
+  "payMomo": "MTN MoMo",
+  "payOrange": "Orange Money",
+  "payCredit": "Crédit",
+  "amountReceived": "Montant reçu",
+  "amountReceivedHint": "Rien à saisir si le client donne le montant exact.",
+  "changeToGive": "Monnaie à rendre",
+  "missingAmount": "Il manque {montant}. Encaissez plus, ou choisissez Crédit pour noter une dette.",
+  "@missingAmount": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "mobileMoneyHint": "Vérifiez que les {montant} sont bien arrivés sur votre téléphone avant d'encaisser.",
+  "@mobileMoneyHint": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "advancePaid": "Avance payée maintenant",
+  "advancePaidHint": "Laissez 0 si le client ne paie rien aujourd'hui.",
+  "remainingDebt": "Reste à payer",
+  "customer": "Client",
+  "chooseCustomer": "Choisir le client",
+  "changeCustomer": "Changer",
+  "newCustomer": "Nouveau client",
+  "customerName": "Nom du client",
+  "customerPhone": "Téléphone (facultatif)",
+  "customerPhoneHint": "Pour lui envoyer un rappel WhatsApp.",
+  "errCustomerName": "Saisissez le nom du client.",
+  "addCustomer": "Ajouter le client",
+  "searchCustomers": "Rechercher un client",
+  "noCustomers": "Aucun client pour l'instant. Ajoutez-le avec « Nouveau client ».",
+  "errChooseCustomer": "Choisissez le client qui prend à crédit.",
+  "collectAmount": "Encaisser {montant}",
+  "@collectAmount": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "sellOnCredit": "Vendre à crédit",
+  "saleRecorded": "Vente n°{numero} enregistrée : {montant}.",
+  "@saleRecorded": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saleRecordedChange": "Vente n°{numero} enregistrée. Rendez {monnaie}.",
+  "@saleRecordedChange": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "monnaie": {
+        "type": "String"
+      }
+    }
+  },
+  "historyTitle": "Historique des ventes",
+  "today": "Aujourd'hui",
+  "yesterday": "Hier",
+  "chooseDate": "Choisir une date",
+  "allDates": "Toutes les dates",
+  "saleNumber": "Vente n°{numero}",
+  "@saleNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "saleNumberTime": "N°{numero} · {heure}",
+  "@saleNumberTime": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "heure": {
+        "type": "String"
+      }
+    }
+  },
+  "historyEmptyTitle": "Aucune vente pour l'instant",
+  "historyEmptyBody": "Vos ventes apparaîtront ici dès la première.",
+  "historyEmptyDay": "Aucune vente ce jour-là. Choisissez une autre date.",
+  "daySummary": "{nombre, plural, =1{1 vente} other{{nombre} ventes}} · {montant}",
+  "@daySummary": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saleDateTime": "Le {date} à {heure}",
+  "@saleDateTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "heure": {
+        "type": "String"
+      }
+    }
+  },
+  "products": "Produits",
+  "profit": "Bénéfice",
+  "paymentMode": "Paiement",
+  "lineDetail": "{quantite} × {prix}",
+  "@lineDetail": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      },
+      "prix": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSaleTitle": "Annuler la vente n°{numero} ?",
+  "@cancelSaleTitle": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelSaleBody": "Le stock sera remis et la dette du client retirée. La vente reste dans l'historique, marquée Annulée.",
+  "keepSale": "Garder la vente",
+  "errCancelRepaid": "Le client a déjà remboursé une partie de cette vente : impossible de l'annuler.",
+  "saleCancelled": "Vente n°{numero} annulée. Le stock a été remis.",
+  "@saleCancelled": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "saleNotFound": "Cette vente n'existe plus.",
+  "debtorsCount": "{nombre, plural, =0{Personne ne vous doit d'argent} =1{1 client vous doit de l'argent} other{{nombre} clients vous doivent de l'argent}}",
+  "@debtorsCount": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "lastPurchaseOn": "Dernier achat le {date}",
+  "@lastPurchaseOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lastPurchaseToday": "Dernier achat aujourd'hui",
+  "lastPurchaseYesterday": "Dernier achat hier",
+  "customersEmptyTitle": "Aucun client pour l'instant",
+  "customersEmptyBody": "Ajoutez vos clients pour suivre ce qu'ils vous doivent.",
+  "noCustomerMatch": "Aucun client ne correspond à « {texte} ».",
+  "@noCustomerMatch": {
+    "placeholders": {
+      "texte": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderMessageNoShop": "Bonjour {nom}, il vous reste {montant} à payer. Merci.",
+  "@reminderMessageNoShop": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsappError": "WhatsApp ne s'ouvre pas. Vérifiez qu'il est installé sur ce téléphone.",
+  "addPhoneToRemind": "Ajoutez son numéro pour lui envoyer un rappel WhatsApp.",
+  "edit": "Modifier",
+  "balance": "Solde",
+  "customerHistoryEmpty": "Aucun achat ni versement pour l'instant.",
+  "purchaseNumber": "Achat · N°{numero}",
+  "@purchaseNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "creditPurchaseNumber": "Achat à crédit · N°{numero}",
+  "@creditPurchaseNumber": {
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "debtPayment": "Versement · {mode}",
+  "@debtPayment": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "customerNotFound": "Ce client n'existe plus.",
+  "collectDebtTitle": "Encaisser une dette",
+  "amountPaidNow": "Montant versé",
+  "amountPaidNowHint": "Touchez « Toute la dette » si le client paie tout.",
+  "wholeDebt": "Toute la dette · {montant}",
+  "@wholeDebt": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "remainingAfterPayment": "Il restera à payer",
+  "debtPaidOffLabel": "Dette soldée",
+  "errPaymentTooHigh": "{nom} ne doit que {montant}. Baissez le montant.",
+  "@errPaymentTooHigh": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRecordedTitle": "Versement enregistré",
+  "paymentRecordedBody": "{montant} reçus de {nom}.",
+  "@paymentRecordedBody": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      },
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentRemaining": "Il reste {montant} à payer.",
+  "@paymentRemaining": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentPaidOff": "Sa dette est soldée.",
+  "sendReceipt": "Envoyer le reçu",
+  "done": "Terminer",
+  "receiptMessage": "Bonjour {nom}, le {date}, nous avons bien reçu {montant}.",
+  "@receiptMessage": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptRemaining": "Il vous reste {montant} à payer. Merci.",
+  "@receiptRemaining": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "receiptPaidOff": "Votre dette est soldée. Merci.",
+  "editCustomerTitle": "Modifier le client",
+  "customerNote": "Note (facultatif)",
+  "customerNoteHint": "Par exemple : paie en fin de mois.",
+  "errCustomerPhone": "Numéro invalide. Saisissez 9 chiffres, par exemple 6 77 12 34 56.",
+  "deleteCustomer": "Supprimer le client",
+  "deleteCustomerTitle": "Supprimer {nom} ?",
+  "@deleteCustomerTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteCustomerBody": "Il ne sera plus dans votre liste. Ses achats restent dans l'historique des ventes.",
+  "errDeleteIndebted": "{nom} doit encore {montant}. Encaissez sa dette avant de le supprimer.",
+  "@errDeleteIndebted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "customerDeleted": "{nom} a été supprimé.",
+  "@customerDeleted": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "dateAndTotal": "{date} · Total {total}",
+  "@dateAndTotal": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "salesAndProfit": "{ventes} · bénéfice {montant}",
+  "@salesAndProfit": {
+    "placeholders": {
+      "ventes": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "saveStatePending": "Sauvegarde en attente",
+  "saveStateLocal": "Sur ce téléphone",
+  "saveStateSavedHelp": "Tout est sauvegardé en ligne.",
+  "saveStatePendingHelp": "Des changements attendent internet pour être sauvegardés.",
+  "saveStateLocalHelp": "Vos données sont enregistrées sur ce téléphone. La sauvegarde en ligne commencera quand vous créerez votre compte.",
+  "seeStock": "Voir le stock",
+  "reportsTitle": "Rapports",
+  "reportsHint": "Jour, semaine, mois et meilleurs produits",
+  "homeNoProductsTitle": "Ajoutez vos produits pour commencer",
+  "homeNoProductsBody": "Avec vos produits et leurs prix, une vente se fait en quelques touchers.",
+  "periodDay": "Jour",
+  "periodWeek": "Semaine",
+  "periodMonth": "Mois",
+  "periodEarlier": "Avant",
+  "periodLater": "Après",
+  "periodEarlierHint": "Période précédente",
+  "periodLaterHint": "Période suivante",
+  "thisWeek": "Cette semaine",
+  "lastWeek": "La semaine dernière",
+  "weekRange": "Du {debut} au {fin}",
+  "@weekRange": {
+    "placeholders": {
+      "debut": {
+        "type": "String"
+      },
+      "fin": {
+        "type": "String"
+      }
+    }
+  },
+  "thisMonth": "Ce mois-ci",
+  "lastMonth": "Le mois dernier",
+  "salesLabel": "Ventes",
+  "averageSale": "Vente moyenne : {montant}",
+  "@averageSale": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyReceivedTitle": "Argent reçu",
+  "paidAtSale": "Payé à la vente",
+  "soldOnCredit": "Vendu à crédit",
+  "debtsCollected": "Dettes encaissées",
+  "totalReceived": "Total reçu",
+  "salesByMode": "Ventes par mode de paiement",
+  "bestSellers": "Meilleurs produits",
+  "bestSellerDetail": "{quantite} vendus · bénéfice {benefice}",
+  "@bestSellerDetail": {
+    "placeholders": {
+      "quantite": {
+        "type": "String"
+      },
+      "benefice": {
+        "type": "String"
+      }
+    }
+  },
+  "bestSellerRank": "N°{rang}",
+  "@bestSellerRank": {
+    "placeholders": {
+      "rang": {
+        "type": "int"
+      }
+    }
+  },
+  "reportEmpty": "Aucune vente sur cette période.",
+  "cancelledNotCounted": "{nombre, plural, =1{1 vente annulée n'est pas comptée.} other{{nombre} ventes annulées ne sont pas comptées.}}",
+  "@cancelledNotCounted": {
+    "placeholders": {
+      "nombre": {
+        "type": "int"
+      }
+    }
+  },
+  "welcomeTitle": "Votre caisse, même sans internet",
+  "welcomeBody": "Ventes, stock et dettes de vos clients au même endroit. Il faut internet une seule fois, pour créer votre compte.",
+  "start": "Commencer",
+  "serverMissing": "Cette version de l'app n'est pas reliée au serveur Kassa.",
+  "loginTitle": "Votre numéro",
+  "loginBody": "Nous vous envoyons un code par SMS pour vérifier que ce numéro est à vous.",
+  "phoneLabel": "Numéro de téléphone",
+  "errPhone": "Numéro invalide. Saisissez les 9 chiffres, par exemple 6 77 12 34 56.",
+  "sendCode": "Recevoir le code",
+  "codeTitle": "Code reçu par SMS",
+  "codeBody": "Saisissez le code à 6 chiffres envoyé au {numero}.",
+  "@codeBody": {
+    "placeholders": {
+      "numero": {
+        "type": "String"
+      }
+    }
+  },
+  "codeLabel": "Code à 6 chiffres",
+  "verifyCode": "Valider le code",
+  "resendIn": "Renvoyer le code dans {secondes} s",
+  "@resendIn": {
+    "placeholders": {
+      "secondes": {
+        "type": "int"
+      }
+    }
+  },
+  "resendCode": "Renvoyer le code",
+  "changeNumber": "Changer de numéro",
+  "codeSent": "Code envoyé au {numero}.",
+  "@codeSent": {
+    "placeholders": {
+      "numero": {
+        "type": "String"
+      }
+    }
+  },
+  "errCodeRefused": "Code incorrect ou trop ancien. Vérifiez le SMS ou demandez un nouveau code.",
+  "errTooManyRequests": "Trop de demandes. Attendez une minute avant de réessayer.",
+  "errSmsFailed": "Le SMS n'a pas pu partir. Vérifiez le numéro.",
+  "errNetwork": "Pas de connexion internet. Vérifiez vos données mobiles, puis réessayez.",
+  "errOther": "Une erreur s'est produite. Réessayez dans un instant.",
+  "errOtherAccount": "Ce téléphone est déjà relié au compte d'un autre numéro. Connectez-vous avec ce numéro-là.",
+  "restoring": "Récupération de vos données…",
+  "shopTitle": "Votre boutique",
+  "shopBody": "Ces informations restent modifiables plus tard dans Réglages.",
+  "shopName": "Nom de la boutique",
+  "shopNameHint": "Par exemple : Chez Maman Brigitte",
+  "errShopName": "Saisissez le nom de la boutique.",
+  "shopType": "Type de commerce",
+  "typeFood": "Alimentation, épicerie",
+  "typeNeighborhood": "Boutique de quartier",
+  "typeHardware": "Quincaillerie",
+  "typeBeauty": "Cosmétiques",
+  "typeClothes": "Vêtements, chaussures",
+  "typePhones": "Téléphones, accessoires",
+  "typeOther": "Autre",
+  "city": "Ville",
+  "cityHint": "Par exemple : Douala",
+  "errCity": "Saisissez la ville.",
+  "district": "Quartier",
+  "districtHint": "Par exemple : Akwa",
+  "errDistrict": "Saisissez le quartier.",
+  "pinChoose": "Code PIN à 4 chiffres",
+  "pinChooseHint": "Il protège l'app si quelqu'un d'autre prend votre téléphone.",
+  "pinConfirm": "Confirmez le code PIN",
+  "errPinFormat": "Le code PIN doit avoir 4 chiffres.",
+  "errPinMismatch": "Les deux codes ne sont pas pareils. Saisissez-les à nouveau.",
+  "createShop": "Créer ma boutique",
+  "pinTitle": "Entrez votre code PIN",
+  "pinProgress": "{n} chiffres sur 4 saisis",
+  "@pinProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "pinWrong": "{restants, plural, =1{Code incorrect. Il reste 1 essai.} other{Code incorrect. Il reste {restants} essais.}}",
+  "@pinWrong": {
+    "placeholders": {
+      "restants": {
+        "type": "int"
+      }
+    }
+  },
+  "pinLocked": "Trop d'essais. Réessayez dans {secondes} s.",
+  "@pinLocked": {
+    "placeholders": {
+      "secondes": {
+        "type": "int"
+      }
+    }
+  },
+  "pinForgot": "Code oublié",
+  "pinForgotBody": "Nous vous envoyons un code par SMS, puis vous choisissez un nouveau code PIN.",
+  "newPinTitle": "Choisissez un nouveau code PIN",
+  "newPinConfirmTitle": "Saisissez-le encore une fois",
+  "pinChanged": "Code PIN changé.",
+  "errPinOtherNumber": "Ce numéro n'est pas celui du compte de ce téléphone.",
+  "loading": "Chargement…",
+  "settingsTitle": "Réglages",
+  "settingsHint": "Langue, abonnement, compte",
+  "settingsSubscription": "Abonnement",
+  "settingsBackup": "Sauvegarde",
+  "settingsAccount": "Compte",
+  "backupNow": "Sauvegarder maintenant",
+  "backupDone": "Tout est sauvegardé en ligne.",
+  "backupFailed": "Sauvegarde impossible pour l'instant. Vos données restent sur ce téléphone ; Kassa réessaiera quand internet reviendra.",
+  "logout": "Se déconnecter",
+  "logoutTitle": "Se déconnecter de ce téléphone ?",
+  "logoutBody": "Les données de la boutique seront effacées de ce téléphone. Elles restent sauvegardées en ligne et reviendront quand vous vous reconnecterez avec votre numéro.",
+  "logoutPending": "{n, plural, =1{1 changement n'est pas encore sauvegardé en ligne : il sera perdu.} other{{n} changements ne sont pas encore sauvegardés en ligne : ils seront perdus.}}",
+  "@logoutPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutLocalOnly": "Cette boutique n'est pas sauvegardée en ligne : toutes ses données seront perdues.",
+  "logoutConfirm": "Effacer et se déconnecter",
+  "proTitle": "Kassa Pro",
+  "trialDaysLeft": "{jours, plural, =1{Dernier jour d'essai gratuit} other{Essai gratuit : {jours} jours restants}}",
+  "@trialDaysLeft": {
+    "placeholders": {
+      "jours": {
+        "type": "int"
+      }
+    }
+  },
+  "trialUntil": "Essai gratuit jusqu'au {date}",
+  "@trialUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "proUntil": "Kassa Pro jusqu'au {date}",
+  "@proUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "trialEnded": "Votre essai gratuit est terminé",
+  "proEnded": "Votre abonnement Pro est terminé",
+  "readOnlyBody": "Vos ventes, votre stock et vos dettes restent visibles. Pour enregistrer à nouveau, passez à Kassa Pro : {prix} par mois.",
+  "@readOnlyBody": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "trialEndingBody": "Après l'essai, Kassa Pro coûte {prix} par mois pour continuer à enregistrer.",
+  "@trialEndingBody": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "proPrice": "{prix} / mois",
+  "@proPrice": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "proBenefitRecord": "Enregistrez ventes, stock et dettes sans limite.",
+  "proBenefitBackup": "Vos données restent sauvegardées en ligne.",
+  "proBenefitDays": "Les jours qui restent ne sont pas perdus : le mois payé s'ajoute à la fin.",
+  "payWith": "Payer avec",
+  "payPhoneLabel": "Numéro Mobile Money",
+  "payButton": "Payer {prix}",
+  "@payButton": {
+    "placeholders": {
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "payWaitingTitle": "Validez le paiement sur votre téléphone",
+  "payWaitingBody": "Un message {operateur} va s'afficher sur le {numero}. Entrez votre code secret Mobile Money pour payer {prix}.",
+  "@payWaitingBody": {
+    "placeholders": {
+      "operateur": {
+        "type": "String",
+        "example": "MoMo"
+      },
+      "numero": {
+        "type": "String",
+        "example": "+237 6 77 12 34 56"
+      },
+      "prix": {
+        "type": "String",
+        "example": "5 000 FCFA"
+      }
+    }
+  },
+  "payWaitingLater": "Revenir plus tard",
+  "paySuccess": "Merci. Kassa Pro est activé jusqu'au {date}.",
+  "@paySuccess": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "9 nov."
+      }
+    }
+  },
+  "payFailed": "Le paiement n'a pas abouti. Vérifiez votre solde Mobile Money, puis réessayez.",
+  "payTimeout": "Pas encore de réponse. Si vous avez payé, Kassa Pro s'activera tout seul dans quelques minutes.",
+  "payPending": "Un paiement attend déjà votre validation. Regardez votre téléphone, ou réessayez dans 5 minutes.",
+  "payRefused": "La demande de paiement a été refusée. Vérifiez le numéro et l'opérateur, puis réessayez.",
+  "payUnavailable": "Le paiement en ligne n'est pas disponible sur cette version de Kassa.",
+  "payExtend": "Payer un mois de plus",
+  "settingsShop": "Boutique",
+  "shopEditTitle": "Modifier la boutique",
+  "shopThreshold": "Alerte de stock bas par défaut",
+  "shopThresholdHelp": "Proposée pour chaque nouveau produit. Les produits déjà créés gardent la leur.",
+  "errThreshold": "Saisissez un nombre entier de 0 à 100 000, par exemple 5.",
+  "shopSaved": "Boutique enregistrée.",
+  "adminTitle": "Kassa Admin",
+  "adminLoginTitle": "Espace admin",
+  "adminLoginBody": "Réservé à l'équipe Kassa.",
+  "adminEmail": "Adresse e-mail",
+  "adminPassword": "Mot de passe",
+  "adminLogin": "Se connecter",
+  "adminErrEmpty": "Saisissez l'e-mail et le mot de passe.",
+  "adminErrCredentials": "E-mail ou mot de passe incorrect.",
+  "adminErrNotAdmin": "Ce compte n'a pas accès à l'espace admin.",
+  "adminErrTooMany": "Trop d'essais. Attendez une minute, puis réessayez.",
+  "adminConfigMissing": "Réglages du serveur absents. Lancez l'admin avec --dart-define-from-file=config/kassa.json.",
+  "adminHello": "Bonjour, {email}",
+  "@adminHello": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNavDashboard": "Tableau de bord",
+  "adminNavShops": "Boutiques",
+  "adminNavPayments": "Paiements",
+  "adminNavMap": "Carte",
+  "adminStatShops": "Boutiques inscrites",
+  "adminStatNewShops": "{n, plural, =0{Aucune en 7 jours} =1{1 nouvelle en 7 jours} other{{n} nouvelles en 7 jours}}",
+  "@adminStatNewShops": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminStatTrials": "Essais en cours",
+  "adminStatPro": "Abonnés Pro",
+  "adminStatEnded": "Essais ou Pro terminés",
+  "adminStatEndedHint": "Lecture seule, à relancer",
+  "adminStatRevenue": "Revenus du mois",
+  "adminStatPayments": "{n, plural, =0{Aucun paiement réussi} =1{1 paiement réussi} other{{n} paiements réussis}}",
+  "@adminStatPayments": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminChartSignups": "Inscriptions, 30 derniers jours",
+  "adminChartSignupsSummary": "{total, plural, =0{Aucune inscription en 30 jours.} =1{1 inscription en 30 jours.} other{{total} inscriptions en 30 jours.}}",
+  "@adminChartSignupsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminSignupsOn": "{date} : {n, plural, =0{aucune inscription} =1{1 inscription} other{{n} inscriptions}}",
+  "@adminSignupsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminChartRevenue": "Revenus, 6 derniers mois",
+  "adminChartRevenueSummary": "{total} encaissés en 6 mois.",
+  "@adminChartRevenueSummary": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRevenueOn": "{mois} : {montant}",
+  "@adminRevenueOn": {
+    "placeholders": {
+      "mois": {
+        "type": "String"
+      },
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMapTitle": "Zones couvertes",
+  "adminShopsCount": "{n, plural, =1{1 boutique} other{{n} boutiques}}",
+  "@adminShopsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminZoneLine": "{ville} : {boutiques}, dont {pro} Pro",
+  "@adminZoneLine": {
+    "placeholders": {
+      "ville": {
+        "type": "String"
+      },
+      "boutiques": {
+        "type": "String"
+      },
+      "pro": {
+        "type": "int"
+      }
+    }
+  },
+  "adminMapOffMap": "Pas sur la carte (ville inconnue)",
+  "adminMapEmpty": "Aucune boutique inscrite pour l'instant.",
+  "adminMapSummary": "Carte du Cameroun : {n, plural, =0{aucune ville} =1{1 ville} other{{n} villes}} avec des boutiques Kassa.",
+  "@adminMapSummary": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adminSearchShops": "Rechercher : nom, téléphone, ville, quartier",
+  "adminShownOf": "{affiches} sur {total}",
+  "@adminShownOf": {
+    "placeholders": {
+      "affiches": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminShowMore": "Afficher plus",
+  "adminNoShops": "Aucune boutique trouvée.",
+  "adminSubEnded": "Terminé le {date}",
+  "@adminSubEnded": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSubNone": "Pas d'abonnement",
+  "adminShopSince": "Inscrite le {date}",
+  "@adminShopSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLastBackup": "Dernière sauvegarde : {date}",
+  "@adminLastBackup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoBackup": "Aucune sauvegarde reçue",
+  "adminChooseShop": "Choisissez une boutique pour voir sa fiche.",
+  "adminGift": "Offrir des jours",
+  "adminGiftTitle": "Offrir des jours à {nom}",
+  "@adminGiftTitle": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "adminGiftDays": "Nombre de jours",
+  "adminGiftDaysHelp": "De 1 à 366, ajoutés à la fin de l'abonnement en cours.",
+  "adminGiftKindTrial": "Jours d'essai",
+  "adminGiftKindPro": "Jours de Pro",
+  "adminGiftReason": "Motif",
+  "adminGiftReasonHint": "Par exemple : geste commercial après une panne",
+  "adminGiftConfirm": "Offrir",
+  "adminGiftDone": "{nom} : abonnement jusqu'au {date}.",
+  "@adminGiftDone": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrDays": "Saisissez un nombre de jours de 1 à 366.",
+  "adminErrReason": "Expliquez le geste en quelques mots.",
+  "adminHistory": "Gestes déjà faits",
+  "adminHistoryEmpty": "Aucun geste pour cette boutique.",
+  "adminHistoryEntry": "{date} : +{jours} jours ({formule}), par {email}",
+  "@adminHistoryEntry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "jours": {
+        "type": "int"
+      },
+      "formule": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPayAll": "Tous",
+  "adminPaySuccess": "Réussis",
+  "adminPayPending": "En attente",
+  "adminPayFailed": "Échoués",
+  "adminPayStatusSuccess": "Réussi",
+  "adminPayStatusPending": "En attente",
+  "adminPayStatusFailed": "Échoué",
+  "adminNoPayments": "Aucun paiement.",
+  "adminLoadError": "Impossible de charger les données. Vérifiez la connexion, puis réessayez.",
+  "adminRetry": "Réessayer",
+  "adminClose": "Fermer",
+  "adminRefresh": "Actualiser",
+  "lieuRegion": "Région",
+  "lieuDepartement": "Département",
+  "lieuArrondissement": "Arrondissement",
+  "lieuLocalite": "Ville ou village",
+  "lieuLocaliteHint": "Tapez les premières lettres",
+  "lieuQuartierHint": "Tapez le nom de votre quartier",
+  "lieuAjouter": "Ajouter « {nom} »",
+  "@lieuAjouter": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Haoussa"
+      }
+    }
+  },
+  "lieuNouveau": "Nouveau : « {nom} » sera ajouté à la liste.",
+  "@lieuNouveau": {
+    "placeholders": {
+      "nom": {
+        "type": "String",
+        "example": "Haoussa"
+      }
+    }
+  },
+  "lieuHorsLigne": "Liste indisponible sans internet : tapez le nom, il sera gardé tel quel.",
+  "lieuOsm": "Liste des villages : © contributeurs OpenStreetMap",
+  "errRegion": "Choisissez la région.",
+  "errDepartement": "Choisissez le département.",
+  "errArrondissement": "Choisissez l'arrondissement.",
+  "errLocalite": "Choisissez ou ajoutez la ville ou le village.",
+  "errLieuTrop": "Trop d'ajouts aujourd'hui : choisissez un nom dans la liste, ou réessayez demain.",
+  "errLieuNom": "Ce nom n'est pas valide : utilisez des lettres.",
+  "lieuActuel": "Lieu actuel : {lieu}",
+  "@lieuActuel": {
+    "description": "Adresse d'une boutique créée avant le choix guidé du lieu.",
+    "placeholders": {"lieu": {"type": "String"}}
+  },
+  "lieuPreciser": "Choisissez la région pour préciser le lieu.",
+  "adminNavPlaces": "Lieux",
+  "adminPlacesIntro": "Villages et quartiers ajoutés par les commerçants. Ils sont proposés tout de suite aux autres : corrigez une faute ou retirez un doublon.",
+  "adminPlacesEmpty": "Aucun ajout pour le moment.",
+  "adminPlaceDistrictOf": "Quartier de {localite}",
+  "@adminPlaceDistrictOf": {"placeholders": {"localite": {"type": "String"}}},
+  "adminPlaceWhere": "{arrondissement}, {departement}",
+  "@adminPlaceWhere": {"placeholders": {"arrondissement": {"type": "String"}, "departement": {"type": "String"}}},
+  "adminPlaceAdded": "Ajouté le {date}",
+  "@adminPlaceAdded": {"placeholders": {"date": {"type": "String"}}},
+  "adminPlaceShops": "{n, plural, =0{Aucune boutique} =1{1 boutique} other{{n} boutiques}}",
+  "@adminPlaceShops": {"placeholders": {"n": {"type": "int"}}},
+  "adminPlaceFix": "Corriger",
+  "adminPlaceDelete": "Retirer",
+  "adminPlaceFixTitle": "Corriger « {nom} »",
+  "@adminPlaceFixTitle": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceFixHelp": "Les boutiques qui utilisent ce nom seront mises à jour.",
+  "adminPlaceNewName": "Nom correct",
+  "adminPlaceErrExists": "Ce nom existe déjà au même endroit : retirez plutôt ce doublon.",
+  "adminPlaceFixed": "Nom corrigé : « {nom} ».",
+  "@adminPlaceFixed": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceDeleteTitle": "Retirer « {nom} » ?",
+  "@adminPlaceDeleteTitle": {"placeholders": {"nom": {"type": "String"}}},
+  "adminPlaceDeleteHelp": "Il ne sera plus proposé. Les boutiques qui l'utilisent gardent le nom écrit.",
+  "adminPlaceDeleted": "« {nom} » retiré.",
+  "@adminPlaceDeleted": {"placeholders": {"nom": {"type": "String"}}}
+}
