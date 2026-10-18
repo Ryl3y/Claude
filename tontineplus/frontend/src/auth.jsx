@@ -32,6 +32,20 @@ export function AuthProvider({ children }) {
     await chargerProfil();
   };
 
+  const demanderCode = (telephone) =>
+    api("/auth/code/demande/", { methode: "POST", corps: { telephone }, reessai: false });
+
+  // Un numéro inconnu renvoie l'erreur « nom_requis » : on redemande alors avec le nom.
+  const connexionParCode = async (telephone, code, nomComplet) => {
+    const reponse = await api("/auth/code/verification/", {
+      methode: "POST",
+      corps: { telephone, code, nom_complet: nomComplet ?? "" },
+      reessai: false,
+    });
+    jetons.definir(reponse);
+    setUtilisateur(reponse.utilisateur);
+  };
+
   const inscription = async (donnees) => {
     const reponse = await api("/auth/inscription/", { methode: "POST", corps: donnees, reessai: false });
     jetons.definir(reponse);
@@ -48,7 +62,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <ContexteAuth.Provider value={{ utilisateur, chargement, connexion, inscription, deconnexion }}>
+    <ContexteAuth.Provider
+      value={{ utilisateur, chargement, connexion, demanderCode, connexionParCode, inscription, deconnexion }}
+    >
       {children}
     </ContexteAuth.Provider>
   );

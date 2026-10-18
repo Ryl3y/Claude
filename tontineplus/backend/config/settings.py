@@ -108,6 +108,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
     "PAGE_SIZE": 50,
     "EXCEPTION_HANDLER": "tontines.erreurs.gestionnaire_erreurs",
+    # Limite par adresse IP des routes de code SMS (en plus des limites par numéro).
+    "DEFAULT_THROTTLE_RATES": {"sms": "30/hour"},
 }
 
 SIMPLE_JWT = {
@@ -119,6 +121,22 @@ SIMPLE_JWT = {
 
 # Secret partagé avec les fournisseurs Mobile Money pour signer les webhooks.
 MOBILE_MONEY_WEBHOOK_SECRET = env("MOBILE_MONEY_WEBHOOK_SECRET", "")
+
+# SMS : "console" (écrit dans les logs) ou "africastalking".
+SMS_BACKEND = env("SMS_BACKEND", "console")
+AFRICASTALKING_USERNAME = env("AFRICASTALKING_USERNAME", "sandbox")
+AFRICASTALKING_API_KEY = env("AFRICASTALKING_API_KEY", "")
+AFRICASTALKING_EXPEDITEUR = env("AFRICASTALKING_EXPEDITEUR", "")
+
+# Mobile Money : "simulation" (aucun appel réseau) ou "reel".
+MOBILE_MONEY_MODE = env("MOBILE_MONEY_MODE", "simulation")
+MTN_MOMO_BASE_URL = env("MTN_MOMO_BASE_URL", "https://sandbox.momodeveloper.mtn.com")
+MTN_MOMO_ENVIRONNEMENT = env("MTN_MOMO_ENVIRONNEMENT", "sandbox")  # mtncameroon en production
+MTN_MOMO_DEVISE = env("MTN_MOMO_DEVISE", "EUR")  # le bac à sable n'accepte que EUR ; XAF en production
+MTN_MOMO_SUBSCRIPTION_KEY = env("MTN_MOMO_SUBSCRIPTION_KEY", "")
+MTN_MOMO_API_USER = env("MTN_MOMO_API_USER", "")
+MTN_MOMO_API_KEY = env("MTN_MOMO_API_KEY", "")
+MTN_MOMO_CALLBACK_URL = env("MTN_MOMO_CALLBACK_URL", "")
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

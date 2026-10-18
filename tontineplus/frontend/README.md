@@ -21,10 +21,11 @@ Si Django tourne ailleurs : `VITE_BACKEND=http://127.0.0.1:8001 npm run dev`.
 
 | Page | Route | Ce qu'on y fait |
 | --- | --- | --- |
-| Connexion / inscription | `/login`, `/register` | Téléphone + mot de passe ; la session survit au rechargement |
+| Connexion | `/login` | Code reçu par SMS (crée le compte au premier passage) ou mot de passe ; la session survit au rechargement |
+| Inscription par mot de passe | `/register` | Variante sans SMS |
 | Tableau de bord | `/` | Mes tontines, leur statut et mon rôle |
 | Création | `/create-group` | Montant, fréquence, nombre de membres, ordre, pénalité, date du 1er tour |
-| Détail d'une tontine | `/group/:id` | Membres ; pour le président : invitations, ordre de passage, démarrage ; calendrier des tours ; encaissement en espèces et remise de la caisse |
+| Détail d'une tontine | `/group/:id` | Membres ; pour le président : invitations, ordre de passage, nomination du trésorier, démarrage ; calendrier des tours ; paiement de sa cotisation par Mobile Money ; encaissement en espèces et remise de la caisse (trésorier, président) |
 | Invitation | `/invitation/:code` | Rejoindre une tontine (inscription ou connexion d'abord si besoin) |
 
 Les boutons affichés dépendent du rôle, et le backend revérifie chaque droit.

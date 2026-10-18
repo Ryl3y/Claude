@@ -175,12 +175,12 @@ class ParcoursTontine(TestCase):
     def test_webhook_mobile_money_idempotent(self):
         tontine = self.tontine_demarree()
         cotisation = Cotisation.objects.filter(tour__tontine=tontine, membre__utilisateur=self.bello).first()
-        reponse = client_pour(self.bello).post(f"/api/v1/cotisations/{cotisation.pk}/paiements/", {
-            "montant": 10000, "moyen": "mtn_momo", "reference_externe": "MOMO-123"
-        }, format="json")
+        reponse = client_pour(self.bello).post(f"/api/v1/cotisations/{cotisation.pk}/paiements/",
+                                               {"moyen": "mtn_momo"}, format="json")
         self.assertEqual((reponse.status_code, reponse.data["statut"]), (201, "initie"))
+        reference = Paiement.objects.get(pk=reponse.data["id"]).reference_externe
 
-        corps = json.dumps({"reference_externe": "MOMO-123", "reussi": True}).encode()
+        corps = json.dumps({"reference_externe": reference, "reussi": True}).encode()
         signature = hmac.new(SECRET.encode(), corps, hashlib.sha256).hexdigest()
         envoyer = lambda sig: APIClient().post("/api/v1/webhooks/mobile-money/mtn/", corps,
                                                content_type="application/json", HTTP_X_SIGNATURE=sig)

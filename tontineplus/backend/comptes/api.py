@@ -1,9 +1,10 @@
 from django.contrib.auth.password_validation import validate_password
 from django.urls import path
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -11,7 +12,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from tontines.models import Membre
 from tontines.serializers import TontineSerializer
 
-from .models import Utilisateur
+from . import otp
+from .models import Utilisateur, valider_telephone
 
 
 class InscriptionSerializer(serializers.ModelSerializer):
@@ -49,6 +51,41 @@ def inscription(request):
     )
 
 
+class DemandeCodeSerializer(serializers.Serializer):
+    telephone = serializers.CharField(validators=[valider_telephone])
+
+
+class VerificationCodeSerializer(DemandeCodeSerializer):
+    code = serializers.RegexField(r"^[0-9]{6}$")
+    nom_complet = serializers.CharField(required=False, allow_blank=True, max_length=150)
+
+
+class LimiteSMS(ScopedRateThrottle):
+    scope = "sms"
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+@throttle_classes([LimiteSMS])
+def demander_code(request):
+    entree = DemandeCodeSerializer(data=request.data)
+    entree.is_valid(raise_exception=True)
+    otp.demander_code(entree.validated_data["telephone"])
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+@throttle_classes([LimiteSMS])
+def verifier_code(request):
+    entree = VerificationCodeSerializer(data=request.data)
+    entree.is_valid(raise_exception=True)
+    utilisateur = otp.verifier_code(**entree.validated_data)
+    jetons = RefreshToken.for_user(utilisateur)
+    return Response({"utilisateur": UtilisateurSerializer(utilisateur).data,
+                     "access": str(jetons.access_token), "refresh": str(jetons)})
+
+
 @api_view(["POST"])
 def deconnexion(request):
     """Révoque le jeton de renouvellement : la session ne peut plus être prolongée."""
@@ -72,6 +109,8 @@ def moi(request):
 urlpatterns = [
     path("auth/inscription/", inscription, name="inscription"),
     path("auth/connexion/", TokenObtainPairView.as_view(), name="connexion"),
+    path("auth/code/demande/", demander_code, name="code-demande"),
+    path("auth/code/verification/", verifier_code, name="code-verification"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("auth/deconnexion/", deconnexion, name="deconnexion"),
     path("moi/", moi, name="moi"),

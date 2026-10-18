@@ -70,26 +70,37 @@ class TourSerializer(serializers.ModelSerializer):
 
 
 class CotisationSerializer(serializers.ModelSerializer):
+    membre_id = serializers.IntegerField(read_only=True)
     membre = serializers.CharField(source="membre.utilisateur.nom_complet", read_only=True)
     reste_a_payer = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Cotisation
-        fields = ["id", "membre", "montant_du", "montant_paye", "reste_a_payer", "statut", "soldee_le"]
+        fields = ["id", "membre_id", "membre", "montant_du", "montant_paye", "reste_a_payer", "statut", "soldee_le"]
 
 
 class PaiementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paiement
-        fields = ["id", "montant", "moyen", "reference_externe", "statut", "cree_le", "confirme_le"]
-        read_only_fields = ["statut", "cree_le", "confirme_le"]
+        fields = ["id", "cotisation", "montant", "moyen", "telephone_payeur", "statut", "cree_le", "confirme_le"]
+        read_only_fields = fields
+
+
+class PaiementEntreeSerializer(serializers.Serializer):
+    """Espèces : montant obligatoire. Mobile Money : le reste dû est demandé au numéro indiqué."""
+
+    moyen = serializers.ChoiceField(choices=Paiement.Moyen.choices)
+    montant = serializers.IntegerField(min_value=1, required=False)
+    telephone = serializers.CharField(validators=[valider_telephone], required=False)
 
     def validate(self, donnees):
-        if donnees["moyen"] != Paiement.Moyen.ESPECES and not donnees.get("reference_externe"):
-            raise serializers.ValidationError(
-                {"reference_externe": "Obligatoire pour un paiement Mobile Money."}
-            )
+        if donnees["moyen"] == Paiement.Moyen.ESPECES and "montant" not in donnees:
+            raise serializers.ValidationError({"montant": "Obligatoire pour un paiement en espèces."})
         return donnees
+
+
+class RoleSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(choices=[Membre.Role.TRESORIER, Membre.Role.MEMBRE])
 
 
 class WebhookSerializer(serializers.Serializer):

@@ -51,3 +51,22 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.nom_complet} ({self.telephone})"
+
+
+class CodeSMS(models.Model):
+    """Code de connexion à usage unique envoyé par SMS. Seule son empreinte est stockée."""
+
+    telephone = models.CharField(max_length=16, validators=[valider_telephone])
+    empreinte = models.CharField(max_length=64)
+    essais = models.PositiveSmallIntegerField(default=0)
+    cree_le = models.DateTimeField(auto_now_add=True)
+    expire_le = models.DateTimeField()
+    utilise_le = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "codes_sms"
+        verbose_name = "code SMS"
+        indexes = [models.Index(fields=["telephone", "-cree_le"], name="codes_sms_telephone_idx")]
+
+    def __str__(self):
+        return f"{self.telephone} ({self.cree_le:%Y-%m-%d %H:%M})"

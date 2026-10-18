@@ -6,12 +6,14 @@ verrouille les lignes concernées et écrit une entrée dans le journal d'audit.
 
 import calendar
 import secrets
+import uuid
 from datetime import date, timedelta
 
 from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
+from . import mobile_money
 from .models import Cotisation, Invitation, JournalAudit, Membre, Paiement, Penalite, Tontine, Tour
 
 
@@ -216,6 +218,64 @@ def confirmer_paiement_mobile(reference_externe: str, reussi: bool) -> tuple[Pai
             paiement_id=paiement.pk, reussi=reussi,
         )
         return paiement, False
+
+
+@transaction.atomic
+def changer_role(tontine: Tontine, acteur, membre_id: int, role: str) -> Membre:
+    """Nomme ou retire le trésorier. Il n'y a qu'un trésorier ; le président garde son rôle."""
+    if role not in (Membre.Role.TRESORIER, Membre.Role.MEMBRE):
+        raise ErreurMetier("role_invalide", "Rôle attribuable : trésorier ou membre.")
+    membre = Membre.objects.select_for_update().filter(
+        tontine=tontine, pk=membre_id, statut=Membre.Statut.ACTIF
+    ).first()
+    if membre is None:
+        raise ErreurMetier("membre_inconnu", "Ce membre n'appartient pas à la tontine.")
+    if membre.role == Membre.Role.PRESIDENT:
+        raise ErreurMetier("role_president", "Le rôle du président ne peut pas être changé.")
+    if role == Membre.Role.TRESORIER:
+        tontine.membres.filter(role=Membre.Role.TRESORIER).exclude(pk=membre.pk).update(role=Membre.Role.MEMBRE)
+    membre.role = role
+    membre.save(update_fields=["role"])
+    journaliser(tontine, acteur, "changement_role", membre_id=membre.pk, role=role)
+    return membre
+
+
+def lancer_paiement_mobile(cotisation: Cotisation, acteur, moyen: str, telephone: str) -> Paiement:
+    """Demande au fournisseur de débiter le payeur du reste dû ; le crédit vient à la confirmation."""
+    with transaction.atomic():
+        cotisation = Cotisation.objects.select_for_update().select_related("tour__tontine").get(pk=cotisation.pk)
+        if cotisation.tour.tontine.statut != Tontine.Statut.ACTIVE:
+            raise ErreurMetier("tontine_inactive", "La tontine n'est pas active.")
+        if cotisation.statut == Cotisation.Statut.PAYEE:
+            raise ErreurMetier("deja_payee", "Cette cotisation est déjà soldée.")
+        if cotisation.paiements.filter(statut=Paiement.Statut.INITIE).exists():
+            raise ErreurMetier("paiement_en_cours", "Un paiement est déjà en attente de validation.")
+        paiement = Paiement.objects.create(
+            cotisation=cotisation, montant=cotisation.reste_a_payer, moyen=moyen,
+            reference_externe=str(uuid.uuid4()), telephone_payeur=telephone, enregistre_par=acteur,
+        )
+        journaliser(cotisation.tour.tontine, acteur, "paiement_mobile_lance",
+                    paiement_id=paiement.pk, moyen=moyen, montant=paiement.montant)
+    # Appel réseau hors transaction : le paiement est déjà enregistré « initié ».
+    try:
+        mobile_money.fournisseur(moyen).demander_paiement(paiement)
+    except mobile_money.FournisseurIndisponible as exc:
+        Paiement.objects.filter(pk=paiement.pk).update(statut=Paiement.Statut.ECHOUE, confirme_le=timezone.now())
+        raise ErreurMetier("fournisseur_indisponible", str(exc))
+    return paiement
+
+
+def actualiser_paiement(paiement: Paiement) -> Paiement:
+    """Relit le statut chez le fournisseur et crédite la cotisation si le paiement a réussi."""
+    if paiement.statut != Paiement.Statut.INITIE or paiement.moyen == Paiement.Moyen.ESPECES:
+        return paiement
+    try:
+        etat = mobile_money.fournisseur(paiement.moyen).statut(paiement)
+    except mobile_money.FournisseurIndisponible:
+        return paiement
+    if etat != mobile_money.EN_ATTENTE:
+        paiement, _ = confirmer_paiement_mobile(paiement.reference_externe, etat == mobile_money.REUSSI)
+    return paiement
 
 
 @transaction.atomic

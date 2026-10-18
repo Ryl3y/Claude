@@ -11,5 +11,7 @@ urlpatterns = router.urls + [
     path("tours/<int:pk>/cotisations/", views.cotisations_du_tour, name="tour-cotisations"),
     path("tours/<int:pk>/remise/", views.remise_du_tour, name="tour-remise"),
     path("cotisations/<int:pk>/paiements/", views.payer_cotisation, name="cotisation-paiements"),
+    path("paiements/<int:pk>/", views.detail_paiement, name="paiement-detail"),
+    path("webhooks/mtn-momo/", views.callback_mtn, name="callback-mtn"),
     path("webhooks/mobile-money/<str:fournisseur>/", views.webhook_mobile_money, name="webhook-mobile-money"),
 ]

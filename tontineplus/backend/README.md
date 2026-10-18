@@ -63,6 +63,8 @@ Authentification : en-tête `Authorization: Bearer <access>`. Erreurs au format 
 | Méthode | Route | Qui | Effet |
 | --- | --- | --- | --- |
 | POST | `auth/inscription/` | Public | Crée le compte, renvoie les jetons |
+| POST | `auth/code/demande/` | Public | `{telephone}` : envoie un code à 6 chiffres par SMS (valable 5 min) |
+| POST | `auth/code/verification/` | Public | `{telephone, code, nom_complet?}` → jetons ; crée le compte si le numéro est nouveau (erreur `nom_requis` tant que le nom manque) |
 | POST | `auth/connexion/` | Public | `{telephone, password}` → jetons `access` (15 min) et `refresh` (30 j) |
 | POST | `auth/refresh/` | Public | Nouveau jeton d'accès |
 | POST | `auth/deconnexion/` | Connecté | Révoque le jeton `refresh` |
@@ -72,13 +74,38 @@ Authentification : en-tête `Authorization: Bearer <access>`. Erreurs au format 
 | POST | `tontines/{id}/invitations/` | Président | `{telephone}` → code d'invitation |
 | POST | `invitations/{code}/accepter/` | Invité | Rejoint la tontine |
 | PUT | `tontines/{id}/ordre/` | Président | `{membres: [ids]}` ordre de passage |
+| PUT | `tontines/{id}/membres/{membre}/role/` | Président | `{role: "tresorier" \| "membre"}` ; un seul trésorier à la fois |
 | POST | `tontines/{id}/demarrer/` | Président | Génère tours et cotisations |
 | GET | `tontines/{id}/tours/` | Membre | Calendrier, montants attendus et collectés |
 | GET | `tontines/{id}/journal/` | Président | Journal d'audit |
 | GET | `tours/{id}/cotisations/` | Membre | Qui a payé, qui doit |
-| POST | `cotisations/{id}/paiements/` | Trésorier (espèces) ; membre (Mobile Money) | `{montant, moyen, reference_externe?}` |
+| POST | `cotisations/{id}/paiements/` | Trésorier ou président (espèces) ; le membre lui-même (Mobile Money) | Espèces : `{moyen: "especes", montant}`. Mobile Money : `{moyen: "mtn_momo", telephone?}`, demande le reste dû au numéro |
+| GET | `paiements/{id}/` | Payeur, trésorier, président | Statut du paiement, relu chez l'opérateur tant qu'il est en attente |
 | POST | `tours/{id}/remise/` | Trésorier, président | Clôt le tour ; `{forcer: true}` réservé au président |
+| POST, PUT | `webhooks/mtn-momo/` | MTN | Notification : le statut est relu chez MTN, le contenu n'est pas cru |
 | POST | `webhooks/mobile-money/{fournisseur}/` | Fournisseur (signature HMAC `X-Signature`) | Confirme un paiement, de façon idempotente |
+
+## Connexion par SMS
+
+Par défaut (`SMS_BACKEND=console`), aucun SMS n'est envoyé : le message s'affiche dans le
+terminal de `runserver`, avec le code. En production, `SMS_BACKEND=africastalking` et les
+identifiants Africa's Talking. Protections : 1 code par minute et 5 par heure et par numéro,
+5 essais par code, code stocké sous forme d'empreinte, 30 demandes par heure et par adresse IP.
+
+## Mobile Money
+
+Par défaut (`MOBILE_MONEY_MODE=simulation`), aucun opérateur n'est appelé : le paiement
+réussit, sauf si le numéro payeur se termine par `99` (pour tester un refus).
+
+En mode `reel`, MTN MoMo (API Collection) est branché :
+1. créer un compte sur <https://momodeveloper.mtn.com>, s'abonner au produit *Collection* ;
+2. créer l'utilisateur API et sa clé (bac à sable), les mettre dans `.env` ;
+3. en production : `MTN_MOMO_ENVIRONNEMENT=mtncameroon`, `MTN_MOMO_DEVISE=XAF`, et l'URL
+   de production fournie par MTN après validation du dossier.
+
+Le crédit d'une cotisation n'a lieu qu'une fois le statut confirmé par MTN (relu par
+`GET requesttopay`), jamais sur la seule foi d'une notification.
+Orange Money n'est pas encore branché en mode réel.
 
 ## Tâche quotidienne
 
@@ -97,11 +124,13 @@ Ils tournent sur un vrai PostgreSQL (l'utilisateur doit pouvoir créer une base 
 python manage.py test
 ```
 
-17 tests couvrent l'authentification, les droits par rôle, le démarrage, les paiements,
-la remise, le webhook rejoué, les retards et les contraintes de la base.
+33 tests couvrent l'authentification (mot de passe et code SMS), les droits par rôle, le
+trésorier, le démarrage, les paiements en espèces et Mobile Money (dont les requêtes
+envoyées à MTN, réseau simulé), la remise, les retards et les contraintes de la base.
 
 ## Pas encore fait
 
-- Connexion par code SMS (OTP) : la connexion se fait pour l'instant par mot de passe.
-- Appels réels aux API MTN MoMo et Orange Money (seul le webhook de confirmation existe).
-- Envoi des SMS d'invitation et de rappel.
+- Orange Money en mode réel.
+- Le client MTN MoMo et l'envoi Africa's Talking suivent leur documentation publique mais
+  n'ont pas encore été essayés avec de vrais identifiants (bac à sable).
+- SMS d'invitation et de rappel avant échéance.

@@ -16,8 +16,8 @@ from .models import Cotisation, Membre, Paiement, Tontine, Tour
 from .permissions import exiger_role
 from .serializers import (
     CotisationSerializer, InvitationSerializer, JournalSerializer, MembreSerializer, OrdreSerializer,
-    PaiementSerializer, RemiseSerializer, TontineDetailSerializer, TontineSerializer, TourSerializer,
-    WebhookSerializer,
+    PaiementEntreeSerializer, PaiementSerializer, RemiseSerializer, RoleSerializer, TontineDetailSerializer,
+    TontineSerializer, TourSerializer, WebhookSerializer,
 )
 
 PRESIDENT, TRESORIER = Membre.Role.PRESIDENT, Membre.Role.TRESORIER
@@ -87,6 +87,16 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
         membres = tontine.membres.select_related("utilisateur").order_by("position_tour")
         return Response(MembreSerializer(membres, many=True).data)
 
+    @action(detail=True, methods=["put"], url_path=r"membres/(?P<membre_id>\d+)/role")
+    def role(self, request, pk=None, membre_id=None):
+        tontine = self.get_object()
+        exiger_role(tontine, request.user, PRESIDENT)
+        entree = RoleSerializer(data=request.data)
+        entree.is_valid(raise_exception=True)
+        services.changer_role(tontine, request.user, int(membre_id), entree.validated_data["role"])
+        membres = tontine.membres.select_related("utilisateur").filter(statut=Membre.Statut.ACTIF)
+        return Response(MembreSerializer(membres, many=True).data)
+
     @action(detail=True, methods=["post"])
     def demarrer(self, request, pk=None):
         tontine = self.get_object()
@@ -124,21 +134,32 @@ def cotisations_du_tour(request, pk):
 @api_view(["POST"])
 def payer_cotisation(request, pk):
     """Espèces : enregistré par le trésorier ou le président.
-    Mobile Money : lancé par le membre lui-même, confirmé ensuite par le webhook."""
+    Mobile Money : lancé par le membre pour sa propre cotisation, crédité à la confirmation."""
     cotisation = get_object_or_404(Cotisation.objects.select_related("tour__tontine", "membre"), pk=pk)
     membre = exiger_role(cotisation.tour.tontine, request.user)
-    entree = PaiementSerializer(data=request.data)
+    entree = PaiementEntreeSerializer(data=request.data)
     entree.is_valid(raise_exception=True)
     donnees = entree.validated_data
     if donnees["moyen"] == Paiement.Moyen.ESPECES:
         if membre.role not in (PRESIDENT, TRESORIER):
             raise PermissionDenied("Seuls le trésorier et le président enregistrent les espèces.")
-    elif cotisation.membre_id != membre.pk:
-        raise PermissionDenied("Vous ne pouvez payer par Mobile Money que vos propres cotisations.")
-    paiement = services.enregistrer_paiement(
-        cotisation, request.user, donnees["montant"], donnees["moyen"], donnees.get("reference_externe")
-    )
+        paiement = services.enregistrer_paiement(cotisation, request.user, donnees["montant"], donnees["moyen"])
+    else:
+        if cotisation.membre_id != membre.pk:
+            raise PermissionDenied("Vous ne pouvez payer par Mobile Money que vos propres cotisations.")
+        telephone = donnees.get("telephone", request.user.telephone)
+        paiement = services.lancer_paiement_mobile(cotisation, request.user, donnees["moyen"], telephone)
     return Response(PaiementSerializer(paiement).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["GET"])
+def detail_paiement(request, pk):
+    """Suivi d'un paiement : relit le statut chez le fournisseur tant qu'il est en attente."""
+    paiement = get_object_or_404(Paiement.objects.select_related("cotisation__tour__tontine"), pk=pk)
+    membre = exiger_role(paiement.cotisation.tour.tontine, request.user)
+    if paiement.enregistre_par_id != request.user.pk and membre.role not in (PRESIDENT, TRESORIER):
+        raise PermissionDenied("Ce paiement ne vous concerne pas.")
+    return Response(PaiementSerializer(services.actualiser_paiement(paiement)).data)
 
 
 @api_view(["POST"])
@@ -169,3 +190,15 @@ def webhook_mobile_money(request, fournisseur):
         entree.validated_data["reference_externe"], entree.validated_data["reussi"]
     )
     return Response({"statut": paiement.statut, "deja_traite": deja_traite})
+
+
+@api_view(["POST", "PUT"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def callback_mtn(request):
+    """Notification MTN MoMo (non signée) : on ne croit pas son contenu, on relit le statut chez MTN."""
+    reference = request.data.get("externalId") if isinstance(request.data, dict) else None
+    paiement = Paiement.objects.filter(reference_externe=reference, moyen=Paiement.Moyen.MTN_MOMO).first()
+    if paiement:
+        services.actualiser_paiement(paiement)
+    return Response(status=status.HTTP_204_NO_CONTENT)

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-from .models import Utilisateur
+from .models import CodeSMS, Utilisateur
 
 
 class FormulaireCreation(UserCreationForm):
@@ -35,3 +35,18 @@ class UtilisateurAdmin(UserAdmin):
     add_fieldsets = [
         (None, {"classes": ["wide"], "fields": ["telephone", "nom_complet", "password1", "password2"]}),
     ]
+
+
+@admin.register(CodeSMS)
+class CodeSMSAdmin(admin.ModelAdmin):
+    """Lecture seule : le code lui-même n'est jamais stocké, seulement son empreinte."""
+
+    list_display = ["telephone", "cree_le", "expire_le", "essais", "utilise_le"]
+    search_fields = ["telephone"]
+    exclude = ["empreinte"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

@@ -214,6 +214,7 @@ class Paiement(models.Model):
     moyen = models.CharField(max_length=14, choices=Moyen.choices)
     # Unique : un même callback Mobile Money rejoué ne crédite qu'une fois.
     reference_externe = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    telephone_payeur = models.CharField(max_length=16, blank=True)
     statut = models.CharField(max_length=8, choices=Statut.choices, default=Statut.INITIE)
     enregistre_par = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True
