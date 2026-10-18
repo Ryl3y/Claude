@@ -44,17 +44,31 @@ Python 3.12+ · Django 5.2 · Django REST Framework · SimpleJWT · psycopg 3 ·
 | Table | Rôle |
 | --- | --- |
 | `utilisateurs` | Comptes, identifiés par le numéro de téléphone |
-| `tontines` | Montant (FCFA), fréquence, mode d'attribution, statut |
-| `membres` | Adhésion d'un utilisateur à une tontine, rôle et position de passage |
+| `tontines` | Montant par nom (FCFA), fréquence, nombre de places, mode d'attribution, statut |
+| `membres` | Adhésion d'un utilisateur à une tontine et son rôle |
+| `noms` | Places dans l'ordre de passage ; un membre peut en tenir plusieurs |
 | `invitations` | Codes d'invitation valables 7 jours |
-| `tours` | Une séance : date d'échéance, bénéficiaire, remise de la caisse |
-| `cotisations` | Ce que chaque membre doit à chaque tour |
+| `tours` | Une séance par nom : date d'échéance, nom bénéficiaire, remise de la caisse |
+| `cotisations` | Ce que chaque membre doit à chaque tour (montant × nombre de noms) |
 | `paiements` | Espèces ou Mobile Money ; `reference_externe` unique (anti double crédit) |
 | `penalites` | Pénalités de retard |
 | `journal_audit` | Trace de chaque action sensible |
 
 Les règles critiques sont aussi des contraintes PostgreSQL : un membre ne rejoint qu'une
-fois, ne ramasse qu'une fois par cycle, et un même paiement Mobile Money ne crédite qu'une fois.
+fois, chaque nom ne ramasse qu'une fois par cycle, et un même paiement Mobile Money ne crédite
+qu'une fois.
+
+## Plusieurs noms par membre
+
+Un membre peut « avoir plusieurs noms » : avec 2 noms, il cotise 2 fois à chaque tour et
+ramasse la caisse 2 fois dans le cycle, à deux tours différents.
+
+- `nb_places` = nombre maximum de noms = nombre de tours du cycle.
+- Le président ajoute ou retire des noms tant que la tontine n'a pas démarré ; chaque membre
+  garde au moins un nom, et il faut au moins 2 membres différents pour démarrer.
+- La cotisation d'un membre pour un tour = montant × son nombre de noms ; la pénalité de
+  retard aussi (une pénalité par nom en retard).
+- La caisse d'un tour = montant × nombre total de noms.
 
 ## API (`/api/v1/`)
 
@@ -70,10 +84,15 @@ Authentification : en-tête `Authorization: Bearer <access>`. Erreurs au format 
 | POST | `auth/deconnexion/` | Connecté | Révoque le jeton `refresh` |
 | GET | `moi/` | Connecté | Profil et tontines, avec mon rôle |
 | GET, POST | `tontines/` | Connecté | Mes tontines ; création (le créateur devient président) |
-| GET, PATCH | `tontines/{id}/` | Membre ; président | Détail ; modification tant qu'en brouillon |
+| GET, PATCH | `tontines/{id}/` | Membre ; président | Détail (membres, `ordre` des noms) ; modification tant qu'en brouillon |
+| POST | `tontines/{id}/annuler/` | Président | Annule une tontine en brouillon |
+| POST | `tontines/{id}/nouveau-cycle/` | Président | Après la fin : recrée la tontine en brouillon avec les mêmes membres, noms et rôles |
 | POST | `tontines/{id}/invitations/` | Président | `{telephone}` → code d'invitation |
 | POST | `invitations/{code}/accepter/` | Invité | Rejoint la tontine |
-| PUT | `tontines/{id}/ordre/` | Président | `{membres: [ids]}` ordre de passage |
+| PUT | `tontines/{id}/ordre/` | Président | `{noms: [ids]}` ordre de passage |
+| POST | `tontines/{id}/membres/{membre}/noms/` | Président | Donne un nom de plus au membre |
+| DELETE | `tontines/{id}/noms/{nom}/` | Président | Retire un nom (le membre en garde au moins un) |
+| DELETE | `tontines/{id}/membres/{membre}/` | Président | Retire un membre avant le démarrage (il peut être réinvité) |
 | PUT | `tontines/{id}/membres/{membre}/role/` | Président | `{role: "tresorier" \| "membre"}` ; un seul trésorier à la fois |
 | POST | `tontines/{id}/demarrer/` | Président | Génère tours et cotisations |
 | GET | `tontines/{id}/tours/` | Membre | Calendrier, montants attendus et collectés |
@@ -81,7 +100,8 @@ Authentification : en-tête `Authorization: Bearer <access>`. Erreurs au format 
 | GET | `tours/{id}/cotisations/` | Membre | Qui a payé, qui doit |
 | POST | `cotisations/{id}/paiements/` | Trésorier ou président (espèces) ; le membre lui-même (Mobile Money) | Espèces : `{moyen: "especes", montant}`. Mobile Money : `{moyen: "mtn_momo", telephone?}`, demande le reste dû au numéro |
 | GET | `paiements/{id}/` | Payeur, trésorier, président | Statut du paiement, relu chez l'opérateur tant qu'il est en attente |
-| POST | `tours/{id}/remise/` | Trésorier, président | Clôt le tour ; `{forcer: true}` réservé au président |
+| POST | `tours/{id}/remise/` | Trésorier, président | Clôt le tour ; `{forcer: true}` réservé au président, refusé si rien n'a été encaissé |
+| POST | `penalites/{id}/payer/` | Trésorier, président | Enregistre le paiement en espèces d'une pénalité |
 | POST, PUT | `webhooks/mtn-momo/` | MTN | Notification : le statut est relu chez MTN, le contenu n'est pas cru |
 | POST | `webhooks/mobile-money/{fournisseur}/` | Fournisseur (signature HMAC `X-Signature`) | Confirme un paiement, de façon idempotente |
 
@@ -124,7 +144,8 @@ Ils tournent sur un vrai PostgreSQL (l'utilisateur doit pouvoir créer une base 
 python manage.py test
 ```
 
-33 tests couvrent l'authentification (mot de passe et code SMS), les droits par rôle, le
+51 tests couvrent les noms multiples (cotisation, caisse, pénalité, places, tirage au sort),
+le retrait et la réinvitation, l'annulation, la modification, le nouveau cycle, l'authentification (mot de passe et code SMS), les droits par rôle, le
 trésorier, le démarrage, les paiements en espèces et Mobile Money (dont les requêtes
 envoyées à MTN, réseau simulé), la remise, les retards et les contraintes de la base.
 

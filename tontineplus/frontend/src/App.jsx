@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-d
 import { AuthProvider, RouteProtegee } from "./auth";
 import Navbar from "./components/Navbar";
 import AcceptInvitation from "./pages/AcceptInvitation";
-import CreateGroup from "./pages/CreateGroup";
+import CreateGroup, { EditGroup } from "./pages/CreateGroup";
 import Dashboard from "./pages/Dashboard";
 import GroupDetails from "./pages/GroupDetails";
 import Login from "./pages/Login";
@@ -21,6 +21,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/create-group" element={<RouteProtegee><CreateGroup /></RouteProtegee>} />
               <Route path="/group/:id" element={<RouteProtegee><GroupDetails /></RouteProtegee>} />
+              <Route path="/group/:id/modifier" element={<RouteProtegee><EditGroup /></RouteProtegee>} />
               <Route path="/invitation/:code" element={<RouteProtegee><AcceptInvitation /></RouteProtegee>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

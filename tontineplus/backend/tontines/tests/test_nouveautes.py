@@ -24,7 +24,7 @@ class AvecTontine(TestCase):
         self.awa = Utilisateur.objects.create_user("+237690000001", "Awa", "motdepasse-solide-1")
         self.bello = Utilisateur.objects.create_user("+237690000002", "Bello", "motdepasse-solide-2")
         self.tontine = creer_tontine(self.awa, nom="Famille", montant_cotisation=10000,
-                                     frequence="mensuelle", nb_membres_max=3)
+                                     frequence="mensuelle", nb_places=3)
         invitation = creer_invitation(self.tontine, self.awa, self.bello.telephone)
         self.membre_bello = accepter_invitation(invitation.code, self.bello)
 

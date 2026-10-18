@@ -2,14 +2,23 @@
 
 from django.contrib import admin
 
-from .models import Cotisation, Invitation, JournalAudit, Membre, Paiement, Penalite, Tontine, Tour
+from .models import Cotisation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
 
 
 class MembreInline(admin.TabularInline):
     model = Membre
     extra = 0
     autocomplete_fields = ["utilisateur"]
-    fields = ["utilisateur", "role", "position_tour", "statut"]
+    fields = ["utilisateur", "role", "statut"]
+
+
+class NomInline(admin.TabularInline):
+    """Ordre de passage : un membre peut avoir plusieurs noms."""
+
+    model = Nom
+    extra = 0
+    fields = ["position", "membre"]
+    raw_id_fields = ["membre"]
 
 
 class TourInline(admin.TabularInline):
@@ -23,16 +32,16 @@ class TourInline(admin.TabularInline):
 
 @admin.register(Tontine)
 class TontineAdmin(admin.ModelAdmin):
-    list_display = ["nom", "montant_cotisation", "frequence", "nb_membres_max", "statut", "cree_par", "cree_le"]
+    list_display = ["nom", "montant_cotisation", "frequence", "nb_places", "statut", "cree_par", "cree_le"]
     list_filter = ["statut", "frequence", "mode_attribution"]
     search_fields = ["nom", "cree_par__telephone", "cree_par__nom_complet"]
     autocomplete_fields = ["cree_par"]
-    inlines = [MembreInline, TourInline]
+    inlines = [MembreInline, NomInline, TourInline]
 
 
 @admin.register(Membre)
 class MembreAdmin(admin.ModelAdmin):
-    list_display = ["utilisateur", "tontine", "role", "position_tour", "statut"]
+    list_display = ["utilisateur", "tontine", "role", "statut"]
     list_filter = ["role", "statut"]
     search_fields = ["utilisateur__telephone", "utilisateur__nom_complet", "tontine__nom"]
     autocomplete_fields = ["utilisateur", "tontine"]

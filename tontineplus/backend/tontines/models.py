@@ -33,7 +33,8 @@ class Tontine(models.Model):
     mode_attribution = models.CharField(
         max_length=16, choices=ModeAttribution.choices, default=ModeAttribution.ORDRE_FIXE
     )
-    nb_membres_max = models.PositiveSmallIntegerField()
+    # Une place = un « nom » : un membre peut en tenir plusieurs. Nombre de tours = nombre de noms.
+    nb_places = models.PositiveSmallIntegerField("nombre de places (noms)")
     penalite_retard = models.PositiveBigIntegerField(default=0, help_text="En FCFA")
     date_debut = models.DateField(null=True, blank=True)
     statut = models.CharField(max_length=12, choices=Statut.choices, default=Statut.BROUILLON)
@@ -48,8 +49,8 @@ class Tontine(models.Model):
         constraints = [
             models.CheckConstraint(condition=Q(montant_cotisation__gt=0), name="tontines_montant_positif"),
             models.CheckConstraint(
-                condition=Q(nb_membres_max__gte=2, nb_membres_max__lte=100),
-                name="tontines_nb_membres_2_100",
+                condition=Q(nb_places__gte=2, nb_places__lte=100),
+                name="tontines_nb_places_2_100",
             ),
             models.CheckConstraint(
                 condition=Q(frequence__in=["hebdomadaire", "quinzaine", "mensuelle"]),
@@ -86,17 +87,14 @@ class Membre(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="adhesions"
     )
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.MEMBRE)
-    position_tour = models.PositiveSmallIntegerField(null=True, blank=True)
     statut = models.CharField(max_length=8, choices=Statut.choices, default=Statut.ACTIF)
     rejoint_le = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "membres"
-        ordering = ["position_tour", "id"]
+        ordering = ["id"]
         constraints = [
             models.UniqueConstraint(fields=["tontine", "utilisateur"], name="membres_une_adhesion"),
-            models.UniqueConstraint(fields=["tontine", "position_tour"], name="membres_position_unique"),
-            models.CheckConstraint(condition=Q(position_tour__gt=0), name="membres_position_positive"),
             models.CheckConstraint(
                 condition=Q(role__in=["president", "tresorier", "membre"]), name="membres_role_valide"
             ),
@@ -104,6 +102,28 @@ class Membre(models.Model):
 
     def __str__(self):
         return f"{self.utilisateur} — {self.tontine}"
+
+
+class Nom(models.Model):
+    """Une place dans l'ordre de passage. Un membre a au moins un nom ; avec deux noms,
+    il cotise deux fois à chaque tour et ramasse la caisse deux fois dans le cycle."""
+
+    tontine = models.ForeignKey(Tontine, on_delete=models.CASCADE, related_name="noms")
+    membre = models.ForeignKey(Membre, on_delete=models.CASCADE, related_name="noms")
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        db_table = "noms"
+        ordering = ["position", "id"]
+        verbose_name = "nom"
+        constraints = [
+            models.UniqueConstraint(fields=["tontine", "position"], name="noms_position_unique"),
+            models.CheckConstraint(condition=Q(position__gt=0), name="noms_position_positive"),
+        ]
+        indexes = [models.Index(fields=["membre"], name="noms_membre_idx")]
+
+    def __str__(self):
+        return f"{self.membre.utilisateur.nom_complet} — n° {self.position}"
 
 
 class Invitation(models.Model):
@@ -122,7 +142,7 @@ class Invitation(models.Model):
 
 
 class Tour(models.Model):
-    """Une séance : tous les membres cotisent, un bénéficiaire ramasse la caisse."""
+    """Une séance : tous les membres cotisent, un nom (donc son membre) ramasse la caisse."""
 
     class Statut(models.TextChoices):
         A_VENIR = "a_venir", "à venir"
@@ -133,7 +153,7 @@ class Tour(models.Model):
     numero = models.PositiveSmallIntegerField()
     date_echeance = models.DateField()
     beneficiaire = models.ForeignKey(
-        Membre, on_delete=models.PROTECT, null=True, blank=True, related_name="tours_gagnes"
+        Nom, on_delete=models.PROTECT, null=True, blank=True, related_name="tours_gagnes"
     )
     statut = models.CharField(max_length=8, choices=Statut.choices, default=Statut.A_VENIR)
     montant_remis = models.PositiveBigIntegerField(null=True, blank=True)
@@ -144,8 +164,8 @@ class Tour(models.Model):
         ordering = ["tontine", "numero"]
         constraints = [
             models.UniqueConstraint(fields=["tontine", "numero"], name="tours_numero_unique"),
-            # Chaque membre ramasse une seule fois par cycle.
-            models.UniqueConstraint(fields=["tontine", "beneficiaire"], name="tours_un_gain_par_membre"),
+            # Chaque nom ramasse une seule fois par cycle.
+            models.UniqueConstraint(fields=["tontine", "beneficiaire"], name="tours_un_gain_par_nom"),
             models.CheckConstraint(condition=Q(numero__gt=0), name="tours_numero_positif"),
             models.CheckConstraint(
                 condition=Q(statut__in=["a_venir", "ouvert", "clos"]), name="tours_statut_valide"
@@ -162,6 +182,8 @@ class Tour(models.Model):
 
 
 class Cotisation(models.Model):
+    """Ce qu'un membre doit pour un tour : montant de la cotisation × son nombre de noms."""
+
     class Statut(models.TextChoices):
         DUE = "due"
         PARTIELLE = "partielle"

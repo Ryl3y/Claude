@@ -12,12 +12,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from . import services
-from .models import Cotisation, Membre, Paiement, Tontine, Tour
+from .models import Cotisation, Membre, Nom, Paiement, Penalite, Tontine, Tour
 from .permissions import exiger_role
 from .serializers import (
     CotisationSerializer, InvitationSerializer, JournalSerializer, MembreSerializer, OrdreSerializer,
-    PaiementEntreeSerializer, PaiementSerializer, RemiseSerializer, RoleSerializer, TontineDetailSerializer,
-    TontineSerializer, TourSerializer, WebhookSerializer,
+    PaiementEntreeSerializer, PaiementSerializer, PenaliteSerializer, RemiseSerializer, RoleSerializer,
+    TontineDetailSerializer, TontineSerializer, TourSerializer, WebhookSerializer,
 )
 
 PRESIDENT, TRESORIER = Membre.Role.PRESIDENT, Membre.Role.TRESORIER
@@ -29,7 +29,7 @@ class PaginationRecente(CursorPagination):
 
 def tours_avec_totaux(tontine):
     return (
-        tontine.tours.select_related("beneficiaire__utilisateur")
+        tontine.tours.select_related("beneficiaire__membre__utilisateur")
         .annotate(
             montant_attendu=Sum("cotisations__montant_du", default=0),
             montant_collecte=Sum("cotisations__montant_paye", default=0),
@@ -44,14 +44,25 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
     """Tontines dont l'utilisateur est membre actif."""
 
     pagination_class = PaginationRecente
-    http_method_names = ["get", "post", "patch", "put"]
+    http_method_names = ["get", "post", "patch", "put", "delete"]
 
     def get_queryset(self):
         return Tontine.objects.filter(
             membres__utilisateur=self.request.user, membres__statut=Membre.Statut.ACTIF
         ).prefetch_related(
-            Prefetch("membres", queryset=Membre.objects.select_related("utilisateur"))
+            Prefetch("membres", queryset=Membre.objects.select_related("utilisateur").prefetch_related("noms")),
+            Prefetch("noms", queryset=Nom.objects.select_related("membre__utilisateur")
+                     .prefetch_related("membre__noms")),
         ).distinct()
+
+    def detail_a_jour(self, tontine):
+        """Le détail relu après une modification (membres, noms et ordre à jour)."""
+        return Response(TontineDetailSerializer(self.get_queryset().get(pk=tontine.pk)).data)
+
+    def tontine_du_president(self):
+        tontine = self.get_object()
+        exiger_role(tontine, self.request.user, PRESIDENT)
+        return tontine
 
     def get_serializer_class(self):
         return TontineDetailSerializer if self.action == "retrieve" else TontineSerializer
@@ -62,16 +73,29 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
     def update(self, request, *args, **kwargs):
         if not kwargs.get("partial"):
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
-        if tontine.statut != Tontine.Statut.BROUILLON:
-            raise services.ErreurMetier("tontine_demarree", "Les paramètres sont figés après le démarrage.")
-        return super().update(request, *args, **kwargs)
+        tontine = self.tontine_du_president()
+        entree = TontineSerializer(tontine, data=request.data, partial=True)
+        entree.is_valid(raise_exception=True)
+        services.modifier_tontine(tontine, request.user, **entree.validated_data)
+        return self.detail_a_jour(tontine)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @action(detail=True, methods=["post"])
+    def annuler(self, request, pk=None):
+        tontine = services.annuler_tontine(self.tontine_du_president(), request.user)
+        return self.detail_a_jour(tontine)
+
+    @action(detail=True, methods=["post"], url_path="nouveau-cycle")
+    def nouveau_cycle(self, request, pk=None):
+        nouvelle = services.nouveau_cycle(self.tontine_du_president(), request.user)
+        return Response(TontineDetailSerializer(self.get_queryset().get(pk=nouvelle.pk)).data,
+                        status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"])
     def invitations(self, request, pk=None):
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
+        tontine = self.tontine_du_president()
         entree = InvitationSerializer(data=request.data)
         entree.is_valid(raise_exception=True)
         invitation = services.creer_invitation(tontine, request.user, entree.validated_data["telephone"])
@@ -79,29 +103,41 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
 
     @action(detail=True, methods=["put"])
     def ordre(self, request, pk=None):
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
+        tontine = self.tontine_du_president()
         entree = OrdreSerializer(data=request.data)
         entree.is_valid(raise_exception=True)
-        services.definir_ordre(tontine, request.user, entree.validated_data["membres"])
-        membres = tontine.membres.select_related("utilisateur").order_by("position_tour")
-        return Response(MembreSerializer(membres, many=True).data)
+        services.definir_ordre(tontine, request.user, entree.validated_data["noms"])
+        return self.detail_a_jour(tontine)
+
+    @action(detail=True, methods=["post"], url_path=r"membres/(?P<membre_id>\d+)/noms")
+    def ajouter_nom(self, request, pk=None, membre_id=None):
+        tontine = self.tontine_du_president()
+        services.ajouter_nom(tontine, request.user, int(membre_id))
+        return self.detail_a_jour(tontine)
+
+    @action(detail=True, methods=["delete"], url_path=r"noms/(?P<nom_id>\d+)")
+    def retirer_nom(self, request, pk=None, nom_id=None):
+        tontine = self.tontine_du_president()
+        services.retirer_nom(tontine, request.user, int(nom_id))
+        return self.detail_a_jour(tontine)
+
+    @action(detail=True, methods=["delete"], url_path=r"membres/(?P<membre_id>\d+)")
+    def retirer_membre(self, request, pk=None, membre_id=None):
+        tontine = self.tontine_du_president()
+        services.retirer_membre(tontine, request.user, int(membre_id))
+        return self.detail_a_jour(tontine)
 
     @action(detail=True, methods=["put"], url_path=r"membres/(?P<membre_id>\d+)/role")
     def role(self, request, pk=None, membre_id=None):
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
+        tontine = self.tontine_du_president()
         entree = RoleSerializer(data=request.data)
         entree.is_valid(raise_exception=True)
         services.changer_role(tontine, request.user, int(membre_id), entree.validated_data["role"])
-        membres = tontine.membres.select_related("utilisateur").filter(statut=Membre.Statut.ACTIF)
-        return Response(MembreSerializer(membres, many=True).data)
+        return self.detail_a_jour(tontine)
 
     @action(detail=True, methods=["post"])
     def demarrer(self, request, pk=None):
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
-        tontine = services.demarrer_tontine(tontine, request.user)
+        tontine = services.demarrer_tontine(self.tontine_du_president(), request.user)
         return Response(TourSerializer(tours_avec_totaux(tontine), many=True).data)
 
     @action(detail=True, methods=["get"])
@@ -111,8 +147,7 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
 
     @action(detail=True, methods=["get"])
     def journal(self, request, pk=None):
-        tontine = self.get_object()
-        exiger_role(tontine, request.user, PRESIDENT)
+        tontine = self.tontine_du_president()
         page = self.paginate_queryset(tontine.journal.select_related("acteur"))
         return self.get_paginated_response(JournalSerializer(page, many=True).data)
 
@@ -127,7 +162,8 @@ def accepter_invitation(request, code):
 def cotisations_du_tour(request, pk):
     tour = get_object_or_404(Tour, pk=pk)
     exiger_role(tour.tontine, request.user)
-    cotisations = tour.cotisations.select_related("membre__utilisateur").order_by("membre__position_tour")
+    cotisations = (tour.cotisations.select_related("membre__utilisateur", "tour__tontine")
+                   .prefetch_related("penalites").order_by("membre__id"))
     return Response(CotisationSerializer(cotisations, many=True).data)
 
 
@@ -160,6 +196,13 @@ def detail_paiement(request, pk):
     if paiement.enregistre_par_id != request.user.pk and membre.role not in (PRESIDENT, TRESORIER):
         raise PermissionDenied("Ce paiement ne vous concerne pas.")
     return Response(PaiementSerializer(services.actualiser_paiement(paiement)).data)
+
+
+@api_view(["POST"])
+def encaisser_penalite(request, pk):
+    penalite = get_object_or_404(Penalite.objects.select_related("cotisation__tour__tontine"), pk=pk)
+    exiger_role(penalite.cotisation.tour.tontine, request.user, PRESIDENT, TRESORIER)
+    return Response(PenaliteSerializer(services.encaisser_penalite(penalite, request.user)).data)
 
 
 @api_view(["POST"])

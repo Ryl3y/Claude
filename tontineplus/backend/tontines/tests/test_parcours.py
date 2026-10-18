@@ -31,7 +31,7 @@ class ParcoursTontine(TestCase):
 
     def creer_tontine(self, **extra):
         donnees = {"nom": "Famille", "montant_cotisation": 10000, "frequence": "mensuelle",
-                   "nb_membres_max": 3, "penalite_retard": 500, "date_debut": "2026-11-01", **extra}
+                   "nb_places": 3, "penalite_retard": 500, "date_debut": "2026-11-01", **extra}
         reponse = self.api_awa.post("/api/v1/tontines/", donnees, format="json")
         self.assertEqual(reponse.status_code, 201, reponse.data)
         return Tontine.objects.get(pk=reponse.data["id"])
@@ -87,14 +87,15 @@ class ParcoursTontine(TestCase):
     def test_createur_devient_president(self):
         tontine = self.creer_tontine()
         membre = tontine.membres.get()
-        self.assertEqual((membre.utilisateur, membre.role, membre.position_tour), (self.awa, "president", 1))
+        self.assertEqual((membre.utilisateur, membre.role), (self.awa, "president"))
+        self.assertEqual(list(membre.noms.values_list("position", flat=True)), [1])
 
     def test_non_membre_ne_voit_pas_la_tontine(self):
         tontine = self.creer_tontine()
         self.assertEqual(client_pour(self.bello).get(f"/api/v1/tontines/{tontine.pk}/").status_code, 404)
 
     def test_tontine_complete_refuse_un_membre_de_plus(self):
-        tontine = self.creer_tontine(nb_membres_max=2)
+        tontine = self.creer_tontine(nb_places=2)
         self.inviter_et_accepter(tontine, self.bello)
         code = self.api_awa.post(
             f"/api/v1/tontines/{tontine.pk}/invitations/", {"telephone": self.chantal.telephone}, format="json"
@@ -112,10 +113,11 @@ class ParcoursTontine(TestCase):
         tontine = self.creer_tontine()
         self.inviter_et_accepter(tontine, self.bello)
         self.inviter_et_accepter(tontine, self.chantal)
-        ids = list(tontine.membres.order_by("-position_tour").values_list("pk", flat=True))
-        reponse = self.api_awa.put(f"/api/v1/tontines/{tontine.pk}/ordre/", {"membres": ids}, format="json")
+        ids = list(tontine.noms.order_by("-position").values_list("pk", flat=True))
+        reponse = self.api_awa.put(f"/api/v1/tontines/{tontine.pk}/ordre/", {"noms": ids}, format="json")
         self.assertEqual(reponse.status_code, 200, reponse.data)
-        self.assertEqual([m["id"] for m in reponse.data], ids)
+        self.assertEqual([n["id"] for n in reponse.data["ordre"]], ids)
+        self.assertEqual([n["nom_complet"] for n in reponse.data["ordre"]], ["Chantal", "Bello", "Awa"])
 
     # --- démarrage -----------------------------------------------------------------------
 

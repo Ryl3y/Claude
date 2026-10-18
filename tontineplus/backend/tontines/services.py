@@ -7,14 +7,15 @@ verrouille les lignes concernées et écrit une entrée dans le journal d'audit.
 import calendar
 import secrets
 import uuid
+from collections import Counter
 from datetime import date, timedelta
 
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Max
 from django.utils import timezone
 
 from . import mobile_money
-from .models import Cotisation, Invitation, JournalAudit, Membre, Paiement, Penalite, Tontine, Tour
+from .models import Cotisation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
 
 
 class ErreurMetier(Exception):
@@ -48,13 +49,60 @@ def echeance(tontine: Tontine, numero: int) -> date:
     return ajouter_mois(debut, numero - 1)
 
 
+def _verrouiller_brouillon(tontine: Tontine, message: str, code: str = "tontine_demarree") -> Tontine:
+    tontine = Tontine.objects.select_for_update().get(pk=tontine.pk)
+    if tontine.statut != Tontine.Statut.BROUILLON:
+        raise ErreurMetier(code, message)
+    return tontine
+
+
+def _noms_actifs(tontine: Tontine):
+    return Nom.objects.filter(tontine=tontine, membre__statut=Membre.Statut.ACTIF)
+
+
+def _ajouter_nom(tontine: Tontine, membre: Membre) -> Nom:
+    """Ajoute un nom en fin d'ordre de passage, dans la limite des places."""
+    if _noms_actifs(tontine).count() >= tontine.nb_places:
+        raise ErreurMetier("tontine_complete", "Toutes les places de la tontine sont prises.")
+    position = (tontine.noms.aggregate(m=Max("position"))["m"] or 0) + 1
+    return Nom.objects.create(tontine=tontine, membre=membre, position=position)
+
+
+def _renumeroter(tontine: Tontine, ids_noms: list[int]) -> None:
+    """Réécrit les positions 1..N dans l'ordre donné (deux passes : contrainte d'unicité)."""
+    Nom.objects.filter(tontine=tontine).update(position=None)
+    for position, pk in enumerate(ids_noms, start=1):
+        Nom.objects.filter(pk=pk).update(position=position)
+
+
 @transaction.atomic
 def creer_tontine(createur, **donnees) -> Tontine:
     tontine = Tontine.objects.create(cree_par=createur, **donnees)
-    Membre.objects.create(
-        tontine=tontine, utilisateur=createur, role=Membre.Role.PRESIDENT, position_tour=1
-    )
+    president = Membre.objects.create(tontine=tontine, utilisateur=createur, role=Membre.Role.PRESIDENT)
+    Nom.objects.create(tontine=tontine, membre=president, position=1)
     journaliser(tontine, createur, "creation")
+    return tontine
+
+
+@transaction.atomic
+def modifier_tontine(tontine: Tontine, acteur, **donnees) -> Tontine:
+    tontine = _verrouiller_brouillon(tontine, "Les paramètres sont figés après le démarrage.")
+    places = donnees.get("nb_places", tontine.nb_places)
+    if places < _noms_actifs(tontine).count():
+        raise ErreurMetier("places_insuffisantes", "Il y a déjà plus de noms inscrits que de places demandées.")
+    for champ, valeur in donnees.items():
+        setattr(tontine, champ, valeur)
+    tontine.save()
+    journaliser(tontine, acteur, "modification", champs=sorted(donnees))
+    return tontine
+
+
+@transaction.atomic
+def annuler_tontine(tontine: Tontine, acteur) -> Tontine:
+    tontine = _verrouiller_brouillon(tontine, "Une tontine démarrée ne peut pas être annulée.")
+    tontine.statut = Tontine.Statut.ANNULEE
+    tontine.save(update_fields=["statut"])
+    journaliser(tontine, acteur, "annulation")
     return tontine
 
 
@@ -83,76 +131,125 @@ def accepter_invitation(code: str, utilisateur) -> Membre:
     if invitation.telephone != utilisateur.telephone:
         raise ErreurMetier("invitation_autre_numero", "Cette invitation est destinée à un autre numéro.")
 
-    tontine = Tontine.objects.select_for_update().get(pk=invitation.tontine_id)
-    if tontine.statut != Tontine.Statut.BROUILLON:
-        raise ErreurMetier("tontine_demarree", "La tontine a déjà démarré.")
-    membres = tontine.membres.filter(statut=Membre.Statut.ACTIF)
-    if membres.count() >= tontine.nb_membres_max:
-        raise ErreurMetier("tontine_complete", "La tontine a atteint son nombre maximum de membres.")
-    if membres.filter(utilisateur=utilisateur).exists():
+    tontine = _verrouiller_brouillon(invitation.tontine, "La tontine a déjà démarré.")
+    membre = tontine.membres.filter(utilisateur=utilisateur).first()
+    if membre and membre.statut == Membre.Statut.ACTIF:
         raise ErreurMetier("deja_membre", "Vous êtes déjà membre de cette tontine.")
-
-    position = (membres.order_by("-position_tour").values_list("position_tour", flat=True).first() or 0) + 1
-    membre = Membre.objects.create(tontine=tontine, utilisateur=utilisateur, position_tour=position)
+    if membre:  # retiré auparavant puis réinvité
+        membre.statut, membre.role = Membre.Statut.ACTIF, Membre.Role.MEMBRE
+        membre.save(update_fields=["statut", "role"])
+    else:
+        membre = Membre.objects.create(tontine=tontine, utilisateur=utilisateur)
+    _ajouter_nom(tontine, membre)
     invitation.acceptee_le = timezone.now()
     invitation.save(update_fields=["acceptee_le"])
     journaliser(tontine, utilisateur, "adhesion", membre_id=membre.pk)
     return membre
 
 
+def _membre_actif(tontine: Tontine, membre_id: int) -> Membre:
+    membre = tontine.membres.filter(pk=membre_id, statut=Membre.Statut.ACTIF).first()
+    if membre is None:
+        raise ErreurMetier("membre_inconnu", "Ce membre n'appartient pas à la tontine.")
+    return membre
+
+
 @transaction.atomic
-def definir_ordre(tontine: Tontine, acteur, ids_membres: list[int]) -> None:
-    tontine = Tontine.objects.select_for_update().get(pk=tontine.pk)
-    if tontine.statut != Tontine.Statut.BROUILLON:
-        raise ErreurMetier("tontine_demarree", "L'ordre est figé une fois la tontine démarrée.")
-    membres = {m.pk: m for m in tontine.membres.filter(statut=Membre.Statut.ACTIF)}
-    if sorted(ids_membres) != sorted(membres):
-        raise ErreurMetier("ordre_incomplet", "L'ordre doit contenir chaque membre actif une seule fois.")
-    # Deux passes pour ne pas heurter la contrainte d'unicité des positions.
-    Membre.objects.filter(pk__in=ids_membres).update(position_tour=None)
-    for position, pk in enumerate(ids_membres, start=1):
-        Membre.objects.filter(pk=pk).update(position_tour=position)
-    journaliser(tontine, acteur, "ordre_defini", ordre=ids_membres)
+def ajouter_nom(tontine: Tontine, acteur, membre_id: int) -> Nom:
+    """Donne un nom de plus à un membre : il cotisera et ramassera une fois de plus."""
+    tontine = _verrouiller_brouillon(tontine, "Les noms sont figés une fois la tontine démarrée.")
+    nom = _ajouter_nom(tontine, _membre_actif(tontine, membre_id))
+    journaliser(tontine, acteur, "ajout_nom", membre_id=membre_id, position=nom.position)
+    return nom
+
+
+@transaction.atomic
+def retirer_nom(tontine: Tontine, acteur, nom_id: int) -> None:
+    tontine = _verrouiller_brouillon(tontine, "Les noms sont figés une fois la tontine démarrée.")
+    nom = tontine.noms.filter(pk=nom_id).select_related("membre").first()
+    if nom is None:
+        raise ErreurMetier("nom_inconnu", "Ce nom n'appartient pas à la tontine.")
+    if nom.membre.noms.count() <= 1:
+        raise ErreurMetier("dernier_nom", "Un membre garde au moins un nom. Retirez plutôt le membre.")
+    nom.delete()
+    _renumeroter(tontine, list(_noms_actifs(tontine).values_list("pk", flat=True)))
+    journaliser(tontine, acteur, "retrait_nom", membre_id=nom.membre_id)
+
+
+@transaction.atomic
+def retirer_membre(tontine: Tontine, acteur, membre_id: int) -> None:
+    tontine = _verrouiller_brouillon(tontine, "Les membres sont figés une fois la tontine démarrée.")
+    membre = _membre_actif(tontine, membre_id)
+    if membre.role == Membre.Role.PRESIDENT:
+        raise ErreurMetier("role_president", "Le président ne peut pas être retiré.")
+    membre.noms.all().delete()
+    membre.statut, membre.role = Membre.Statut.EXCLU, Membre.Role.MEMBRE
+    membre.save(update_fields=["statut", "role"])
+    _renumeroter(tontine, list(_noms_actifs(tontine).values_list("pk", flat=True)))
+    journaliser(tontine, acteur, "retrait_membre", membre_id=membre.pk)
+
+
+@transaction.atomic
+def definir_ordre(tontine: Tontine, acteur, ids_noms: list[int]) -> None:
+    tontine = _verrouiller_brouillon(tontine, "L'ordre est figé une fois la tontine démarrée.")
+    if sorted(ids_noms) != sorted(_noms_actifs(tontine).values_list("pk", flat=True)):
+        raise ErreurMetier("ordre_incomplet", "L'ordre doit contenir chaque nom une seule fois.")
+    _renumeroter(tontine, ids_noms)
+    journaliser(tontine, acteur, "ordre_defini", ordre=ids_noms)
 
 
 @transaction.atomic
 def demarrer_tontine(tontine: Tontine, acteur) -> Tontine:
-    """Fige les membres, génère les N tours et les N × N cotisations."""
-    tontine = Tontine.objects.select_for_update().get(pk=tontine.pk)
-    if tontine.statut != Tontine.Statut.BROUILLON:
-        raise ErreurMetier("deja_demarree", "Cette tontine a déjà démarré.")
-    membres = list(tontine.membres.filter(statut=Membre.Statut.ACTIF))
+    """Fige les membres et les noms, génère un tour par nom et les cotisations de chaque tour."""
+    tontine = _verrouiller_brouillon(tontine, "Cette tontine a déjà démarré.", "deja_demarree")
+    noms = list(_noms_actifs(tontine).select_related("membre"))
+    membres = {nom.membre_id: nom.membre for nom in noms}
     if len(membres) < 2:
         raise ErreurMetier("membres_insuffisants", "Il faut au moins 2 membres pour démarrer.")
     if tontine.mode_attribution == Tontine.ModeAttribution.ENCHERE:
         raise ErreurMetier("mode_non_disponible", "Le mode enchère n'est pas encore disponible.")
 
     if tontine.mode_attribution == Tontine.ModeAttribution.TIRAGE_AU_SORT:
-        secrets.SystemRandom().shuffle(membres)
+        secrets.SystemRandom().shuffle(noms)
+        _renumeroter(tontine, [nom.pk for nom in noms])
     else:
-        membres.sort(key=lambda m: (m.position_tour is None, m.position_tour, m.pk))
-    Membre.objects.filter(pk__in=[m.pk for m in membres]).update(position_tour=None)
-    for position, membre in enumerate(membres, start=1):
-        membre.position_tour = position
-        membre.save(update_fields=["position_tour"])
+        noms.sort(key=lambda nom: (nom.position is None, nom.position, nom.pk))
 
+    noms_par_membre = Counter(nom.membre_id for nom in noms)
     if tontine.date_debut is None:
         tontine.date_debut = timezone.localdate()
-    for membre in membres:
+    for numero, nom in enumerate(noms, start=1):
         tour = Tour.objects.create(
-            tontine=tontine,
-            numero=membre.position_tour,
-            date_echeance=echeance(tontine, membre.position_tour),
-            beneficiaire=membre,
+            tontine=tontine, numero=numero, date_echeance=echeance(tontine, numero), beneficiaire=nom
         )
         Cotisation.objects.bulk_create(
-            Cotisation(tour=tour, membre=m, montant_du=tontine.montant_cotisation) for m in membres
+            Cotisation(tour=tour, membre_id=membre_id, montant_du=tontine.montant_cotisation * nombre)
+            for membre_id, nombre in noms_par_membre.items()
         )
 
     tontine.statut = Tontine.Statut.ACTIVE
     tontine.save(update_fields=["statut", "date_debut"])
-    journaliser(tontine, acteur, "demarrage", ordre=[m.pk for m in membres])
+    journaliser(tontine, acteur, "demarrage", ordre=[nom.pk for nom in noms])
     return tontine
+
+
+@transaction.atomic
+def nouveau_cycle(tontine: Tontine, acteur) -> Tontine:
+    """Recrée la tontine terminée en brouillon : mêmes paramètres, membres, rôles et noms."""
+    if tontine.statut != Tontine.Statut.TERMINEE:
+        raise ErreurMetier("cycle_en_cours", "Un nouveau cycle ne démarre qu'après la fin du précédent.")
+    champs = ["nom", "description", "montant_cotisation", "frequence", "mode_attribution",
+              "nb_places", "penalite_retard"]
+    nouvelle = Tontine.objects.create(cree_par=acteur, **{c: getattr(tontine, c) for c in champs})
+    copies = {}
+    for membre in tontine.membres.filter(statut=Membre.Statut.ACTIF):
+        copies[membre.pk] = Membre.objects.create(
+            tontine=nouvelle, utilisateur_id=membre.utilisateur_id, role=membre.role
+        )
+    for nom in _noms_actifs(tontine).order_by("position"):
+        Nom.objects.create(tontine=nouvelle, membre=copies[nom.membre_id], position=nom.position)
+    journaliser(nouvelle, acteur, "nouveau_cycle", tontine_precedente=tontine.pk)
+    return nouvelle
 
 
 def _crediter(cotisation: Cotisation, montant: int) -> None:
@@ -293,6 +390,8 @@ def remettre_caisse(tour: Tour, acteur, forcer: bool = False) -> Tour:
         raise ErreurMetier("cotisations_impayees", f"{impayees} cotisation(s) non soldée(s) pour ce tour.")
 
     tour.montant_remis = sum(tour.cotisations.values_list("montant_paye", flat=True))
+    if tour.montant_remis == 0:
+        raise ErreurMetier("caisse_vide", "Aucune cotisation n'a été encaissée pour ce tour.")
     tour.statut = Tour.Statut.CLOS
     tour.remis_le = timezone.now()
     tour.save(update_fields=["montant_remis", "statut", "remis_le"])
@@ -320,11 +419,13 @@ def marquer_retards(aujourd_hui: date | None = None) -> int:
         with transaction.atomic():
             cotisation.statut = Cotisation.Statut.EN_RETARD
             cotisation.save(update_fields=["statut"])
-            penalite = cotisation.tour.tontine.penalite_retard
-            if penalite:
+            tontine = cotisation.tour.tontine
+            if tontine.penalite_retard:
+                # Une pénalité par nom en retard : un membre à 2 noms en paie 2.
+                noms = max(cotisation.montant_du // tontine.montant_cotisation, 1)
                 Penalite.objects.create(
-                    cotisation=cotisation, montant=penalite,
-                    motif=f"Retard au tour {cotisation.tour.numero}",
+                    cotisation=cotisation, montant=tontine.penalite_retard * noms,
+                    motif=f"Retard au tour {cotisation.tour.numero}" + (f" ({noms} noms)" if noms > 1 else ""),
                 )
             traitees += 1
     # Ouvre les tours dont l'échéance approche (3 jours).
@@ -335,3 +436,15 @@ def marquer_retards(aujourd_hui: date | None = None) -> int:
     ).update(statut=Tour.Statut.OUVERT)
     return traitees
 
+
+@transaction.atomic
+def encaisser_penalite(penalite: Penalite, acteur) -> Penalite:
+    """Enregistre le paiement en espèces d'une pénalité (trésorier ou président)."""
+    penalite = Penalite.objects.select_for_update().select_related("cotisation__tour__tontine").get(pk=penalite.pk)
+    if penalite.payee:
+        raise ErreurMetier("penalite_payee", "Cette pénalité est déjà payée.")
+    penalite.payee = True
+    penalite.save(update_fields=["payee"])
+    journaliser(penalite.cotisation.tour.tontine, acteur, "penalite_payee",
+                penalite_id=penalite.pk, montant=penalite.montant)
+    return penalite
