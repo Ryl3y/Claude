@@ -11,7 +11,7 @@ from rest_framework.test import APIClient
 
 from comptes.models import Utilisateur
 from tontines.models import Cotisation, Membre, Paiement, Penalite, Tontine, Tour
-from tontines.services import ajouter_mois, marquer_retards
+from tontines.services import ajouter_mois, marquer_retards, tirer_au_sort
 
 SECRET = "secret-de-test"
 
@@ -109,16 +109,6 @@ class ParcoursTontine(TestCase):
         reponse = client_pour(self.bello).post(f"/api/v1/tontines/{tontine.pk}/demarrer/")
         self.assertEqual(reponse.status_code, 403)
 
-    def test_ordre_de_passage(self):
-        tontine = self.creer_tontine()
-        self.inviter_et_accepter(tontine, self.bello)
-        self.inviter_et_accepter(tontine, self.chantal)
-        ids = list(tontine.noms.order_by("-position").values_list("pk", flat=True))
-        reponse = self.api_awa.put(f"/api/v1/tontines/{tontine.pk}/ordre/", {"noms": ids}, format="json")
-        self.assertEqual(reponse.status_code, 200, reponse.data)
-        self.assertEqual([n["id"] for n in reponse.data["ordre"]], ids)
-        self.assertEqual([n["nom_complet"] for n in reponse.data["ordre"]], ["Chantal", "Bello", "Awa"])
-
     # --- démarrage -----------------------------------------------------------------------
 
     def test_demarrage_genere_tours_et_cotisations(self):
@@ -128,7 +118,8 @@ class ParcoursTontine(TestCase):
         self.assertEqual([t.date_echeance for t in tours],
                          [date(2026, 11, 1), date(2026, 12, 1), date(2027, 1, 1)])
         self.assertEqual(Cotisation.objects.filter(tour__tontine=tontine).count(), 9)
-        self.assertEqual(len({t.beneficiaire_id for t in tours}), 3)
+        # Personne ne connaît les bénéficiaires à l'avance : ils sont tirés au sort à chaque séance.
+        self.assertEqual({t.beneficiaire_id for t in tours}, {None})
         reponse = self.api_awa.post(f"/api/v1/tontines/{tontine.pk}/demarrer/")
         self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "deja_demarree"))
 
@@ -143,6 +134,9 @@ class ParcoursTontine(TestCase):
         tontine = self.tontine_demarree()
         tour = tontine.tours.get(numero=1)
         cotisations = list(tour.cotisations.all())
+        reponse = self.api_awa.post(f"/api/v1/tours/{tour.pk}/remise/")
+        self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "tirage_requis"))
+        self.api_awa.post(f"/api/v1/tours/{tour.pk}/tirage/")
         reponse = self.api_awa.post(f"/api/v1/tours/{tour.pk}/remise/")
         self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "cotisations_impayees"))
 
@@ -206,6 +200,7 @@ class ParcoursTontine(TestCase):
     def test_contraintes_postgresql(self):
         tontine = self.tontine_demarree()
         cotisation = Cotisation.objects.filter(tour__tontine=tontine).first()
+        tirer_au_sort(tontine.tours.get(numero=1), self.awa)
         Paiement.objects.create(cotisation=cotisation, montant=1, moyen="mtn_momo", reference_externe="R1")
         cas = [
             lambda: Paiement.objects.create(cotisation=cotisation, montant=1, moyen="mtn_momo", reference_externe="R1"),

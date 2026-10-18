@@ -24,8 +24,8 @@ Si Django tourne ailleurs : `VITE_BACKEND=http://127.0.0.1:8001 npm run dev`.
 | Connexion | `/login` | Code reçu par SMS (crée le compte au premier passage) ou mot de passe ; la session survit au rechargement |
 | Inscription par mot de passe | `/register` | Variante sans SMS |
 | Tableau de bord | `/` | Mes tontines, leur statut et mon rôle |
-| Création / modification | `/create-group`, `/group/:id/modifier` | Montant par nom, fréquence, nombre de places (noms), ordre, pénalité, date du 1er tour |
-| Détail d'une tontine | `/group/:id` | Membres et leurs noms ; pour le président : invitations, + 1 nom / retrait d'un nom ou d'un membre, ordre de passage, trésorier, démarrage, annulation, journal, nouveau cycle ; calendrier des tours ; paiement de sa cotisation par Mobile Money ; encaissement des cotisations et pénalités en espèces et remise de la caisse (trésorier, président) |
+| Création / modification | `/create-group`, `/group/:id/modifier` | Montant par nom, fréquence, nombre de places (noms), pénalité, date du 1er tour |
+| Détail d'une tontine | `/group/:id` | Membres, leurs noms et leurs postes ; pour le président : invitations, + 1 / − 1 nom, retrait d'un membre, postes du bureau, démarrage, annulation, nouveau cycle ; pour le bureau : tirage au sort de chaque tour, propositions de désignation et votes, journal ; calendrier des tours ; paiement de sa cotisation par Mobile Money ; encaissement et remise de la caisse (trésorier, président) |
 | Invitation | `/invitation/:code` | Rejoindre une tontine (inscription ou connexion d'abord si besoin) |
 
 Les boutons affichés dépendent du rôle, et le backend revérifie chaque droit.

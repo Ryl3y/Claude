@@ -2,7 +2,10 @@
 
 from django.contrib import admin
 
-from .models import Cotisation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
+from .models import (
+    Cotisation, Designation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour,
+    VoteDesignation,
+)
 
 
 class MembreInline(admin.TabularInline):
@@ -33,7 +36,7 @@ class TourInline(admin.TabularInline):
 @admin.register(Tontine)
 class TontineAdmin(admin.ModelAdmin):
     list_display = ["nom", "montant_cotisation", "frequence", "nb_places", "statut", "cree_par", "cree_le"]
-    list_filter = ["statut", "frequence", "mode_attribution"]
+    list_filter = ["statut", "frequence"]
     search_fields = ["nom", "cree_par__telephone", "cree_par__nom_complet"]
     autocomplete_fields = ["cree_par"]
     inlines = [MembreInline, NomInline, TourInline]
@@ -127,4 +130,27 @@ class JournalAuditAdmin(admin.ModelAdmin):
         return False
 
     def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class VoteInline(admin.TabularInline):
+    model = VoteDesignation
+    extra = 0
+    fields = ["membre", "approuve", "cree_le"]
+    readonly_fields = fields
+    can_delete = False
+
+
+@admin.register(Designation)
+class DesignationAdmin(admin.ModelAdmin):
+    """Lecture seule : une désignation passe par le vote du bureau, pas par l'administration."""
+
+    list_display = ["tour", "nom", "statut", "propose_par", "cree_le", "decide_le"]
+    list_filter = ["statut"]
+    inlines = [VoteInline]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
         return False

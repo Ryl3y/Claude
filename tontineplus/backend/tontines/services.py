@@ -15,7 +15,10 @@ from django.db.models import F, Max
 from django.utils import timezone
 
 from . import mobile_money
-from .models import Cotisation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
+from .models import (
+    Cotisation, Designation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour,
+    VoteDesignation,
+)
 
 
 class ErreurMetier(Exception):
@@ -190,38 +193,19 @@ def retirer_membre(tontine: Tontine, acteur, membre_id: int) -> None:
 
 
 @transaction.atomic
-def definir_ordre(tontine: Tontine, acteur, ids_noms: list[int]) -> None:
-    tontine = _verrouiller_brouillon(tontine, "L'ordre est figé une fois la tontine démarrée.")
-    if sorted(ids_noms) != sorted(_noms_actifs(tontine).values_list("pk", flat=True)):
-        raise ErreurMetier("ordre_incomplet", "L'ordre doit contenir chaque nom une seule fois.")
-    _renumeroter(tontine, ids_noms)
-    journaliser(tontine, acteur, "ordre_defini", ordre=ids_noms)
-
-
-@transaction.atomic
 def demarrer_tontine(tontine: Tontine, acteur) -> Tontine:
-    """Fige les membres et les noms, génère un tour par nom et les cotisations de chaque tour."""
+    """Fige les membres et les noms, crée un tour par nom (bénéficiaire tiré au sort à chaque
+    séance) et les cotisations de chaque tour."""
     tontine = _verrouiller_brouillon(tontine, "Cette tontine a déjà démarré.", "deja_demarree")
-    noms = list(_noms_actifs(tontine).select_related("membre"))
-    membres = {nom.membre_id: nom.membre for nom in noms}
-    if len(membres) < 2:
-        raise ErreurMetier("membres_insuffisants", "Il faut au moins 2 membres pour démarrer.")
-    if tontine.mode_attribution == Tontine.ModeAttribution.ENCHERE:
-        raise ErreurMetier("mode_non_disponible", "Le mode enchère n'est pas encore disponible.")
-
-    if tontine.mode_attribution == Tontine.ModeAttribution.TIRAGE_AU_SORT:
-        secrets.SystemRandom().shuffle(noms)
-        _renumeroter(tontine, [nom.pk for nom in noms])
-    else:
-        noms.sort(key=lambda nom: (nom.position is None, nom.position, nom.pk))
-
+    noms = list(_noms_actifs(tontine))
     noms_par_membre = Counter(nom.membre_id for nom in noms)
+    if len(noms_par_membre) < 2:
+        raise ErreurMetier("membres_insuffisants", "Il faut au moins 2 membres pour démarrer.")
+
     if tontine.date_debut is None:
         tontine.date_debut = timezone.localdate()
-    for numero, nom in enumerate(noms, start=1):
-        tour = Tour.objects.create(
-            tontine=tontine, numero=numero, date_echeance=echeance(tontine, numero), beneficiaire=nom
-        )
+    for numero in range(1, len(noms) + 1):
+        tour = Tour.objects.create(tontine=tontine, numero=numero, date_echeance=echeance(tontine, numero))
         Cotisation.objects.bulk_create(
             Cotisation(tour=tour, membre_id=membre_id, montant_du=tontine.montant_cotisation * nombre)
             for membre_id, nombre in noms_par_membre.items()
@@ -229,8 +213,123 @@ def demarrer_tontine(tontine: Tontine, acteur) -> Tontine:
 
     tontine.statut = Tontine.Statut.ACTIVE
     tontine.save(update_fields=["statut", "date_debut"])
-    journaliser(tontine, acteur, "demarrage", ordre=[nom.pk for nom in noms])
+    journaliser(tontine, acteur, "demarrage", tours=len(noms))
     return tontine
+
+
+def _noms_sans_tour(tontine: Tontine):
+    """Les noms qui n'ont encore ni ramassé ni été attribués à un tour."""
+    attribues = Tour.objects.filter(tontine=tontine, beneficiaire__isnull=False).values("beneficiaire")
+    return _noms_actifs(tontine).exclude(pk__in=attribues)
+
+
+def _tour_a_attribuer(tour: Tour) -> Tour:
+    """Verrouille la tontine puis le tour, encore sans bénéficiaire.
+    Ordre des verrous partout : tontine → tour → désignation (évite les interblocages)."""
+    Tontine.objects.select_for_update().get(pk=tour.tontine_id)
+    tour = Tour.objects.select_for_update().select_related("tontine").get(pk=tour.pk)
+    if tour.tontine.statut != Tontine.Statut.ACTIVE:
+        raise ErreurMetier("tontine_inactive", "La tontine n'est pas active.")
+    if tour.beneficiaire_id:
+        raise ErreurMetier("tour_attribue", "Le bénéficiaire de ce tour est déjà connu.")
+    return tour
+
+
+@transaction.atomic
+def tirer_au_sort(tour: Tour, acteur) -> Tour:
+    """Tire au sort le bénéficiaire du tour parmi les noms qui n'ont pas encore ramassé.
+    Le résultat est définitif ; les tours se tirent dans l'ordre."""
+    tour = _tour_a_attribuer(tour)
+    if tour.tontine.tours.filter(numero__lt=tour.numero, beneficiaire__isnull=True).exists():
+        raise ErreurMetier("tirage_dans_l_ordre", "Le tour précédent n'a pas encore de bénéficiaire.")
+    candidats = list(_noms_sans_tour(tour.tontine).select_related("membre__utilisateur"))
+    if not candidats:
+        raise ErreurMetier("aucun_candidat", "Tous les noms ont déjà un tour.")
+    gagnant = secrets.SystemRandom().choice(candidats)
+    tour.beneficiaire = gagnant
+    tour.save(update_fields=["beneficiaire"])
+    tour.designations.filter(statut=Designation.Statut.EN_ATTENTE).update(
+        statut=Designation.Statut.CADUQUE, decide_le=timezone.now()
+    )
+    journaliser(tour.tontine, acteur, "tirage", tour=tour.numero, nom_id=gagnant.pk,
+                beneficiaire=gagnant.membre.utilisateur.nom_complet, candidats=[n.pk for n in candidats])
+    return tour
+
+
+def _electeurs(designation: Designation) -> list[Membre]:
+    """Le bureau vote, sauf le membre désigné lui-même (conflit d'intérêts)."""
+    return list(
+        designation.tour.tontine.membres.filter(statut=Membre.Statut.ACTIF)
+        .exclude(role=Membre.Role.MEMBRE).exclude(pk=designation.nom.membre_id)
+    )
+
+
+def decompte(designation: Designation) -> dict:
+    electeurs = _electeurs(designation)
+    votes = list(designation.votes.all())
+    return {
+        "pour": sum(v.approuve for v in votes),
+        "contre": sum(not v.approuve for v in votes),
+        "electeurs": len(electeurs),
+        "majorite": len(electeurs) // 2 + 1,
+        "ids_electeurs": {m.pk for m in electeurs},
+    }
+
+
+@transaction.atomic
+def proposer_designation(tour: Tour, auteur: Membre, nom_id: int, motif: str) -> Designation:
+    tour = _tour_a_attribuer(tour)
+    if tour.statut == Tour.Statut.CLOS:
+        raise ErreurMetier("tour_clos", "Ce tour est clos.")
+    nom = _noms_sans_tour(tour.tontine).filter(pk=nom_id).select_related("membre").first()
+    if nom is None:
+        raise ErreurMetier("nom_indisponible", "Ce nom a déjà un tour ou n'appartient pas à la tontine.")
+    if tour.designations.filter(statut=Designation.Statut.EN_ATTENTE).exists():
+        raise ErreurMetier("designation_en_cours", "Une demande de désignation est déjà en cours pour ce tour.")
+    designation = Designation.objects.create(tour=tour, nom=nom, motif=motif, propose_par=auteur)
+    if not _electeurs(designation):
+        raise ErreurMetier("bureau_insuffisant", "Aucun membre du bureau ne peut valider cette désignation.")
+    journaliser(tour.tontine, auteur.utilisateur, "designation_proposee", tour=tour.numero,
+                beneficiaire=nom.membre.utilisateur.nom_complet, motif=motif)
+    if auteur.pk in decompte(designation)["ids_electeurs"]:
+        return voter_designation(designation, auteur, True)
+    return designation
+
+
+@transaction.atomic
+def voter_designation(designation: Designation, membre: Membre, approuve: bool) -> Designation:
+    """Enregistre un vote ; la désignation est acceptée dès que la majorité du bureau approuve,
+    refusée dès que cette majorité ne peut plus être atteinte."""
+    Tontine.objects.select_for_update().get(pk=designation.tour.tontine_id)
+    designation = (Designation.objects.select_for_update()
+                   .select_related("tour__tontine", "nom__membre__utilisateur").get(pk=designation.pk))
+    if designation.statut != Designation.Statut.EN_ATTENTE:
+        raise ErreurMetier("designation_close", "Cette demande a déjà été tranchée.")
+    if membre.pk not in decompte(designation)["ids_electeurs"]:
+        raise ErreurMetier("vote_non_autorise", "Seuls les membres du bureau non concernés votent.")
+    if designation.votes.filter(membre=membre).exists():
+        raise ErreurMetier("deja_vote", "Vous avez déjà voté.")
+    VoteDesignation.objects.create(designation=designation, membre=membre, approuve=approuve)
+    compte = decompte(designation)
+    tontine = designation.tour.tontine
+    if compte["pour"] >= compte["majorite"]:
+        tour = Tour.objects.select_for_update().get(pk=designation.tour_id)
+        nom_libre = _noms_sans_tour(tontine).filter(pk=designation.nom_id).exists()
+        if tour.beneficiaire_id or not nom_libre:
+            designation.statut = Designation.Statut.CADUQUE
+        else:
+            tour.beneficiaire_id = designation.nom_id
+            tour.save(update_fields=["beneficiaire"])
+            designation.statut = Designation.Statut.ACCEPTEE
+    elif compte["contre"] > compte["electeurs"] - compte["majorite"]:
+        designation.statut = Designation.Statut.REFUSEE
+    if designation.statut != Designation.Statut.EN_ATTENTE:
+        designation.decide_le = timezone.now()
+        designation.save(update_fields=["statut", "decide_le"])
+        journaliser(tontine, membre.utilisateur, f"designation_{designation.statut}",
+                    tour=designation.tour.numero, beneficiaire=designation.nom.membre.utilisateur.nom_complet,
+                    pour=compte["pour"], contre=compte["contre"], electeurs=compte["electeurs"])
+    return designation
 
 
 @transaction.atomic
@@ -238,8 +337,7 @@ def nouveau_cycle(tontine: Tontine, acteur) -> Tontine:
     """Recrée la tontine terminée en brouillon : mêmes paramètres, membres, rôles et noms."""
     if tontine.statut != Tontine.Statut.TERMINEE:
         raise ErreurMetier("cycle_en_cours", "Un nouveau cycle ne démarre qu'après la fin du précédent.")
-    champs = ["nom", "description", "montant_cotisation", "frequence", "mode_attribution",
-              "nb_places", "penalite_retard"]
+    champs = ["nom", "description", "montant_cotisation", "frequence", "nb_places", "penalite_retard"]
     nouvelle = Tontine.objects.create(cree_par=acteur, **{c: getattr(tontine, c) for c in champs})
     copies = {}
     for membre in tontine.membres.filter(statut=Membre.Statut.ACTIF):
@@ -319,9 +417,10 @@ def confirmer_paiement_mobile(reference_externe: str, reussi: bool) -> tuple[Pai
 
 @transaction.atomic
 def changer_role(tontine: Tontine, acteur, membre_id: int, role: str) -> Membre:
-    """Nomme ou retire le trésorier. Il n'y a qu'un trésorier ; le président garde son rôle."""
-    if role not in (Membre.Role.TRESORIER, Membre.Role.MEMBRE):
-        raise ErreurMetier("role_invalide", "Rôle attribuable : trésorier ou membre.")
+    """Attribue un poste du bureau (ou le retire). Un seul titulaire par poste : l'ancien titulaire
+    redevient simple membre. Le rôle du président ne change pas."""
+    if role not in Membre.Role.values or role == Membre.Role.PRESIDENT:
+        raise ErreurMetier("role_invalide", "Ce rôle ne peut pas être attribué.")
     membre = Membre.objects.select_for_update().filter(
         tontine=tontine, pk=membre_id, statut=Membre.Statut.ACTIF
     ).first()
@@ -329,8 +428,8 @@ def changer_role(tontine: Tontine, acteur, membre_id: int, role: str) -> Membre:
         raise ErreurMetier("membre_inconnu", "Ce membre n'appartient pas à la tontine.")
     if membre.role == Membre.Role.PRESIDENT:
         raise ErreurMetier("role_president", "Le rôle du président ne peut pas être changé.")
-    if role == Membre.Role.TRESORIER:
-        tontine.membres.filter(role=Membre.Role.TRESORIER).exclude(pk=membre.pk).update(role=Membre.Role.MEMBRE)
+    if role != Membre.Role.MEMBRE:
+        tontine.membres.filter(role=role).exclude(pk=membre.pk).update(role=Membre.Role.MEMBRE)
     membre.role = role
     membre.save(update_fields=["role"])
     journaliser(tontine, acteur, "changement_role", membre_id=membre.pk, role=role)
@@ -380,6 +479,8 @@ def remettre_caisse(tour: Tour, acteur, forcer: bool = False) -> Tour:
     tour = Tour.objects.select_for_update().select_related("tontine").get(pk=tour.pk)
     if tour.statut == Tour.Statut.CLOS:
         raise ErreurMetier("tour_clos", "La caisse de ce tour a déjà été remise.")
+    if tour.beneficiaire_id is None:
+        raise ErreurMetier("tirage_requis", "Tirez au sort (ou désignez) le bénéficiaire avant la remise.")
     precedent_ouvert = Tour.objects.filter(
         tontine=tour.tontine, numero__lt=tour.numero
     ).exclude(statut=Tour.Statut.CLOS).exists()

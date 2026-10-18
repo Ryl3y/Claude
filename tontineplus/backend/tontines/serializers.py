@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from comptes.models import valider_telephone
 
-from .models import Cotisation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
+from .models import Cotisation, Designation, Invitation, JournalAudit, Membre, Nom, Paiement, Penalite, Tontine, Tour
+from .services import decompte
 
 
 class MembreSerializer(serializers.ModelSerializer):
@@ -40,8 +41,7 @@ class TontineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tontine
         fields = [
-            "id", "nom", "description", "montant_cotisation", "frequence", "mode_attribution",
-            "nb_places", "penalite_retard", "date_debut", "statut", "cree_le",
+            "id", "nom", "description", "montant_cotisation", "frequence", "nb_places", "penalite_retard", "date_debut", "statut", "cree_le",
         ]
         read_only_fields = ["statut", "cree_le"]
 
@@ -58,16 +58,16 @@ class TontineSerializer(serializers.ModelSerializer):
 
 class TontineDetailSerializer(TontineSerializer):
     membres = serializers.SerializerMethodField()
-    ordre = serializers.SerializerMethodField(help_text="Les noms dans l'ordre de passage")
+    noms = serializers.SerializerMethodField(help_text="Tous les noms (places) de la tontine")
 
     class Meta(TontineSerializer.Meta):
-        fields = TontineSerializer.Meta.fields + ["membres", "ordre"]
+        fields = TontineSerializer.Meta.fields + ["membres", "noms"]
 
     def get_membres(self, tontine):
         actifs = [m for m in tontine.membres.all() if m.statut == Membre.Statut.ACTIF]
         return MembreSerializer(actifs, many=True).data
 
-    def get_ordre(self, tontine):
+    def get_noms(self, tontine):
         noms = sorted((n for n in tontine.noms.all() if n.position), key=lambda n: n.position)
         return NomSerializer(noms, many=True).data
 
@@ -81,13 +81,12 @@ class InvitationSerializer(serializers.ModelSerializer):
         read_only_fields = ["code", "expire_le", "acceptee_le"]
 
 
-class OrdreSerializer(serializers.Serializer):
-    noms = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
-
-
 class TourSerializer(serializers.ModelSerializer):
-    beneficiaire = serializers.CharField(source="beneficiaire.membre.utilisateur.nom_complet", read_only=True)
-    beneficiaire_membre_id = serializers.IntegerField(source="beneficiaire.membre_id", read_only=True)
+    # Vides tant que le bénéficiaire n'est pas tiré au sort (ou désigné).
+    beneficiaire = serializers.CharField(source="beneficiaire.membre.utilisateur.nom_complet", read_only=True,
+                                         default=None)
+    beneficiaire_membre_id = serializers.IntegerField(source="beneficiaire.membre_id", read_only=True, default=None)
+    beneficiaire_nom_id = serializers.IntegerField(source="beneficiaire_id", read_only=True)
     montant_attendu = serializers.IntegerField(read_only=True)
     montant_collecte = serializers.IntegerField(read_only=True)
     nb_impayes = serializers.IntegerField(read_only=True)
@@ -95,7 +94,7 @@ class TourSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tour
         fields = [
-            "id", "numero", "date_echeance", "beneficiaire", "beneficiaire_membre_id", "statut",
+            "id", "numero", "date_echeance", "beneficiaire", "beneficiaire_membre_id", "beneficiaire_nom_id", "statut",
             "montant_remis", "remis_le",
             "montant_attendu", "montant_collecte", "nb_impayes",
         ]
@@ -145,7 +144,57 @@ class PaiementEntreeSerializer(serializers.Serializer):
 
 
 class RoleSerializer(serializers.Serializer):
-    role = serializers.ChoiceField(choices=[Membre.Role.TRESORIER, Membre.Role.MEMBRE])
+    role = serializers.ChoiceField(choices=[r for r in Membre.Role.values if r != Membre.Role.PRESIDENT])
+
+
+class DesignationEntreeSerializer(serializers.Serializer):
+    nom = serializers.IntegerField()
+    motif = serializers.CharField(max_length=300)
+
+
+class VoteSerializer(serializers.Serializer):
+    approuve = serializers.BooleanField()
+
+
+class DesignationSerializer(serializers.ModelSerializer):
+    """Une demande de désignation, avec son décompte et ce que l'utilisateur peut faire."""
+
+    tour = serializers.IntegerField(source="tour.numero", read_only=True)
+    tour_id = serializers.IntegerField(read_only=True)
+    beneficiaire = serializers.CharField(source="nom.membre.utilisateur.nom_complet", read_only=True)
+    propose_par = serializers.CharField(source="propose_par.utilisateur.nom_complet", read_only=True)
+    decompte = serializers.SerializerMethodField()
+    mon_vote = serializers.SerializerMethodField()
+    peut_voter = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Designation
+        fields = ["id", "tour", "tour_id", "nom", "beneficiaire", "motif", "propose_par", "statut", "cree_le",
+                  "decide_le", "decompte", "mon_vote", "peut_voter"]
+        read_only_fields = fields
+
+    def _compte(self, designation):
+        if not hasattr(designation, "_compte"):
+            designation._compte = decompte(designation)
+        return designation._compte
+
+    def get_decompte(self, designation):
+        compte = self._compte(designation)
+        return {k: compte[k] for k in ("pour", "contre", "electeurs", "majorite")}
+
+    def _moi(self):
+        return self.context.get("membre")
+
+    def get_mon_vote(self, designation):
+        moi = self._moi()
+        vote = next((v for v in designation.votes.all() if moi and v.membre_id == moi.pk), None)
+        return None if vote is None else vote.approuve
+
+    def get_peut_voter(self, designation):
+        moi = self._moi()
+        return bool(moi and designation.statut == Designation.Statut.EN_ATTENTE
+                    and moi.pk in self._compte(designation)["ids_electeurs"]
+                    and self.get_mon_vote(designation) is None)
 
 
 class WebhookSerializer(serializers.Serializer):

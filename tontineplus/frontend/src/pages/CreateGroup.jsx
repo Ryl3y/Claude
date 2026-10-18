@@ -9,7 +9,6 @@ const VIDE = {
   description: "",
   montant_cotisation: "",
   frequence: "mensuelle",
-  mode_attribution: "ordre_fixe",
   nb_places: 10,
   penalite_retard: 0,
   date_debut: "",
@@ -107,13 +106,6 @@ function FormulaireTontine({ titre, bouton, initial, enregistrer }) {
             <input type="number" min={2} max={100} value={form.nb_places}
                    onChange={changer("nb_places")} className="champ" required />
             <span className="mt-1 block text-xs text-gray-500">Un tour par nom ; un membre peut prendre plusieurs noms.</span>
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium">Ordre de passage</span>
-            <select value={form.mode_attribution} onChange={changer("mode_attribution")} className="champ">
-              <option value="ordre_fixe">Ordre fixe (choisi par le président)</option>
-              <option value="tirage_au_sort">Tirage au sort au démarrage</option>
-            </select>
           </label>
           <label className="block">
             <span className="mb-1 block text-sm font-medium">Pénalité de retard par nom (FCFA)</span>

@@ -9,7 +9,7 @@ from comptes.models import Utilisateur
 from tontines.models import Cotisation, Membre, Penalite, Tontine
 from tontines.services import (
     accepter_invitation, creer_invitation, creer_tontine, demarrer_tontine, enregistrer_paiement,
-    marquer_retards, remettre_caisse,
+    marquer_retards, remettre_caisse, tirer_au_sort,
 )
 
 
@@ -40,12 +40,16 @@ class PlusieursNoms(Base):
         self.assertEqual(reponse.status_code, 200, reponse.data)
         bello = next(m for m in reponse.data["membres"] if m["nom_complet"] == "Bello")
         self.assertEqual(bello["positions"], [2, 3])
-        self.assertEqual([(n["nom_complet"], n["rang"]) for n in reponse.data["ordre"]],
+        self.assertEqual([(n["nom_complet"], n["rang"]) for n in reponse.data["noms"]],
                          [("Awa", 1), ("Bello", 1), ("Bello", 2)])
 
         self.api.post(f"{self.url}/demarrer/")
+        for tour in self.api.get(f"{self.url}/tours/").data:
+            self.assertEqual(self.api.post(f"/api/v1/tours/{tour['id']}/tirage/").status_code, 200)
         tours = self.api.get(f"{self.url}/tours/").data
-        self.assertEqual([t["beneficiaire"] for t in tours], ["Awa", "Bello", "Bello"])
+        self.assertEqual(sorted(t["beneficiaire"] for t in tours), ["Awa", "Bello", "Bello"])
+        noms = {n["id"] for n in self.api.get(f"{self.url}/").data["noms"]}
+        self.assertEqual({t["beneficiaire_nom_id"] for t in tours}, noms)  # chaque nom servi une fois
         self.assertEqual({t["montant_attendu"] for t in tours}, {30000})  # 3 noms × 10 000
 
         cotisations = self.api.get(f"/api/v1/tours/{tours[0]['id']}/cotisations/").data
@@ -72,7 +76,7 @@ class PlusieursNoms(Base):
         premier_nom_bello = self.membre_bello.noms.order_by("position").first()
         reponse = self.api.delete(f"{self.url}/noms/{premier_nom_bello.pk}/")
         self.assertEqual(reponse.status_code, 200, reponse.data)
-        self.assertEqual([n["position"] for n in reponse.data["ordre"]], [1, 2])
+        self.assertEqual([n["position"] for n in reponse.data["noms"]], [1, 2])
         dernier = self.membre_bello.noms.get()
         reponse = self.api.delete(f"{self.url}/noms/{dernier.pk}/")
         self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "dernier_nom"))
@@ -82,13 +86,6 @@ class PlusieursNoms(Base):
         self.ajouter_nom(self.tontine.membres.get(role="president"))
         reponse = self.api.post(f"{self.url}/demarrer/")
         self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "membres_insuffisants"))
-
-    def test_tirage_au_sort_avec_plusieurs_noms(self):
-        Tontine.objects.filter(pk=self.tontine.pk).update(mode_attribution="tirage_au_sort")
-        self.ajouter_nom(self.membre_bello)
-        demarrer_tontine(self.tontine, self.awa)
-        gagnants = sorted(t.beneficiaire.membre.utilisateur.nom_complet for t in self.tontine.tours.all())
-        self.assertEqual(gagnants, ["Awa", "Bello", "Bello"])
 
     def test_penalite_par_nom(self):
         self.ajouter_nom(self.membre_bello)
@@ -153,6 +150,7 @@ class CycleDeVie(Base):
         demarrer_tontine(self.tontine, self.awa)
         self.assertEqual(self.api.post(f"{self.url}/nouveau-cycle/").data["code"], "cycle_en_cours")
         for tour in self.tontine.tours.order_by("numero"):
+            tirer_au_sort(tour, self.awa)
             for cotisation in tour.cotisations.all():
                 enregistrer_paiement(cotisation, self.awa, cotisation.montant_du, "especes")
             remettre_caisse(tour, self.awa)
@@ -198,5 +196,6 @@ class Penalites(Base):
 
     def test_pas_de_remise_forcee_d_une_caisse_vide(self):
         tour = self.tontine.tours.get(numero=1)
+        tirer_au_sort(tour, self.awa)
         reponse = self.api.post(f"/api/v1/tours/{tour.pk}/remise/", {"forcer": True}, format="json")
         self.assertEqual((reponse.status_code, reponse.data["code"]), (409, "caisse_vide"))

@@ -4,7 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import Badge from "../components/Badge";
 import Erreur from "../components/Erreur";
-import { dateCourte, fcfa, libelle } from "../format";
+import { dateCourte, fcfa, libelle, POSTES_BUREAU } from "../format";
 
 // « Bello » ou « Bello (2e nom) » quand le membre tient plusieurs noms.
 function nomAffiche(nom, nbNoms) {
@@ -19,13 +19,16 @@ export default function GroupDetails() {
   const navigate = useNavigate();
   const [tontine, setTontine] = useState(null);
   const [tours, setTours] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [erreur, setErreur] = useState("");
 
   const charger = useCallback(async () => {
     try {
       const detail = await api(`/tontines/${id}/`);
       setTontine(detail);
-      setTours(["active", "terminee"].includes(detail.statut) ? await api(`/tontines/${id}/tours/`) : []);
+      const demarree = ["active", "terminee"].includes(detail.statut);
+      setTours(demarree ? await api(`/tontines/${id}/tours/`) : []);
+      setDesignations(demarree ? await api(`/tontines/${id}/designations/`) : []);
     } catch (err) {
       setErreur(err.status === 404 ? "Tontine introuvable, ou vous n'en êtes pas membre." : err.message);
     }
@@ -42,11 +45,19 @@ export default function GroupDetails() {
 
   const moi = tontine.membres.find((m) => m.telephone === utilisateur.telephone);
   const estPresident = moi?.role === "president";
+  const auBureau = Boolean(moi) && moi.role !== "membre";
   const encaisse = ["president", "tresorier"].includes(moi?.role);
   const brouillon = tontine.statut === "brouillon";
-  const nbNoms = tontine.ordre.length;
+  const nbNoms = tontine.noms.length;
   const nbNomsDe = (membreId) => tontine.membres.find((m) => m.id === membreId)?.positions.length ?? 1;
-  const nomEnPosition = (position) => tontine.ordre.find((n) => n.position === position);
+  const libelleNom = (nomId) => {
+    const nom = tontine.noms.find((n) => n.id === nomId);
+    return nom ? nomAffiche(nom, nbNomsDe(nom.membre_id)) : null;
+  };
+  // Noms qui n'ont pas encore de tour : candidats au tirage et aux désignations.
+  const attribues = new Set(tours.map((t) => t.beneficiaire_nom_id).filter(Boolean));
+  const nomsLibres = tontine.noms.filter((n) => !attribues.has(n.id));
+  const prochainTirage = tours.find((t) => !t.beneficiaire_nom_id);
 
   // Exécute une action, affiche son erreur éventuelle, puis recharge la page.
   const agir = async (action) => {
@@ -87,6 +98,10 @@ export default function GroupDetails() {
           <Info titre="Caisse par tour">{fcfa(tontine.montant_cotisation * nbNoms)}</Info>
           <Info titre="Pénalité de retard par nom">{fcfa(tontine.penalite_retard)}</Info>
         </dl>
+        <p className="mt-3 text-sm text-gray-600">
+          Le bénéficiaire de chaque tour est tiré au sort le jour de la séance. Une désignation reste possible
+          si la majorité du bureau l'approuve.
+        </p>
         {estPresident && brouillon && (
           <div className="mt-4 flex flex-wrap gap-2 border-t pt-4">
             <Link to={`/group/${tontine.id}/modifier`} className="bouton-secondaire">Modifier les paramètres</Link>
@@ -116,29 +131,20 @@ export default function GroupDetails() {
         agir={agir}
       />
 
-      <OrdrePassage
-        tontine={tontine}
-        nbNomsDe={nbNomsDe}
-        peutOrdonner={estPresident && brouillon && tontine.mode_attribution === "ordre_fixe"}
-        gerer={estPresident && brouillon}
-        agir={agir}
-      />
-
       {estPresident && brouillon && (
         <section className="carte space-y-6">
           <Invitation tontineId={tontine.id} complete={nbNoms >= tontine.nb_places} />
           <div className="border-t pt-4">
             <h2 className="mb-2 text-lg font-semibold">Démarrer la tontine</h2>
             <p className="mb-3 text-sm text-gray-600">
-              Un tour par nom est généré ({nbNoms} {nbNoms > 1 ? "tours" : "tour"}), puis les membres et les
-              noms sont figés.
-              {tontine.mode_attribution === "tirage_au_sort" && " L'ordre de passage sera tiré au sort."}
+              Un tour par nom est créé ({nbNoms} {nbNoms > 1 ? "tours" : "tour"}) ; les membres et les noms sont
+              ensuite figés. Les bénéficiaires seront tirés au sort séance après séance.
             </p>
             <button
               className="bouton"
               disabled={tontine.membres.length < 2}
               onClick={() =>
-                window.confirm("Démarrer la tontine ? Les membres, les noms et l'ordre ne pourront plus changer.") &&
+                window.confirm("Démarrer la tontine ? Les membres et les noms ne pourront plus changer.") &&
                 agir(() => api(`/tontines/${tontine.id}/demarrer/`, { methode: "POST" }))
               }
             >
@@ -155,14 +161,20 @@ export default function GroupDetails() {
           <ul className="divide-y">
             {tours.map((tour) => (
               <Tour key={tour.id} tour={tour} encaisse={encaisse} estPresident={estPresident} moi={moi}
-                    beneficiaire={nomAffiche(nomEnPosition(tour.numero), nbNomsDe(tour.beneficiaire_membre_id))}
+                    auBureau={auBureau && tontine.statut === "active"}
+                    peutTirer={tour.id === prochainTirage?.id}
+                    beneficiaire={libelleNom(tour.beneficiaire_nom_id)}
+                    candidats={nomsLibres.map((n) => ({ id: n.id, libelle: nomAffiche(n, nbNomsDe(n.membre_id)) }))}
+                    designationEnCours={designations.some((d) => d.tour_id === tour.id && d.statut === "en_attente")}
                     agir={agir} />
             ))}
           </ul>
         </section>
       )}
 
-      {estPresident && <Journal tontineId={tontine.id} />}
+      {designations.length > 0 && <Designations designations={designations} agir={agir} />}
+
+      {auBureau && <Journal tontineId={tontine.id} />}
     </div>
   );
 }
@@ -177,13 +189,17 @@ function Info({ titre, children }) {
 }
 
 function Membres({ tontine, nbNoms, gerer, peutNommer, agir }) {
-  const url = `/tontines/${tontine.id}/membres`;
+  const url = `/tontines/${tontine.id}`;
   const changerRole = (membre, role) =>
-    agir(() => api(`${url}/${membre.id}/role/`, { methode: "PUT", corps: { role } }));
+    agir(() => api(`${url}/membres/${membre.id}/role/`, { methode: "PUT", corps: { role } }));
   const retirer = (membre) =>
     window.confirm(`Retirer ${membre.nom_complet} de la tontine ?`) &&
-    agir(() => api(`${url}/${membre.id}/`, { methode: "DELETE" }));
-  const ajouterNom = (membre) => agir(() => api(`${url}/${membre.id}/noms/`, { methode: "POST" }));
+    agir(() => api(`${url}/membres/${membre.id}/`, { methode: "DELETE" }));
+  const ajouterNom = (membre) => agir(() => api(`${url}/membres/${membre.id}/noms/`, { methode: "POST" }));
+  const retirerNom = (membre) => {
+    const dernier = tontine.noms.filter((n) => n.membre_id === membre.id).at(-1);
+    agir(() => api(`${url}/noms/${dernier.id}/`, { methode: "DELETE" }));
+  };
 
   return (
     <section className="carte">
@@ -193,35 +209,78 @@ function Membres({ tontine, nbNoms, gerer, peutNommer, agir }) {
         il cotise et ramasse autant de fois.
       </p>
       <ul className="divide-y">
-        {tontine.membres.map((m) => (
-          <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-            <div className="min-w-0">
-              <span className="font-medium">{m.nom_complet}</span>
-              <span className="block text-sm text-gray-500 sm:ml-2 sm:inline">{m.telephone}</span>
-              <span className="block text-sm text-gray-600">
-                {m.positions.length} nom{m.positions.length > 1 ? "s" : ""}
-                {m.positions.length > 0 && ` — n° ${m.positions.join(", ")}`}
-              </span>
-              <div className="flex flex-wrap gap-x-3 text-sm">
-                {peutNommer && m.role !== "president" && (
-                  <button className="text-blue-600 hover:underline"
-                          onClick={() => changerRole(m, m.role === "tresorier" ? "membre" : "tresorier")}>
-                    {m.role === "tresorier" ? "Retirer trésorier" : "Nommer trésorier"}
-                  </button>
-                )}
+        {tontine.membres.map((m) => {
+          const noms = m.positions.length;
+          return (
+            <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+              <div className="min-w-0">
+                <span className="font-medium">{m.nom_complet}</span>
+                <span className="block text-sm text-gray-500 sm:ml-2 sm:inline">{m.telephone}</span>
+                <span className="block text-sm text-gray-600">{noms} nom{noms > 1 ? "s" : ""}</span>
                 {gerer && (
-                  <button className="text-blue-600 hover:underline disabled:text-gray-400"
-                          disabled={nbNoms >= tontine.nb_places} onClick={() => ajouterNom(m)}
-                          aria-label={`Ajouter un nom à ${m.nom_complet}`}>
-                    + 1 nom
-                  </button>
-                )}
-                {gerer && m.role !== "president" && (
-                  <button className="text-red-700 hover:underline" onClick={() => retirer(m)}>Retirer</button>
+                  <div className="flex flex-wrap gap-x-3 text-sm">
+                    <button className="text-blue-600 hover:underline disabled:text-gray-400"
+                            disabled={nbNoms >= tontine.nb_places} onClick={() => ajouterNom(m)}
+                            aria-label={`Ajouter un nom à ${m.nom_complet}`}>+ 1 nom</button>
+                    {noms > 1 && (
+                      <button className="text-blue-600 hover:underline" onClick={() => retirerNom(m)}
+                              aria-label={`Retirer un nom à ${m.nom_complet}`}>− 1 nom</button>
+                    )}
+                    {m.role !== "president" && (
+                      <button className="text-red-700 hover:underline" onClick={() => retirer(m)}>Retirer</button>
+                    )}
+                  </div>
                 )}
               </div>
+              {peutNommer && m.role !== "president" ? (
+                <select value={m.role} onChange={(e) => changerRole(m, e.target.value)}
+                        className="champ w-auto max-w-[14rem] py-1 text-sm" aria-label={`Poste de ${m.nom_complet}`}>
+                  <option value="membre">Membre</option>
+                  {POSTES_BUREAU.map((poste) => <option key={poste} value={poste}>{libelle(poste)}</option>)}
+                </select>
+              ) : (
+                m.role !== "membre" && <Badge valeur={m.role} />
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {peutNommer && (
+        <p className="mt-3 text-xs text-gray-500">Un seul titulaire par poste : nommer quelqu'un remplace l'ancien titulaire.</p>
+      )}
+    </section>
+  );
+}
+
+function Designations({ designations, agir }) {
+  const voter = (d, approuve) =>
+    agir(() => api(`/designations/${d.id}/vote/`, { methode: "POST", corps: { approuve } }));
+  return (
+    <section className="carte">
+      <h2 className="mb-1 text-lg font-semibold">Désignations</h2>
+      <p className="mb-4 text-sm text-gray-500">
+        Demandes d'attribuer un tour sans tirage au sort. Acceptées à la majorité du bureau ; le membre désigné ne
+        vote pas.
+      </p>
+      <ul className="divide-y">
+        {designations.map((d) => (
+          <li key={d.id} className="py-3 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-medium">Tour {d.tour} : désignation de {d.beneficiaire}</span>
+              <Badge valeur={d.statut} />
             </div>
-            {m.role !== "membre" && <Badge valeur={m.role} />}
+            <p className="text-gray-700">« {d.motif} » — proposé par {d.propose_par}</p>
+            <p className="text-gray-500">
+              {d.decompte.pour} pour, {d.decompte.contre} contre — majorité : {d.decompte.majorite} sur{" "}
+              {d.decompte.electeurs} votant{d.decompte.electeurs > 1 ? "s" : ""}
+              {d.mon_vote !== null && ` — vous avez voté ${d.mon_vote ? "pour" : "contre"}`}
+            </p>
+            {d.peut_voter && (
+              <div className="mt-2 flex gap-2">
+                <button className="bouton-secondaire" onClick={() => voter(d, true)}>Approuver</button>
+                <button className="bouton-secondaire text-red-700" onClick={() => voter(d, false)}>Refuser</button>
+              </div>
+            )}
           </li>
         ))}
       </ul>
@@ -229,55 +288,12 @@ function Membres({ tontine, nbNoms, gerer, peutNommer, agir }) {
   );
 }
 
-function OrdrePassage({ tontine, nbNomsDe, peutOrdonner, gerer, agir }) {
-  const ordre = tontine.ordre;
-  const deplacer = (index, sens) => {
-    const ids = ordre.map((n) => n.id);
-    [ids[index], ids[index + sens]] = [ids[index + sens], ids[index]];
-    agir(() => api(`/tontines/${tontine.id}/ordre/`, { methode: "PUT", corps: { noms: ids } }));
-  };
-  const retirerNom = (nom) => agir(() => api(`/tontines/${tontine.id}/noms/${nom.id}/`, { methode: "DELETE" }));
-
-  return (
-    <section className="carte">
-      <h2 className="mb-1 text-lg font-semibold">Ordre de passage</h2>
-      <p className="mb-4 text-sm text-gray-500">Le n° 1 ramasse la caisse au premier tour, le n° 2 au deuxième, etc.</p>
-      <ol className="divide-y">
-        {ordre.map((nom, i) => {
-          const plusieurs = nbNomsDe(nom.membre_id) > 1;
-          const libelleNom = nomAffiche(nom, nbNomsDe(nom.membre_id));
-          return (
-            <li key={nom.id} className="flex items-center justify-between gap-2 py-2">
-              <span>
-                <span className="mr-2 text-gray-500">{nom.position}.</span>
-                {libelleNom}
-              </span>
-              <span className="flex shrink-0 items-center gap-2">
-                {gerer && plusieurs && (
-                  <button className="bouton-secondaire" onClick={() => retirerNom(nom)}
-                          aria-label={`Retirer ce nom de ${libelleNom}`}>−</button>
-                )}
-                {peutOrdonner && (
-                  <>
-                    <button className="bouton-secondaire" disabled={i === 0} onClick={() => deplacer(i, -1)}
-                            aria-label={`Faire passer ${libelleNom} plus tôt`}>↑</button>
-                    <button className="bouton-secondaire" disabled={i === ordre.length - 1}
-                            onClick={() => deplacer(i, 1)} aria-label={`Faire passer ${libelleNom} plus tard`}>↓</button>
-                  </>
-                )}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
-  );
-}
-
 const ACTIONS_JOURNAL = {
   creation: "Création", modification: "Paramètres modifiés", annulation: "Annulation", invitation: "Invitation",
   adhesion: "Adhésion", ajout_nom: "Nom ajouté", retrait_nom: "Nom retiré", retrait_membre: "Membre retiré",
-  ordre_defini: "Ordre modifié", changement_role: "Rôle modifié", demarrage: "Démarrage", paiement: "Paiement",
+  changement_role: "Poste modifié", tirage: "Tirage au sort", designation_proposee: "Désignation proposée",
+  designation_acceptee: "Désignation acceptée", designation_refusee: "Désignation refusée",
+  designation_caduque: "Désignation caduque", demarrage: "Démarrage", paiement: "Paiement",
   paiement_mobile_lance: "Paiement Mobile Money lancé", confirmation_mobile_money: "Paiement Mobile Money confirmé",
   penalite_payee: "Pénalité payée", remise: "Caisse remise", fin_de_cycle: "Fin du cycle",
   nouveau_cycle: "Nouveau cycle",
@@ -371,8 +387,10 @@ function Invitation({ tontineId, complete }) {
   );
 }
 
-function Tour({ tour, beneficiaire, encaisse, estPresident, moi, agir }) {
+function Tour({ tour, beneficiaire, encaisse, estPresident, moi, auBureau, peutTirer, candidats,
+                designationEnCours, agir }) {
   const [ouvert, setOuvert] = useState(false);
+  const [proposer, setProposer] = useState(false);
   const [cotisations, setCotisations] = useState(null);
   const [aPayer, setAPayer] = useState(null);
 
@@ -412,10 +430,12 @@ function Tour({ tour, beneficiaire, encaisse, estPresident, moi, agir }) {
     <li className="py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button onClick={basculer} className="text-left" aria-expanded={ouvert}
-                aria-label={`Tour ${tour.numero}, ${dateCourte(tour.date_echeance)}, pour ${beneficiaire}`}>
+                aria-label={`Tour ${tour.numero}, ${dateCourte(tour.date_echeance)}, ${beneficiaire ? `pour ${beneficiaire}` : "bénéficiaire à tirer au sort"}`}>
           <span className="font-medium">Tour {tour.numero}</span>
           <span className="ml-2 text-sm text-gray-500">{dateCourte(tour.date_echeance)}</span>
-          <span className="ml-2 text-sm">→ {beneficiaire}</span>
+          <span className="ml-2 text-sm">
+            → {beneficiaire ?? <em className="text-gray-500">à tirer au sort</em>}
+          </span>
         </button>
         <div className="flex items-center gap-3 text-sm">
           <span>
@@ -425,6 +445,24 @@ function Tour({ tour, beneficiaire, encaisse, estPresident, moi, agir }) {
           <Badge valeur={tour.statut} />
         </div>
       </div>
+
+      {auBureau && !beneficiaire && tour.statut !== "clos" && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {peutTirer && (
+            <button className="bouton" onClick={() =>
+              window.confirm(`Tirer au sort le bénéficiaire du tour ${tour.numero} ? Le résultat est définitif.`) &&
+              agir(() => api(`/tours/${tour.id}/tirage/`, { methode: "POST" }))}>
+              Tirer au sort
+            </button>
+          )}
+          {!designationEnCours && !proposer && (
+            <button className="bouton-secondaire" onClick={() => setProposer(true)}>Proposer une désignation</button>
+          )}
+        </div>
+      )}
+      {proposer && (
+        <PropositionDesignation tour={tour} candidats={candidats} fermer={() => setProposer(false)} agir={agir} />
+      )}
 
       {ouvert && cotisations && (
         <div className="mt-3 rounded bg-gray-50 p-3">
@@ -472,12 +510,41 @@ function Tour({ tour, beneficiaire, encaisse, estPresident, moi, agir }) {
               </li>
             ))}
           </ul>
-          {encaisse && tour.statut !== "clos" && (tour.nb_impayes === 0 || estPresident) && (
+          {encaisse && beneficiaire && tour.statut !== "clos" && (tour.nb_impayes === 0 || estPresident) && (
             <button className="bouton mt-3" onClick={remettre}>Remettre la caisse</button>
           )}
         </div>
       )}
     </li>
+  );
+}
+
+function PropositionDesignation({ tour, candidats, fermer, agir }) {
+  const [nom, setNom] = useState(candidats[0]?.id ?? "");
+  const [motif, setMotif] = useState("");
+
+  const envoyer = (e) => {
+    e.preventDefault();
+    agir(async () => {
+      await api(`/tours/${tour.id}/designations/`, { methode: "POST", corps: { nom: Number(nom), motif: motif.trim() } });
+      fermer();
+    });
+  };
+
+  return (
+    <form onSubmit={envoyer} className="mt-2 space-y-2 rounded border bg-white p-3 text-sm">
+      <p className="font-medium">Désigner le bénéficiaire du tour {tour.numero}</p>
+      <select value={nom} onChange={(e) => setNom(e.target.value)} className="champ" aria-label="Nom à désigner">
+        {candidats.map((c) => <option key={c.id} value={c.id}>{c.libelle}</option>)}
+      </select>
+      <input value={motif} onChange={(e) => setMotif(e.target.value)} className="champ" maxLength={300}
+             placeholder="Motif (ex. : frais d'hôpital)" aria-label="Motif de la désignation" required />
+      <p className="text-xs text-gray-500">La demande est soumise au vote du bureau ; votre proposition compte comme un vote pour.</p>
+      <div className="flex gap-2">
+        <button className="bouton">Soumettre au bureau</button>
+        <button type="button" className="bouton-secondaire" onClick={fermer}>Annuler</button>
+      </div>
+    </form>
   );
 }
 

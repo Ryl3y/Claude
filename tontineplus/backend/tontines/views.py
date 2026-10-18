@@ -12,15 +12,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from . import services
-from .models import Cotisation, Membre, Nom, Paiement, Penalite, Tontine, Tour
+from .models import Cotisation, Designation, Membre, Nom, Paiement, Penalite, Tontine, Tour
 from .permissions import exiger_role
 from .serializers import (
-    CotisationSerializer, InvitationSerializer, JournalSerializer, MembreSerializer, OrdreSerializer,
-    PaiementEntreeSerializer, PaiementSerializer, PenaliteSerializer, RemiseSerializer, RoleSerializer,
-    TontineDetailSerializer, TontineSerializer, TourSerializer, WebhookSerializer,
+    CotisationSerializer, DesignationEntreeSerializer, DesignationSerializer, InvitationSerializer,
+    JournalSerializer, MembreSerializer, PaiementEntreeSerializer, PaiementSerializer, PenaliteSerializer,
+    RemiseSerializer, RoleSerializer, TontineDetailSerializer, TontineSerializer, TourSerializer, VoteSerializer,
+    WebhookSerializer,
 )
 
 PRESIDENT, TRESORIER = Membre.Role.PRESIDENT, Membre.Role.TRESORIER
+BUREAU = [r for r in Membre.Role.values if r != Membre.Role.MEMBRE]
 
 
 class PaginationRecente(CursorPagination):
@@ -101,14 +103,6 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
         invitation = services.creer_invitation(tontine, request.user, entree.validated_data["telephone"])
         return Response(InvitationSerializer(invitation).data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=["put"])
-    def ordre(self, request, pk=None):
-        tontine = self.tontine_du_president()
-        entree = OrdreSerializer(data=request.data)
-        entree.is_valid(raise_exception=True)
-        services.definir_ordre(tontine, request.user, entree.validated_data["noms"])
-        return self.detail_a_jour(tontine)
-
     @action(detail=True, methods=["post"], url_path=r"membres/(?P<membre_id>\d+)/noms")
     def ajouter_nom(self, request, pk=None, membre_id=None):
         tontine = self.tontine_du_president()
@@ -147,9 +141,20 @@ class TontineViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.
 
     @action(detail=True, methods=["get"])
     def journal(self, request, pk=None):
-        tontine = self.tontine_du_president()
+        tontine = self.get_object()
+        exiger_role(tontine, request.user, *BUREAU)
         page = self.paginate_queryset(tontine.journal.select_related("acteur"))
         return self.get_paginated_response(JournalSerializer(page, many=True).data)
+
+    @action(detail=True, methods=["get"])
+    def designations(self, request, pk=None):
+        """Toutes les demandes de désignation, visibles par chaque membre (transparence)."""
+        tontine = self.get_object()
+        membre = exiger_role(tontine, request.user)
+        demandes = (Designation.objects.filter(tour__tontine=tontine)
+                    .select_related("tour__tontine", "nom__membre__utilisateur", "propose_par__utilisateur")
+                    .prefetch_related("votes"))
+        return Response(DesignationSerializer(demandes, many=True, context={"membre": membre}).data)
 
 
 @api_view(["POST"])
@@ -203,6 +208,36 @@ def encaisser_penalite(request, pk):
     penalite = get_object_or_404(Penalite.objects.select_related("cotisation__tour__tontine"), pk=pk)
     exiger_role(penalite.cotisation.tour.tontine, request.user, PRESIDENT, TRESORIER)
     return Response(PenaliteSerializer(services.encaisser_penalite(penalite, request.user)).data)
+
+
+@api_view(["POST"])
+def tirage_du_tour(request, pk):
+    tour = get_object_or_404(Tour.objects.select_related("tontine"), pk=pk)
+    exiger_role(tour.tontine, request.user, *BUREAU)
+    tour = services.tirer_au_sort(tour, request.user)
+    return Response(TourSerializer(tours_avec_totaux(tour.tontine).get(pk=tour.pk)).data)
+
+
+@api_view(["POST"])
+def proposer_designation(request, pk):
+    tour = get_object_or_404(Tour.objects.select_related("tontine"), pk=pk)
+    membre = exiger_role(tour.tontine, request.user, *BUREAU)
+    entree = DesignationEntreeSerializer(data=request.data)
+    entree.is_valid(raise_exception=True)
+    designation = services.proposer_designation(tour, membre, entree.validated_data["nom"],
+                                                entree.validated_data["motif"])
+    return Response(DesignationSerializer(designation, context={"membre": membre}).data,
+                    status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+def voter_designation(request, pk):
+    designation = get_object_or_404(Designation.objects.select_related("tour__tontine"), pk=pk)
+    membre = exiger_role(designation.tour.tontine, request.user, *BUREAU)
+    entree = VoteSerializer(data=request.data)
+    entree.is_valid(raise_exception=True)
+    designation = services.voter_designation(designation, membre, entree.validated_data["approuve"])
+    return Response(DesignationSerializer(designation, context={"membre": membre}).data)
 
 
 @api_view(["POST"])

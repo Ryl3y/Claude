@@ -15,11 +15,6 @@ class Tontine(models.Model):
         QUINZAINE = "quinzaine"
         MENSUELLE = "mensuelle"
 
-    class ModeAttribution(models.TextChoices):
-        ORDRE_FIXE = "ordre_fixe", "ordre fixe"
-        TIRAGE_AU_SORT = "tirage_au_sort", "tirage au sort"
-        ENCHERE = "enchere", "enchère"
-
     class Statut(models.TextChoices):
         BROUILLON = "brouillon"
         ACTIVE = "active"
@@ -30,10 +25,9 @@ class Tontine(models.Model):
     description = models.TextField(blank=True)
     montant_cotisation = models.PositiveBigIntegerField(help_text="En FCFA")
     frequence = models.CharField(max_length=16, choices=Frequence.choices)
-    mode_attribution = models.CharField(
-        max_length=16, choices=ModeAttribution.choices, default=ModeAttribution.ORDRE_FIXE
-    )
     # Une place = un « nom » : un membre peut en tenir plusieurs. Nombre de tours = nombre de noms.
+    # Le bénéficiaire de chaque tour est tiré au sort le jour de la séance, sauf désignation
+    # approuvée par la majorité du bureau.
     nb_places = models.PositiveSmallIntegerField("nombre de places (noms)")
     penalite_retard = models.PositiveBigIntegerField(default=0, help_text="En FCFA")
     date_debut = models.DateField(null=True, blank=True)
@@ -57,10 +51,6 @@ class Tontine(models.Model):
                 name="tontines_frequence_valide",
             ),
             models.CheckConstraint(
-                condition=Q(mode_attribution__in=["ordre_fixe", "tirage_au_sort", "enchere"]),
-                name="tontines_mode_valide",
-            ),
-            models.CheckConstraint(
                 condition=Q(statut__in=["brouillon", "active", "terminee", "annulee"]),
                 name="tontines_statut_valide",
             ),
@@ -70,10 +60,20 @@ class Tontine(models.Model):
         return self.nom
 
 
+ROLES = ["president", "tresorier", "secretaire", "secretaire_adjoint", "censeur", "censeur_adjoint",
+         "commissaire", "commissaire_adjoint", "membre"]
+
+
 class Membre(models.Model):
     class Role(models.TextChoices):
         PRESIDENT = "president", "président"
         TRESORIER = "tresorier", "trésorier"
+        SECRETAIRE = "secretaire", "secrétaire"
+        SECRETAIRE_ADJOINT = "secretaire_adjoint", "secrétaire adjoint"
+        CENSEUR = "censeur"
+        CENSEUR_ADJOINT = "censeur_adjoint", "censeur adjoint"
+        COMMISSAIRE = "commissaire", "commissaire aux comptes"
+        COMMISSAIRE_ADJOINT = "commissaire_adjoint", "commissaire aux comptes adjoint"
         MEMBRE = "membre"
 
     class Statut(models.TextChoices):
@@ -86,7 +86,7 @@ class Membre(models.Model):
     utilisateur = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="adhesions"
     )
-    role = models.CharField(max_length=10, choices=Role.choices, default=Role.MEMBRE)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.MEMBRE)
     statut = models.CharField(max_length=8, choices=Statut.choices, default=Statut.ACTIF)
     rejoint_le = models.DateTimeField(auto_now_add=True)
 
@@ -95,10 +95,15 @@ class Membre(models.Model):
         ordering = ["id"]
         constraints = [
             models.UniqueConstraint(fields=["tontine", "utilisateur"], name="membres_une_adhesion"),
-            models.CheckConstraint(
-                condition=Q(role__in=["president", "tresorier", "membre"]), name="membres_role_valide"
-            ),
+            # Un seul titulaire par poste du bureau.
+            models.UniqueConstraint(fields=["tontine", "role"], condition=~Q(role="membre"),
+                                    name="membres_un_titulaire_par_poste"),
+            models.CheckConstraint(condition=Q(role__in=ROLES), name="membres_role_valide"),
         ]
+
+    @property
+    def est_au_bureau(self):
+        return self.role != Membre.Role.MEMBRE
 
     def __str__(self):
         return f"{self.utilisateur} — {self.tontine}"
@@ -120,7 +125,6 @@ class Nom(models.Model):
             models.UniqueConstraint(fields=["tontine", "position"], name="noms_position_unique"),
             models.CheckConstraint(condition=Q(position__gt=0), name="noms_position_positive"),
         ]
-        indexes = [models.Index(fields=["membre"], name="noms_membre_idx")]
 
     def __str__(self):
         return f"{self.membre.utilisateur.nom_complet} — n° {self.position}"
@@ -298,3 +302,48 @@ class JournalAudit(models.Model):
 
     def __str__(self):
         return f"{self.cree_le:%Y-%m-%d %H:%M} {self.action}"
+
+
+class Designation(models.Model):
+    """Demande d'attribuer un tour à un nom précis plutôt que par tirage au sort.
+    Proposée par un membre du bureau, acceptée quand la majorité du bureau l'approuve."""
+
+    class Statut(models.TextChoices):
+        EN_ATTENTE = "en_attente", "en attente"
+        ACCEPTEE = "acceptee", "acceptée"
+        REFUSEE = "refusee", "refusée"
+        CADUQUE = "caduque"
+
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name="designations")
+    nom = models.ForeignKey(Nom, on_delete=models.CASCADE, related_name="designations")
+    motif = models.CharField(max_length=300)
+    propose_par = models.ForeignKey(Membre, on_delete=models.PROTECT, related_name="designations_proposees")
+    statut = models.CharField(max_length=10, choices=Statut.choices, default=Statut.EN_ATTENTE)
+    cree_le = models.DateTimeField(auto_now_add=True)
+    decide_le = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "designations"
+        ordering = ["-cree_le"]
+        verbose_name = "désignation"
+        constraints = [
+            # Une seule demande en cours par tour.
+            models.UniqueConstraint(fields=["tour"], condition=Q(statut="en_attente"),
+                                    name="designations_une_en_attente_par_tour"),
+            models.CheckConstraint(condition=Q(statut__in=["en_attente", "acceptee", "refusee", "caduque"]),
+                                   name="designations_statut_valide"),
+        ]
+
+    def __str__(self):
+        return f"Tour {self.tour.numero} → {self.nom} ({self.get_statut_display()})"
+
+
+class VoteDesignation(models.Model):
+    designation = models.ForeignKey(Designation, on_delete=models.CASCADE, related_name="votes")
+    membre = models.ForeignKey(Membre, on_delete=models.PROTECT, related_name="votes")
+    approuve = models.BooleanField()
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "votes_designation"
+        constraints = [models.UniqueConstraint(fields=["designation", "membre"], name="votes_un_par_membre")]

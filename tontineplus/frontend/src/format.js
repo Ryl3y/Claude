@@ -18,11 +18,19 @@ export const LIBELLES = {
   hebdomadaire: "Hebdomadaire",
   quinzaine: "Toutes les 2 semaines",
   mensuelle: "Mensuelle",
-  ordre_fixe: "Ordre fixe",
-  tirage_au_sort: "Tirage au sort",
   president: "Président",
   tresorier: "Trésorier",
+  secretaire: "Secrétaire",
+  secretaire_adjoint: "Secrétaire adjoint",
+  censeur: "Censeur",
+  censeur_adjoint: "Censeur adjoint",
+  commissaire: "Commissaire aux comptes",
+  commissaire_adjoint: "Commissaire aux comptes adjoint",
   membre: "Membre",
+  en_attente: "En attente",
+  acceptee: "Acceptée",
+  refusee: "Refusée",
+  caduque: "Caduque",
   a_venir: "À venir",
   ouvert: "Ouvert",
   clos: "Clos",
@@ -34,6 +42,10 @@ export const LIBELLES = {
 
 export const libelle = (valeur) => LIBELLES[valeur] ?? valeur;
 
+export const POSTES_BUREAU = [
+  "tresorier", "secretaire", "secretaire_adjoint", "censeur", "censeur_adjoint", "commissaire", "commissaire_adjoint",
+];
+
 const COULEURS = {
   active: "bg-green-100 text-green-800",
   payee: "bg-green-100 text-green-800",
@@ -42,6 +54,9 @@ const COULEURS = {
   partielle: "bg-amber-100 text-amber-800",
   ouvert: "bg-blue-100 text-blue-800",
   en_retard: "bg-red-100 text-red-800",
+  acceptee: "bg-green-100 text-green-800",
+  refusee: "bg-red-100 text-red-800",
+  en_attente: "bg-amber-100 text-amber-800",
 };
 
 export const couleurStatut = (statut) => COULEURS[statut] ?? "bg-gray-100 text-gray-700";
