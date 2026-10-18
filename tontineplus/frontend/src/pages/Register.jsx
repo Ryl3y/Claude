@@ -55,7 +55,7 @@ export default function Register() {
       </form>
       <p className="mt-4 text-center text-sm text-gray-600">
         Déjà inscrit ?{" "}
-        <Link to="/login" state={location.state} className="text-blue-600 hover:underline">Se connecter</Link>
+        <Link to="/login" state={location.state} className="text-marque-600 hover:underline">Se connecter</Link>
       </p>
     </div>
   );

@@ -219,11 +219,11 @@ function Membres({ tontine, nbNoms, gerer, peutNommer, agir }) {
                 <span className="block text-sm text-gray-600">{noms} nom{noms > 1 ? "s" : ""}</span>
                 {gerer && (
                   <div className="flex flex-wrap gap-x-3 text-sm">
-                    <button className="text-blue-600 hover:underline disabled:text-gray-400"
+                    <button className="text-marque-600 hover:underline disabled:text-gray-400"
                             disabled={nbNoms >= tontine.nb_places} onClick={() => ajouterNom(m)}
                             aria-label={`Ajouter un nom à ${m.nom_complet}`}>+ 1 nom</button>
                     {noms > 1 && (
-                      <button className="text-blue-600 hover:underline" onClick={() => retirerNom(m)}
+                      <button className="text-marque-600 hover:underline" onClick={() => retirerNom(m)}
                               aria-label={`Retirer un nom à ${m.nom_complet}`}>− 1 nom</button>
                     )}
                     {m.role !== "president" && (
@@ -608,7 +608,7 @@ function PaiementMobile({ cotisation, telephone: telephoneParDefaut, fermer, ter
 
   if (typeof etat === "number") {
     return (
-      <div className="mt-2 rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900" role="status">
+      <div className="mt-2 rounded border border-marque-200 bg-marque-50 p-3 text-sm text-marque-900" role="status">
         Demande de {fcfa(cotisation.reste_a_payer)} envoyée au {telephone}. Validez le paiement sur votre téléphone
         avec votre code secret Mobile Money…
       </div>

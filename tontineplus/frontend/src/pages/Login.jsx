@@ -12,16 +12,18 @@ export default function Login() {
 
   return (
     <div className="carte mx-auto mt-10 max-w-md">
-      <h1 className="mb-6 text-2xl font-bold">Connexion</h1>
+      <img src="/symbole.svg" alt="" className="mx-auto mb-4 h-16 w-16" />
+      <h1 className="mb-1 text-center text-2xl font-bold">Connexion</h1>
+      <p className="mb-6 text-center text-sm text-gray-500">Chacun son tour. Tous ensemble.</p>
       {mode === "sms" ? <ParCode continuer={continuer} /> : <ParMotDePasse continuer={continuer} />}
       <div className="mt-6 space-y-2 border-t pt-4 text-center text-sm text-gray-600">
-        <button className="text-blue-600 hover:underline" onClick={() => setMode(mode === "sms" ? "mdp" : "sms")}>
+        <button className="text-marque-600 hover:underline" onClick={() => setMode(mode === "sms" ? "mdp" : "sms")}>
           {mode === "sms" ? "Se connecter avec un mot de passe" : "Recevoir un code par SMS"}
         </button>
         {mode === "mdp" && (
           <p>
             Pas encore de compte ?{" "}
-            <Link to="/register" state={location.state} className="text-blue-600 hover:underline">S'inscrire</Link>
+            <Link to="/register" state={location.state} className="text-marque-600 hover:underline">S'inscrire</Link>
           </p>
         )}
       </div>
@@ -111,7 +113,7 @@ function ParCode({ continuer }) {
       <button type="submit" className="bouton w-full" disabled={envoi}>
         {envoi ? "Vérification…" : etape === "nom" ? "Créer mon compte" : "Valider"}
       </button>
-      <button type="button" className="w-full text-sm text-blue-600 hover:underline"
+      <button type="button" className="w-full text-sm text-marque-600 hover:underline"
               onClick={() => { setEtape("numero"); setCode(""); setErreur(""); }}>
         Changer de numéro ou renvoyer un code
       </button>

@@ -118,7 +118,7 @@ function FormulaireTontine({ titre, bouton, initial, enregistrer }) {
           </label>
         </div>
         {caisse > 0 && (
-          <p className="rounded bg-blue-50 p-3 text-sm text-blue-900">
+          <p className="rounded bg-marque-50 p-3 text-sm text-marque-900">
             Avec {form.nb_places} noms, chaque tour, le bénéficiaire ramassera {fcfa(caisse)}.
           </p>
         )}

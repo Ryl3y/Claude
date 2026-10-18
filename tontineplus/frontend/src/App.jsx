@@ -12,7 +12,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-ivoire">
           <Navbar />
           <main className="mx-auto max-w-4xl px-4 py-6">
             <Routes>

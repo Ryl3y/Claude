@@ -11,9 +11,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-blue-600 text-white">
+    <nav className="bg-marque-900 text-ivoire">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="text-xl font-bold">TONTINE+</Link>
+        <Link to="/" aria-label="TONTINE+, accueil">
+          <img src="/logo-horizontal-blanc.svg" alt="TONTINE+" className="h-7 w-auto" />
+        </Link>
         <div className="flex items-center gap-4 text-sm">
           {utilisateur ? (
             <>

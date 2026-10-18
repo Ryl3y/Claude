@@ -37,7 +37,7 @@ export default function Dashboard() {
       <ul className="grid gap-4 sm:grid-cols-2">
         {tontines?.map((t) => (
           <li key={t.id}>
-            <Link to={`/group/${t.id}`} className="carte block hover:ring-2 hover:ring-blue-200">
+            <Link to={`/group/${t.id}`} className="carte block hover:ring-2 hover:ring-marque-200">
               <div className="mb-2 flex items-start justify-between gap-2">
                 <h2 className="text-lg font-semibold">{t.nom}</h2>
                 <Badge valeur={t.statut} />
