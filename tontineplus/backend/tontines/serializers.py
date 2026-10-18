@@ -11,7 +11,8 @@ class MembreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Membre
-        fields = ["id", "nom_complet", "telephone", "role", "position_tour", "statut", "rejoint_le"]
+        fields = ["id", "tontine", "nom_complet", "telephone", "role", "position_tour", "statut", "rejoint_le"]
+        read_only_fields = fields
 
 
 class TontineSerializer(serializers.ModelSerializer):
