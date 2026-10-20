@@ -56,7 +56,7 @@ Pour modifier un texte, éditez le fichier HTML. Relancez ensuite `node declinai
 
 ## Animation d'ouverture
 
-`svg/ouverture.svg` (aperçus : `ouverture.mp4`, et `ouverture-demo.mp4` dans un téléphone) se joue à chaque ouverture de l'appli, en 3 s :
+`svg/ouverture.svg` (aperçus : `ouverture.mp4`, et la démo dans un téléphone, voir plus bas) se joue à chaque ouverture de l'appli, en 3 s :
 
 1. La calebasse prend son élan et **bascule** : elle roule sur son fond arrondi jusqu'à poser le rebord.
 2. La **pièce** en sort, tombe et **roule** vers la droite.
@@ -66,6 +66,16 @@ Pour modifier un texte, éditez le fichier HTML. Relancez ensuite `node declinai
 Le SVG anime tout lui-même, sans script ni bibliothèque, et ne pèse que 5 Ko. Dans l'appli, un toucher
 passe l'animation. Elle n'est pas jouée si l'appareil demande de réduire les animations. Ensuite,
 tant que la session se charge, l'**écran de démarrage** montre la calebasse qui flotte doucement.
+
+Démo de 9 s au format vertical, pour WhatsApp ou une présentation :
+
+- `ouverture-demo.mp4` : avec narration, musique façon balafon et bruitages (la calebasse qui
+  bascule, la pièce qui tinte et roule, un carillon quand elle devient le « + ») ;
+- `ouverture-demo-musique.mp4` : la même, sans la voix.
+
+La musique et les bruitages sont synthétisés : aucun extrait sonore tiers. La voix est générée par
+[Piper](https://github.com/rhasspy/piper) avec la voix française « siwis », entraînée sur le corpus
+SIWIS (Université d'Édimbourg, licence CC BY 4.0). Mentionnez-le si vous diffusez la version narrée.
 
 ## Typographie
 
