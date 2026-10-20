@@ -4,24 +4,22 @@
 
 ## L'idée
 
-Le symbole, **le maillon**, est fait de deux maillons de chaîne entrelacés à angle droit, l'un
-vert, l'autre or. Ensemble, ils dessinent un **« + »** :
+Le symbole, **la calebasse**, est la caisse commune de la tontine : une calebasse en terre cuite,
+gravée d'une frise en zigzag, dans laquelle une **pièce d'or** vient d'être déposée.
 
-- la **chaîne** dit la solidarité qui lie les membres : chacun tient sa place, et c'est ensemble
-  que la caisse tient ;
-- le **« + »** reprend le nom et l'argent qui grandit à plusieurs.
+- la **calebasse** est l'objet qu'on se passe de main en main dans les réunions : elle dit la
+  confiance et la tradition ;
+- la **pièce** qui passe derrière le rebord, c'est la cotisation de chacun qui entre dans la caisse ;
+- la **frise** rappelle les motifs gravés des calebasses et des poteries d'Afrique centrale.
 
-Les maillons passent alternativement dessus et dessous (dessus, dessous, dessus, dessous), comme
-une vraie chaîne. Le « + » or du nom fait écho au maillon or du symbole.
-
-Promesse : **Chacun son tour. Tous ensemble.**
+Le « + » ocre du nom fait écho à la pièce. Promesse : **Chacun son tour. Tous ensemble.**
 
 ## Fichiers
 
 | Fichier | Usage |
 | --- | --- |
 | `svg/logo-horizontal.svg` | Logo principal sur fond clair |
-| `svg/logo-horizontal-blanc.svg` | Logo sur fond vert nuit ou photo sombre |
+| `svg/logo-horizontal-blanc.svg` | Logo sur fond brun nuit ou photo sombre |
 | `svg/symbole.svg`, `svg/symbole-blanc.svg` | Symbole seul (avatar, tampon, petit espace) |
 | `svg/mot-symbole.svg` | Nom seul |
 | `svg/icone-app.svg`, `png/icone-*.png` | Icône d'application (coins arrondis) |
@@ -35,27 +33,27 @@ Préférez toujours le SVG ; les PNG servent quand le SVG n'est pas accepté.
 
 | Nom | Hex | Rôle |
 | --- | --- | --- |
-| Vert tontine | `#0E5A3C` | Couleur principale, boutons |
-| Vert nuit | `#0A2E22` | Fonds sombres, barre de navigation |
-| Or caisse | `#E8A93B` | Accent unique : le tour tiré, le « + », jamais en grand aplat de texte |
-| Ivoire | `#FBF6EC` | Fond des pages, logo sur fond sombre |
-| Charbon | `#1C2420` | Texte |
+| Terre cuite | `#B4532A` | Couleur principale, boutons, la calebasse |
+| Brun nuit | `#5A2614` | Fonds sombres, barre de navigation |
+| Ocre | `#E9A23B` | Accent unique : la pièce, le « + », le tour tiré ; jamais en grand aplat de texte |
+| Crème | `#F6EBDD` | Fond des pages, logo sur fond sombre |
+| Brun | `#3B2A20` | Texte, nom dans le logo |
 
 ## Typographie
 
-Inter Display Bold (titres, logo) et SemiBold. Le logo est dessiné à partir d'Inter Display Bold
-(licence SIL Open Font License).
+Le nom est dessiné à partir de **Caladea Bold**, une serif chaleureuse (licence SIL Open Font
+License). L'interface garde la police système, plus lisible en petit.
 
 ## Règles
 
-- Zone de protection autour du logo : au moins l'épaisseur d'un maillon multipliée par deux.
+- Zone de protection autour du logo : au moins le diamètre de la pièce.
 - Taille minimale : symbole 16 px, logo horizontal 24 px de haut.
-- Ne pas changer les couleurs du symbole, ne pas le déformer, ne pas supprimer les croisements dessus/dessous.
-- Sur fond clair : version couleur. Sur fond sombre : version blanche (le maillon vertical reste or).
+- Ne pas changer les couleurs du symbole, ne pas le déformer, ne pas sortir la pièce de la calebasse.
+- Sur fond clair : version couleur. Sur fond sombre : version blanche (calebasse crème, la pièce reste ocre).
 
 ## Régénérer
 
-`generer_logo.py` produit tous les SVG (Python 3 + `fonttools`, police Inter Display installée) :
+`generer_logo.py` produit tous les SVG (Python 3 + `fonttools`, police Caladea installée) :
 
 ```sh
 python generer_logo.py svg/
