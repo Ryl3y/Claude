@@ -56,7 +56,7 @@ Pour modifier un texte, éditez le fichier HTML. Relancez ensuite `node declinai
 
 ## Animation d'ouverture
 
-`svg/ouverture.svg` (aperçu : `ouverture.mp4`) se joue à chaque ouverture de l'appli, en 3 s :
+`svg/ouverture.svg` (aperçus : `ouverture.mp4`, et `ouverture-demo.mp4` dans un téléphone) se joue à chaque ouverture de l'appli, en 3 s :
 
 1. La calebasse prend son élan et **bascule** : elle roule sur son fond arrondi jusqu'à poser le rebord.
 2. La **pièce** en sort, tombe et **roule** vers la droite.
