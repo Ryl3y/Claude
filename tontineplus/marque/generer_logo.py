@@ -1,82 +1,97 @@
-"""Génère le logo TONTINE+ en SVG (texte vectorisé, aucune police requise à l'affichage)."""
-import math, os, sys
-from fontTools.ttLib import TTFont
+"""Génère le logo TONTINE+ en SVG (texte vectorisé : aucune police requise à l'affichage).
+
+Symbole « le maillon » : deux maillons entrelacés à angle droit, vert et or, dessinent un « + ».
+La chaîne dit la solidarité qui lie les membres ; le « + » reprend le nom.
+
+Usage : python generer_logo.py <dossier_sortie>   (Python 3 + fonttools, police Inter Display)
+"""
+
+import math
+import os
+import sys
+
 from fontTools.pens.svgPathPen import SVGPathPen
-from fontTools.pens.boundsPen import BoundsPen
+from fontTools.ttLib import TTFont
 
 SORTIE = sys.argv[1]
 os.makedirs(SORTIE, exist_ok=True)
 
 VERT, VERT_NUIT, OR, IVOIRE, CHARBON = "#0E5A3C", "#0A2E22", "#E8A93B", "#FBF6EC", "#1C2420"
 
-# ---- Symbole : le cycle de la tontine découpé en 6 tours ; le segment or sort du cercle :
-#      c'est le tour que le tirage au sort vient de désigner.
-SEGMENTS, ELU = 6, 0
-R_EXT, R_INT, ECART, SORTIE_ELU, ARRONDI = 47, 25, 5.2, 7.5, 3.2
+# ---- Symbole : deux maillons (ligne médiane) dans un carré de 120 ----
+EPAISSEUR, ECART = 13, 4.2        # trait du maillon ; vide visible de part et d'autre d'un croisement
+LONG, LARGE = 96, 38              # longueur et largeur d'un maillon (ligne médiane) : bras longs = « + » lisible
+C = 60
 
 
-def secteur(cx, cy, i, couleur, decalage=0.0):
-    """Secteur d'anneau à coupes parallèles (écart constant), coins adoucis par un trait de même couleur."""
-    pas = 360 / SEGMENTS
-    milieu = math.radians(-90 + (i + 0.5) * pas)
-    cx, cy = cx + decalage * math.cos(milieu), cy + decalage * math.sin(milieu)
-    demi = (ECART + ARRONDI) / 2  # le trait d'arrondi mord sur l'écart
-    ext, inte = R_EXT - ARRONDI / 2, R_INT + ARRONDI / 2
-
-    def point(r, a):
-        return cx + r * math.cos(a), cy + r * math.sin(a)
-
-    a1 = math.radians(-90 + i * pas)
-    a2 = math.radians(-90 + (i + 1) * pas)
-    e1, e2 = a1 + demi / ext, a2 - demi / ext
-    i1, i2 = a1 + demi / inte, a2 - demi / inte
-    (x1, y1), (x2, y2) = point(ext, e1), point(ext, e2)
-    (x3, y3), (x4, y4) = point(inte, i2), point(inte, i1)
-    d = (f"M{x1:.2f} {y1:.2f}A{ext:.2f} {ext:.2f} 0 0 1 {x2:.2f} {y2:.2f}"
-         f"L{x3:.2f} {y3:.2f}A{inte:.2f} {inte:.2f} 0 0 0 {x4:.2f} {y4:.2f}Z")
-    return (f'<path d="{d}" fill="{couleur}" stroke="{couleur}" stroke-width="{ARRONDI}" '
-            f'stroke-linejoin="round"/>')
+def stade(horizontal):
+    """Ligne médiane d'un maillon (rectangle aux bouts en demi-cercle)."""
+    r = LARGE / 2
+    if horizontal:
+        x0, x1, y0, y1 = C - LONG / 2 + r, C + LONG / 2 - r, C - r, C + r
+        return f"M{x0} {y0}H{x1}A{r} {r} 0 0 1 {x1} {y1}H{x0}A{r} {r} 0 0 1 {x0} {y0}Z"
+    y0, y1, x0, x1 = C - LONG / 2 + r, C + LONG / 2 - r, C - r, C + r
+    return f"M{x0} {y0}V{y1}A{r} {r} 0 0 0 {x1} {y1}V{y0}A{r} {r} 0 0 0 {x0} {y0}Z"
 
 
-def symbole(couleur, accent, *_):
-    return "".join(secteur(60, 60, i, accent if i == ELU else couleur, SORTIE_ELU if i == ELU else 0)
-                   for i in range(SEGMENTS))
+def maillons(c_horizontal, c_vertical, uid):
+    """Entrelacement : le maillon vertical passe dessus en haut à droite et en bas à gauche,
+    dessous aux deux autres croisements (dessus, dessous, dessus, dessous)."""
+    h, v = stade(True), stade(False)
+    d = LARGE / 2                       # les croisements sont en (C ± d, C ± d)
+    z = EPAISSEUR + 2 * ECART + 2       # zone carrée autour d'un croisement
+
+    def zones(points):
+        return "".join(f'<rect x="{C + sx*d - z/2}" y="{C + sy*d - z/2}" width="{z}" height="{z}"/>'
+                       for sx, sy in points)
+
+    dessus_v = zones([(1, -1), (-1, 1)])
+    dessus_h = zones([(-1, -1), (1, 1)])
+    trou = EPAISSEUR + 2 * ECART
+    return (f'<defs><clipPath id="zv{uid}">{dessus_v}</clipPath><clipPath id="zh{uid}">{dessus_h}</clipPath>'
+            f'<mask id="mh{uid}"><rect width="120" height="120" fill="#fff"/>'
+            f'<path d="{v}" fill="none" stroke="#000" stroke-width="{trou}" clip-path="url(#zv{uid})"/></mask>'
+            f'<mask id="mv{uid}"><rect width="120" height="120" fill="#fff"/>'
+            f'<path d="{h}" fill="none" stroke="#000" stroke-width="{trou}" clip-path="url(#zh{uid})"/></mask></defs>'
+            f'<path d="{h}" fill="none" stroke="{c_horizontal}" stroke-width="{EPAISSEUR}" mask="url(#mh{uid})"/>'
+            f'<path d="{v}" fill="none" stroke="{c_vertical}" stroke-width="{EPAISSEUR}" mask="url(#mv{uid})"/>')
 
 
-def plus(cx, cy, longueur, epaisseur):
+def plus(cx, cy, longueur, epaisseur, couleur):
     l, e = longueur / 2, epaisseur / 2
-    return (f'<rect x="{cx-l:.2f}" y="{cy-e:.2f}" width="{longueur:.2f}" height="{epaisseur:.2f}" rx="{e:.2f}"/>'
-            f'<rect x="{cx-e:.2f}" y="{cy-l:.2f}" width="{epaisseur:.2f}" height="{longueur:.2f}" rx="{e:.2f}"/>')
+    return (f'<g fill="{couleur}"><rect x="{cx-l:.2f}" y="{cy-e:.2f}" width="{longueur:.2f}" height="{epaisseur:.2f}" rx="{e:.2f}"/>'
+            f'<rect x="{cx-e:.2f}" y="{cy-l:.2f}" width="{epaisseur:.2f}" height="{longueur:.2f}" rx="{e:.2f}"/></g>')
 
 
-# ---- Mot-symbole « tontine » en Inter Display Bold vectorisé, suivi du « + » or dessiné
+# ---- Mot-symbole « tontine » (Inter Display Bold vectorisé) suivi du « + » or ----
 police = TTFont("/usr/share/fonts/opentype/inter/InterDisplay-Bold.otf")
-glyphes, cmap = police.getGlyphSet(), police.getBestCmap()
-upm = police["head"].unitsPerEm
-hmtx = police["hmtx"]
+glyphes, cmap, upm, hmtx = police.getGlyphSet(), police.getBestCmap(), police["head"].unitsPerEm, police["hmtx"]
 
 
 def texte_en_chemin(texte, taille, x0, ligne_base, approche=0.0):
-    echelle = taille / upm
-    chemins, x = [], x0
+    echelle, x, chemins = taille / upm, x0, []
     for car in texte:
         nom = cmap[ord(car)]
         stylo = SVGPathPen(glyphes)
         glyphes[nom].draw(stylo)
-        d = stylo.getCommands()
-        if d:
-            chemins.append(f'<path transform="translate({x:.2f} {ligne_base:.2f}) scale({echelle:.5f} {-echelle:.5f})" d="{d}"/>')
+        if stylo.getCommands():
+            chemins.append(f'<path transform="translate({x:.2f} {ligne_base:.2f}) scale({echelle:.5f} {-echelle:.5f})" '
+                           f'd="{stylo.getCommands()}"/>')
         x += hmtx[nom][0] * echelle + approche * taille
     return "".join(chemins), x
 
 
-def mot_symbole(couleur, accent, x0, ligne_base, taille):
+def mot_symbole(couleur, x0, ligne_base, taille):
     chemins, x_fin = texte_en_chemin("tontine", taille, x0, ligne_base, approche=-0.012)
     hauteur_x = 0.545 * taille
-    plus_cote, plus_ep = hauteur_x * 0.92, taille * 0.12
-    px = x_fin + taille * 0.06 + plus_cote / 2
-    py = ligne_base - hauteur_x / 2
-    return f'<g fill="{couleur}">{chemins}</g><g fill="{accent}">{plus(px, py, plus_cote, plus_ep)}</g>', px + plus_cote / 2
+    cote, ep = hauteur_x * 0.92, taille * 0.12
+    cx = x_fin + taille * 0.06 + cote / 2
+    return f'<g fill="{couleur}">{chemins}</g>' + plus(cx, ligne_base - hauteur_x / 2, cote, ep, OR), cx + cote / 2
+
+
+def svg(viewbox, contenu):
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewbox}" role="img" aria-label="TONTINE+">'
+            f'<title>TONTINE+</title>{contenu}</svg>')
 
 
 def ecrire(nom, contenu):
@@ -84,30 +99,23 @@ def ecrire(nom, contenu):
         f.write(contenu)
 
 
-titre = '<title>TONTINE+</title>'
-# Symbole seul
-ecrire("symbole.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="TONTINE+">{titre}{symbole(VERT, OR, IVOIRE)}</svg>')
-ecrire("symbole-blanc.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="TONTINE+">{titre}{symbole(IVOIRE, OR, VERT)}</svg>')
+ecrire("symbole.svg", svg("0 0 120 120", maillons(VERT, OR, "a")))
+ecrire("symbole-blanc.svg", svg("0 0 120 120", maillons(IVOIRE, OR, "b")))
 
-# Icône d'application : carré arrondi vert nuit, symbole ivoire
-icone = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="TONTINE+">{titre}'
-         f'<rect width="120" height="120" rx="27" fill="{VERT}"/>'
-         f'<g transform="translate(15 15) scale(0.75)">{symbole(IVOIRE, OR)}</g></svg>')
+icone = svg("0 0 120 120", f'<rect width="120" height="120" rx="27" fill="{VERT_NUIT}"/>'
+                           f'<g transform="translate(13 13) scale(.7833)">{maillons(IVOIRE, OR, "c")}</g>')
 ecrire("icone-app.svg", icone)
 ecrire("favicon.svg", icone)
+# Icône pleine : iOS et Android arrondissent eux-mêmes ; symbole dans la zone sûre (80 %).
+ecrire("icone-carree.svg", svg("0 0 120 120", f'<rect width="120" height="120" fill="{VERT_NUIT}"/>'
+                                              f'<g transform="translate(24 24) scale(.6)">{maillons(IVOIRE, OR, "d")}</g>'))
 
-# Logo horizontal : symbole + mot-symbole
-TAILLE = 74
-mot, fin = mot_symbole(CHARBON, OR, 136, 83, TAILLE)
-mot_b, _ = mot_symbole(IVOIRE, OR, 136, 83, TAILLE)
+TAILLE, X_MOT, BASE = 74, 134, 84
+mot, fin = mot_symbole(CHARBON, X_MOT, BASE, TAILLE)
+mot_b, _ = mot_symbole(IVOIRE, X_MOT, BASE, TAILLE)
 largeur = math.ceil(fin + 4)
-ecrire("logo-horizontal.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {largeur} 120" role="img" aria-label="TONTINE+">{titre}{symbole(VERT, OR, IVOIRE)}{mot}</svg>')
-ecrire("logo-horizontal-blanc.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {largeur} 120" role="img" aria-label="TONTINE+">{titre}{symbole(IVOIRE, OR)}{mot_b}</svg>')
-# Mot-symbole seul
-mot_seul, fin_seul = mot_symbole(CHARBON, OR, 2, 83, TAILLE)
-ecrire("mot-symbole.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {math.ceil(fin_seul + 4)} 120" role="img" aria-label="TONTINE+">{titre}{mot_seul}</svg>')
-print("largeur logo horizontal :", largeur)
-
-# Icône carrée pleine (iOS arrondit lui-même ; Android « maskable » : symbole dans la zone sûre de 80 %)
-ecrire("icone-carree.svg", f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="TONTINE+">{titre}'
-       f'<rect width="120" height="120" fill="{VERT}"/><g transform="translate(24 24) scale(0.6)">{symbole(IVOIRE, OR)}</g></svg>')
+ecrire("logo-horizontal.svg", svg(f"0 0 {largeur} 120", maillons(VERT, OR, "e") + mot))
+ecrire("logo-horizontal-blanc.svg", svg(f"0 0 {largeur} 120", maillons(IVOIRE, OR, "f") + mot_b))
+seul, fin_seul = mot_symbole(CHARBON, 2, BASE, TAILLE)
+ecrire("mot-symbole.svg", svg(f"0 0 {math.ceil(fin_seul + 4)} 120", seul))
+print("logo généré dans", SORTIE)

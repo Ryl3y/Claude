@@ -4,9 +4,15 @@
 
 ## L'idée
 
-Le symbole est le **cycle de la tontine**, découpé en **6 tours**. Le segment **or**, légèrement
-sorti du cercle, est **le tour que le tirage au sort vient de désigner**. Le « + » or du nom
-rappelle l'argent qui grandit ensemble.
+Le symbole, **le maillon**, est fait de deux maillons de chaîne entrelacés à angle droit, l'un
+vert, l'autre or. Ensemble, ils dessinent un **« + »** :
+
+- la **chaîne** dit la solidarité qui lie les membres : chacun tient sa place, et c'est ensemble
+  que la caisse tient ;
+- le **« + »** reprend le nom et l'argent qui grandit à plusieurs.
+
+Les maillons passent alternativement dessus et dessous (dessus, dessous, dessus, dessous), comme
+une vraie chaîne. Le « + » or du nom fait écho au maillon or du symbole.
 
 Promesse : **Chacun son tour. Tous ensemble.**
 
@@ -42,10 +48,10 @@ Inter Display Bold (titres, logo) et SemiBold. Le logo est dessiné à partir d'
 
 ## Règles
 
-- Zone de protection autour du logo : au moins la hauteur d'un segment du symbole.
+- Zone de protection autour du logo : au moins l'épaisseur d'un maillon multipliée par deux.
 - Taille minimale : symbole 16 px, logo horizontal 24 px de haut.
-- Ne pas changer les couleurs du symbole, ne pas le déformer, ne pas remettre le segment or dans le cercle.
-- Sur fond clair : version couleur. Sur fond sombre : version blanche (le segment reste or).
+- Ne pas changer les couleurs du symbole, ne pas le déformer, ne pas supprimer les croisements dessus/dessous.
+- Sur fond clair : version couleur. Sur fond sombre : version blanche (le maillon vertical reste or).
 
 ## Régénérer
 
