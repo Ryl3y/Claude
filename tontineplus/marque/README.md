@@ -39,10 +39,30 @@ Préférez toujours le SVG ; les PNG servent quand le SVG n'est pas accepté.
 | Crème | `#F6EBDD` | Fond des pages, logo sur fond sombre |
 | Brun | `#3B2A20` | Texte, nom dans le logo |
 
+## Déclinaisons
+
+Dans `declinaisons/`, des modèles HTML modifiables et leur rendu PNG (`declinaisons/png/`) :
+
+| Modèle | Format | Usage |
+| --- | --- | --- |
+| `carte-membre.html` | 85,6 × 54 mm (format carte bancaire), rendu 2× | Carte remise à chaque membre |
+| `recu-cotisation.html` | 800 × 1120, rendu 2× | Reçu de paiement, à imprimer ou à envoyer |
+| `post-reseaux.html` | 1080 × 1080 | Publication Facebook / Instagram |
+| `statut-whatsapp.html` | 1080 × 1920 | Statut WhatsApp, story |
+| `partage.html` | 1200 × 630 | Aperçu des liens partagés (copié dans `frontend/public/partage.png`) |
+
+Pour modifier un texte, éditez le fichier HTML. Relancez ensuite `node declinaisons/rendre.cjs`
+(il faut `playwright-core` et Chromium). Les données affichées (Awa Ndongo, montants) sont des exemples.
+
+L'appli affiche aussi un **écran de démarrage** : la calebasse sur fond crème, qui flotte doucement
+pendant le chargement.
+
 ## Typographie
 
 Le nom est dessiné à partir de **Caladea Bold**, une serif chaleureuse (licence SIL Open Font
-License). L'interface garde la police système, plus lisible en petit.
+License). Les titres de l'appli l'utilisent aussi : elle est embarquée en woff2, réduite aux
+caractères latins, dans `frontend/src/fonts/`. Le reste de l'interface garde la police système,
+plus lisible en petit.
 
 ## Règles
 

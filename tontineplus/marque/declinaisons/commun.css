@@ -1,0 +1,10 @@
+/* Styles partagés des déclinaisons TONTINE+ (couleurs : voir ../README.md). */
+@font-face { font-family: "Caladea"; src: url("../../frontend/src/fonts/caladea-bold.woff2") format("woff2"); font-weight: 700; }
+:root { --terre: #B4532A; --nuit: #5A2614; --ocre: #E9A23B; --creme: #F6EBDD; --brun: #3B2A20; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, "Segoe UI", Roboto, sans-serif; color: var(--brun); -webkit-font-smoothing: antialiased; overflow: hidden; }
+.serif { font-family: "Caladea", Georgia, serif; font-weight: 700; }
+.etiquette { font-size: .8em; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+/* Frise en zigzag, la même que sur la calebasse. */
+.frise { height: 34px; background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='34'%3E%3Cpath d='M0 3H28M0 31H28' stroke='%23E9A23B' stroke-width='2.4'/%3E%3Cpolyline points='0,9 7,25 14,9 21,25 28,9' fill='none' stroke='%23E9A23B' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x; }

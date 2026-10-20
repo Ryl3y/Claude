@@ -155,7 +155,8 @@ python manage.py marquer_retards
 ```
 
 Passe en retard les cotisations échues, crée les pénalités et ouvre les tours à J-3.
-À planifier une fois par jour (Planificateur de tâches Windows ou cron).
+À planifier une fois par jour (Planificateur de tâches Windows ou cron). En production, le service
+`taches` de `docker-compose.yml` la lance toutes les heures (voir `../DEPLOIEMENT.md`).
 
 ## Tests
 

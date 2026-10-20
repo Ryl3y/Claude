@@ -1,0 +1,74 @@
+# Déploiement de TONTINE+ sur un serveur : voir DEPLOIEMENT.md.
+# Démarrer : docker compose up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tontineplus}
+      POSTGRES_USER: ${DB_USER:-tontineplus}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant dans .env}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-tontineplus}
+    volumes:
+      - static:/app/staticfiles
+    # Prêt quand Gunicorn écoute, donc après les migrations.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
+      interval: 5s
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Passe en retard les cotisations échues, toutes les heures.
+  taches:
+    build: ./backend
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-tontineplus}
+    entrypoint: ["sh", "-c", "while true; do python manage.py marquer_retards; sleep 3600; done"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        URL_PUBLIQUE: https://${DOMAINE:-localhost}
+    environment:
+      DOMAINE: ${DOMAINE:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db:
+  static:
+  caddy_data:
+  caddy_config:

@@ -9,9 +9,28 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <title>TONTINE+</title>
+  <meta name="description" content="Cotisations, tirage au sort et Mobile Money : la tontine en ligne, en toute transparence." />
+  <!-- Aperçu des liens partagés (WhatsApp, Facebook…) ; l'image vient de marque/declinaisons/partage.html. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="TONTINE+" />
+  <meta property="og:title" content="TONTINE+ · Chacun son tour. Tous ensemble." />
+  <meta property="og:description" content="Cotisations, tirage au sort et Mobile Money : la tontine en ligne, en toute transparence." />
+  <meta property="og:image" content="%VITE_URL_PUBLIQUE%/partage.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Écran de démarrage affiché avant le chargement du script (repris par components/Demarrage.jsx). -->
+  <style>
+    .demarrage { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center;
+                 justify-content: center; gap: 18px; background: #F6EBDD; color: #96421F;
+                 font: 600 15px/1.4 system-ui, sans-serif; }
+    .demarrage img { width: 88px; height: 88px; animation: depot 1.6s ease-in-out infinite; }
+    @keyframes depot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @media (prefers-reduced-motion: reduce) { .demarrage img { animation: none; } }
+  </style>
 </head>
 <body class="bg-ivoire">
-  <div id="root"></div>
+  <div id="root"><div class="demarrage" role="status" aria-label="Chargement"><img src="/symbole.svg" alt="" /><span>Chacun son tour. Tous ensemble.</span></div></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

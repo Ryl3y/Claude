@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { api, jetons } from "./api";
+import Demarrage from "./components/Demarrage";
 
 const ContexteAuth = createContext(null);
 
@@ -75,7 +76,7 @@ export const useAuth = () => useContext(ContexteAuth);
 export function RouteProtegee({ children }) {
   const { utilisateur, chargement } = useAuth();
   const location = useLocation();
-  if (chargement) return <p className="p-6 text-center text-gray-500">Chargement…</p>;
+  if (chargement) return <Demarrage />;
   if (!utilisateur) return <Navigate to="/login" replace state={{ depuis: location.pathname }} />;
   return children;
 }

@@ -1,0 +1,36 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Reçu de cotisation</title><link rel="stylesheet" href="commun.css">
+<style>
+body { width: 800px; height: 1120px; background: var(--creme); }
+.entete { background: var(--nuit); padding: 44px 56px 0; color: var(--creme); }
+.entete img { height: 52px; }
+.entete .frise { margin: 34px -56px 0; }
+.titre { padding: 46px 56px 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+.titre h1 { font-size: 46px; color: var(--nuit); }
+.lignes { margin: 26px 56px 0; background: #fff; border-radius: 18px; padding: 10px 30px; }
+.ligne { display: flex; justify-content: space-between; padding: 19px 0; font-size: 21px; border-bottom: 1px dashed #E3D2BE; }
+.ligne:last-child { border: 0; }
+.ligne span:first-child { opacity: .65; }
+.ligne span:last-child { font-weight: 600; }
+.total { margin: 26px 56px 0; padding: 26px 30px; background: var(--terre); color: var(--creme); border-radius: 18px;
+         display: flex; justify-content: space-between; align-items: center; }
+.total b { font-size: 42px; }
+.tampon { position: absolute; right: 70px; top: 912px; transform: rotate(-9deg); border: 4px solid #2F7A4B; color: #2F7A4B;
+          border-radius: 12px; padding: 8px 22px; font-size: 30px; letter-spacing: .12em; opacity: .85; }
+.pied { position: absolute; bottom: 44px; left: 56px; right: 56px; font-size: 16px; opacity: .65; line-height: 1.5; text-align: center; }
+</style></head><body>
+<div class="entete"><img src="../svg/logo-horizontal-blanc.svg" alt="TONTINE+"><div class="frise"></div></div>
+<div class="titre"><h1 class="serif">Reçu de cotisation</h1><span style="font-size:19px;opacity:.7">N° R-2026-0142</span></div>
+<div class="lignes">
+  <div class="ligne"><span>Date</span><span>15 oct. 2026, 18 h 42</span></div>
+  <div class="ligne"><span>Membre</span><span>Awa Ndongo · +237 6 90 00 00 01</span></div>
+  <div class="ligne"><span>Tontine</span><span>Tontine Famille</span></div>
+  <div class="ligne"><span>Tour</span><span>3 · bénéficiaire tiré au sort : Bello</span></div>
+  <div class="ligne"><span>Noms cotisés</span><span>2 × 10 000 FCFA</span></div>
+  <div class="ligne"><span>Moyen de paiement</span><span>MTN Mobile Money</span></div>
+  <div class="ligne"><span>Référence</span><span style="font-family:ui-monospace,monospace">MP261015.1842.A07</span></div>
+</div>
+<div class="total"><span class="etiquette" style="opacity:.9;font-size:17px">Montant payé</span><b class="serif">20 000 FCFA</b></div>
+<div class="tampon serif">PAYÉE</div>
+<div class="pied">Reçu émis automatiquement par TONTINE+. Il fait foi du paiement enregistré dans le journal de la tontine.<br>
+<span class="serif" style="font-size:19px;color:var(--terre)">Chacun son tour. Tous ensemble.</span></div>
+</body></html>

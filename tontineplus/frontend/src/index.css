@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Titres en Caladea Bold, la police du logo (SIL OFL, voir fonts/OFL-Caladea.txt). */
+@font-face {
+  font-family: "Caladea";
+  src: url("./fonts/caladea-bold.woff2") format("woff2");
+  font-weight: 600 700;
+  font-display: swap;
+}
+
+@layer base {
+  h1, h2 { font-family: "Caladea", Georgia, serif; font-weight: 700; }
+}
+
 @layer components {
   .champ { @apply w-full rounded border border-gray-300 p-2 focus:border-marque-600 focus:outline-none; }
   .bouton { @apply rounded bg-marque-600 px-4 py-2 font-medium text-white hover:bg-marque-700 disabled:cursor-not-allowed disabled:opacity-50; }
