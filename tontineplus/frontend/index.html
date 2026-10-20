@@ -22,14 +22,40 @@
   <!-- Écran de démarrage affiché avant le chargement du script (repris par components/Demarrage.jsx). -->
   <style>
     .demarrage { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center;
-                 justify-content: center; gap: 18px; background: #F6EBDD; color: #96421F;
+                 justify-content: center; gap: 18px; background: #F6EBDD; color: #82381C;
                  font: 600 15px/1.4 system-ui, sans-serif; }
     .demarrage img { width: 88px; height: 88px; animation: depot 1.6s ease-in-out infinite; }
     @keyframes depot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     @media (prefers-reduced-motion: reduce) { .demarrage img { animation: none; } }
+    /* Animation d'ouverture (marque/svg/ouverture.svg) : au-dessus de tout, puis s'efface. */
+    #ouverture { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
+                 background: #F6EBDD; transition: opacity .45s ease; cursor: pointer; }
+    #ouverture img { width: min(86vw, 560px); height: auto; }
+    #ouverture.fini { opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body class="bg-ivoire">
+  <div id="ouverture" aria-hidden="true"><img src="/ouverture.svg" alt="" /></div>
+  <script>
+    // L'animation dure 3 s une fois l'image chargée ; un toucher la passe. Ignorée si l'utilisateur
+    // a demandé à réduire les animations.
+    (function () {
+      var o = document.getElementById("ouverture");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { o.remove(); return; }
+      var finie = false;
+      function fin() {
+        if (finie) return;
+        finie = true;
+        o.classList.add("fini");
+        setTimeout(function () { o.remove(); }, 500);
+      }
+      var img = o.querySelector("img");
+      function lancer() { setTimeout(fin, 3300); }
+      if (img.complete) lancer(); else { img.onload = lancer; img.onerror = fin; }
+      o.addEventListener("click", fin);
+      setTimeout(fin, 8000); // filet de sécurité si l'image tarde
+    })();
+  </script>
   <div id="root"><div class="demarrage" role="status" aria-label="Chargement"><img src="/symbole.svg" alt="" /><span>Chacun son tour. Tous ensemble.</span></div></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

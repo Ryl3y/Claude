@@ -33,7 +33,7 @@ Préférez toujours le SVG ; les PNG servent quand le SVG n'est pas accepté.
 
 | Nom | Hex | Rôle |
 | --- | --- | --- |
-| Terre cuite | `#B4532A` | Couleur principale, boutons, la calebasse |
+| Terre cuite | `#9A4322` | Couleur principale, boutons, la calebasse |
 | Brun nuit | `#5A2614` | Fonds sombres, barre de navigation |
 | Ocre | `#E9A23B` | Accent unique : la pièce, le « + », le tour tiré ; jamais en grand aplat de texte |
 | Crème | `#F6EBDD` | Fond des pages, logo sur fond sombre |
@@ -54,8 +54,18 @@ Dans `declinaisons/`, des modèles HTML modifiables et leur rendu PNG (`declinai
 Pour modifier un texte, éditez le fichier HTML. Relancez ensuite `node declinaisons/rendre.cjs`
 (il faut `playwright-core` et Chromium). Les données affichées (Awa Ndongo, montants) sont des exemples.
 
-L'appli affiche aussi un **écran de démarrage** : la calebasse sur fond crème, qui flotte doucement
-pendant le chargement.
+## Animation d'ouverture
+
+`svg/ouverture.svg` (aperçu : `ouverture.mp4`) se joue à chaque ouverture de l'appli, en 3 s :
+
+1. La calebasse prend son élan et **bascule** : elle roule sur son fond arrondi jusqu'à poser le rebord.
+2. La **pièce** en sort, tombe et **roule** vers la droite.
+3. Le **nom apparaît au fur et à mesure** derrière la pièce, comme si elle le déroulait.
+4. Arrivée au bout, la pièce **devient le « + »**, et la calebasse se redresse : on retrouve le logo.
+
+Le SVG anime tout lui-même, sans script ni bibliothèque, et ne pèse que 5 Ko. Dans l'appli, un toucher
+passe l'animation. Elle n'est pas jouée si l'appareil demande de réduire les animations. Ensuite,
+tant que la session se charge, l'**écran de démarrage** montre la calebasse qui flotte doucement.
 
 ## Typographie
 
